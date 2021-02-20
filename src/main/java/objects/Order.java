@@ -1,3 +1,5 @@
+package objects;
+
 public class Order {
 
     private int orderId;
@@ -12,6 +14,6 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order " + orderId;
+        return "objects.Order " + orderId;
     }
 }
