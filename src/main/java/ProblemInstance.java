@@ -75,18 +75,16 @@ public class ProblemInstance {
     private static void setUpOrders() {
         // Read: fileName
         ProblemInstance.orders = new ArrayList<>();
-        JSONObject jsonObject = getJSONObject(pathToInstanceFile);
-        JSONObject jsonOrders = (JSONObject) jsonObject.get("orders");
+        JSONObject jsonOrders = (JSONObject) getJSONObject(pathToInstanceFile).get(Constants.ORDERS_KEY);
         int orderId = 0;
 
         for(Object key : jsonOrders.keySet()) {
             JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
-            double orderSize = (double) jsonOrder.get("size");
-            int installationId = Math.toIntExact((long) jsonOrder.get("installation"));
-            boolean isDelivery = ((jsonOrder.get("transport")).equals("delivery"));
-            boolean isMandatory = ((jsonOrder.get("mandatory")).equals("true"));
-            Order order = new Order(orderId,isMandatory,isDelivery,
-                    orderSize,installationId);
+            double orderSize = (double) jsonOrder.get(Constants.ORDER_SIZE_KEY);
+            int installationId = Math.toIntExact((long) jsonOrder.get(Constants.INSTALLATION_KEY));
+            boolean isDelivery = ((jsonOrder.get(Constants.TRANSPORTATION_TYPE_KEY)).equals(Constants.DELIVERY_KEY));
+            boolean isMandatory = ((jsonOrder.get(Constants.MANDATORY_KEY)).equals(Constants.TRUE_KEY));
+            Order order = new Order(orderId,isMandatory,isDelivery, orderSize,installationId);
             ProblemInstance.orders.add(order);
             orderId++;
         }
@@ -135,11 +133,11 @@ public class ProblemInstance {
         ProblemInstance.wsToSpeedImpact = new HashMap<>();
         ProblemInstance.wsToServiceImpact = new HashMap<>();
         JSONObject jsonWeather = getJSONObject(Constants.WEATHER_FILE);
-        JSONObject jsonWS = (JSONObject) jsonWeather.get("scenarios");
+        JSONObject jsonWS = (JSONObject) jsonWeather.get(Constants.SCENARIOS_KEY);
         ArrayList<Integer> weatherForecast = (ArrayList<Integer>) jsonWS.get(ProblemInstance.weatherScenario);
         ProblemInstance.weatherForecast = weatherForecast;
-        JSONObject jsonSpeedImpact = (JSONObject) jsonWeather.get("speed_impact");
-        JSONObject jsonServiceImpact = (JSONObject) jsonWeather.get("service_impact");
+        JSONObject jsonSpeedImpact = (JSONObject) jsonWeather.get(Constants.SPEED_IMPACT_KEY);
+        JSONObject jsonServiceImpact = (JSONObject) jsonWeather.get(Constants.SERVICE_IMPACT_KEY);
         addToHashMap(jsonSpeedImpact, ProblemInstance.wsToSpeedImpact);
         addToHashMap(jsonServiceImpact, ProblemInstance.wsToServiceImpact);
     }
