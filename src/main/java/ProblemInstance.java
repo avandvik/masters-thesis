@@ -45,7 +45,7 @@ public class ProblemInstance {
     public static Map<Integer, Integer> wsToServiceImpact;
     public static List<Integer> weatherForecast;
 
-    public void setUpProblem(String fileName) {
+    public static void setUpProblem(String fileName) {
         ProblemInstance.fileName = fileName;
         ProblemInstance.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;
         setUpInstallations();
@@ -77,46 +77,48 @@ public class ProblemInstance {
 
     private static void setUpOrders() {
         // Read: fileName
+        ProblemInstance.orders = new ArrayList<>();
         JSONObject jsonObject = getJSONObject(pathToInstanceFile);
         JSONObject jsonOrders = (JSONObject) jsonObject.get("orders");
-        System.out.println(jsonOrders);
+        int orderId = 0;
 
         for(Object key : jsonOrders.keySet()) {
             JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
-            double size = (double) jsonOrder.get("size");
-            int installationId = (int) jsonOrder.get("installation");
-            boolean isDelivery = ((jsonOrder.get("transport")).equals("delivery") ? true : false);
-            boolean isMandatory = ((jsonOrder.get("mandatory")).equals("true") ? true : false);
+            double orderSize = (double) jsonOrder.get("size");
+            int installationId = Math.toIntExact((long) jsonOrder.get("installation"));
+            boolean isDelivery = ((jsonOrder.get("transport")).equals("delivery"));
+            boolean isMandatory = ((jsonOrder.get("mandatory")).equals("true"));
+            Order order = new Order(orderId,isMandatory,isDelivery,
+                    orderSize,installationId);
+            ProblemInstance.orders.add(order);
+            orderId++;
         }
-
-
-
-
-
     }
 
-    private static void setUpVessels() {
+
+    private static void setUpVessels () {
         // Read: VESSEL_FILE and fileName
 
         // Add return time to each vessel object after they are created
     }
 
-    private static void setUpInstanceInfo() {
+    private static void setUpInstanceInfo () {
         // Read: fileName
 
     }
 
-    private static void setUpVesselInfo() {
+    private static void setUpVesselInfo () {
         // Read: VESSEL_FILE
 
     }
 
-    private static void setUpWeather() {
+    private static void setUpWeather () {
         // Read: WEATHER_FILE
 
     }
 
-    private static JSONObject getJSONObject(String path) {
+    private static JSONObject getJSONObject
+        (String path){
         JSONParser jsonParser = new JSONParser();
         try (FileReader reader = new FileReader(path)) {
             return (JSONObject) jsonParser.parse(reader);
@@ -126,7 +128,10 @@ public class ProblemInstance {
         return null;
     }
 
-    public static void main(String[] args) {
+    public static void main (String[]args){
+        ProblemInstance.setUpProblem("example.json");
 
     }
 }
+
+
