@@ -7,10 +7,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProblemInstance {
 
@@ -41,8 +38,8 @@ public class ProblemInstance {
     public static double realServiceTimeUnit;
 
     // Weather
-    public static Map<Integer, Integer> wsToSpeedImpact;
-    public static Map<Integer, Integer> wsToServiceImpact;
+    public static Map<Integer, Double> wsToSpeedImpact;
+    public static Map<Integer, Double> wsToServiceImpact;
     public static List<Integer> weatherForecast;
 
     public static void setUpProblem(String fileName) {
@@ -121,13 +118,29 @@ public class ProblemInstance {
     }
 
     private static void setUpVesselInfo() {
-        // Read: VESSEL_FILE
+        // Read: VESSEL_FILE;
 
     }
 
     private static void setUpWeather() {
-        // Read: WEATHER_FILE
+        ProblemInstance.wsToSpeedImpact = new HashMap<>();
+        ProblemInstance.wsToServiceImpact = new HashMap<>();
+        JSONObject jsonWeather = getJSONObject(Constants.WEATHER_FILE);
+        JSONObject jsonWS = (JSONObject) jsonWeather.get("scenarios");
+        ArrayList<Integer> weatherForecast = (ArrayList<Integer>) jsonWS.get(ProblemInstance.weatherScenario);
+        ProblemInstance.weatherForecast = weatherForecast;
+        JSONObject jsonSpeedImpact = (JSONObject) jsonWeather.get("speed_impact");
+        JSONObject jsonServiceImpact = (JSONObject) jsonWeather.get("service_impact");
+        addToHashMap(jsonSpeedImpact, ProblemInstance.wsToSpeedImpact);
+        addToHashMap(jsonServiceImpact, ProblemInstance.wsToServiceImpact);
+    }
 
+    private static void addToHashMap(JSONObject jsonObject, Map<Integer, Double> map) {
+        for (Object key : jsonObject.keySet()) {
+            int intKey = Integer.valueOf((String) key);
+            double doubleValue = (double) jsonObject.get(key);
+            map.put(intKey, doubleValue);
+        }
     }
 
     private static JSONObject getJSONObject(String path) {
