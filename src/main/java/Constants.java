@@ -23,4 +23,14 @@ public class Constants {
     public static final String DISCRETIZATION_KEY = "discretization_parameter";
     public static final String WEATHER_SCENARIO_KEY = "weather_scenario";
     public static final String INSTALLATION_ORDERING_KEY = "installation_ordering";
+    public static final String MIN_SPEED_KEY = "min_speed";
+    public static final String DESIGN_SPEED_KEY = "design_speed";
+    public static final String MAX_SPEED_KEY = "max_speed";
+    public static final String FC_DESIGN_SPEED_KEY = "fc_design_speed";
+    public static final String FC_DEPOT_KEY = "fc_depot";
+    public static final String FC_IDLING_KEY = "fc_idling";
+    public static final String FC_SERVICING_KEY = "fc_servicing";
+    public static final String FUEL_PRICE_KEY = "fuel_price";
+    public static final String SPOT_HOUR_RATE_KEY = "spot_hour_rate";
+    public static final String SERVICE_TIME_KEY = "real_service_time_per_unit";
 }

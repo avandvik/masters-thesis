@@ -60,7 +60,7 @@ public class ProblemInstance {
             JSONObject jsonInstallation = (JSONObject) jsonInstallations.get(key);
             String name = (String) key;
             int id = Math.toIntExact((long) jsonInstallation.get(Constants.ID_KEY));
-            int openingHour = Math.toIntExact((long) jsonInstallation.get(Constants.CLOSING_HOUR_KEY));
+            int openingHour = Math.toIntExact((long) jsonInstallation.get(Constants.OPENING_HOUR_KEY));
             int closingHour = Math.toIntExact((long) jsonInstallation.get(Constants.CLOSING_HOUR_KEY));
             double latitude = (double) jsonInstallation.get(Constants.LATITUDE_KEY);
             double longitude = (double) jsonInstallation.get(Constants.LONGITUDE_KEY);
@@ -110,16 +110,25 @@ public class ProblemInstance {
     }
 
     private static void setUpInstanceInfo() {
-        JSONObject jsonInstance = getJSONObject(pathToInstanceFile);
-        ProblemInstance.planningPeriodHours = (double) jsonInstance.get(Constants.PLANNING_PERIOD_KEY);
-        ProblemInstance.discretizationParam = (double) jsonInstance.get(Constants.DISCRETIZATION_KEY);
-        ProblemInstance.weatherScenario = (String) jsonInstance.get(Constants.WEATHER_SCENARIO_KEY);
-        ProblemInstance.installationOrdering = (String) jsonInstance.get(Constants.INSTALLATION_ORDERING_KEY);
+        JSONObject jsonInstanceInfo = getJSONObject(ProblemInstance.pathToInstanceFile);
+        ProblemInstance.planningPeriodHours = (double) jsonInstanceInfo.get(Constants.PLANNING_PERIOD_KEY);
+        ProblemInstance.discretizationParam = (double) jsonInstanceInfo.get(Constants.DISCRETIZATION_KEY);
+        ProblemInstance.weatherScenario = (String) jsonInstanceInfo.get(Constants.WEATHER_SCENARIO_KEY);
+        ProblemInstance.installationOrdering = (String) jsonInstanceInfo.get(Constants.INSTALLATION_ORDERING_KEY);
     }
 
     private static void setUpVesselInfo() {
-        // Read: VESSEL_FILE;
-
+        JSONObject jsonVesselInfo = getJSONObject(Constants.VESSEL_FILE);
+        ProblemInstance.minSpeed = (double) jsonVesselInfo.get(Constants.MIN_SPEED_KEY);
+        ProblemInstance.designSpeed = (double) jsonVesselInfo.get(Constants.DESIGN_SPEED_KEY);
+        ProblemInstance.maxSpeed = (double) jsonVesselInfo.get(Constants.MAX_SPEED_KEY);
+        ProblemInstance.fcDesignSpeed = (double) jsonVesselInfo.get(Constants.FC_DESIGN_SPEED_KEY);
+        ProblemInstance.fcDepot = (double) jsonVesselInfo.get(Constants.FC_DEPOT_KEY);
+        ProblemInstance.fcIdling = (double) jsonVesselInfo.get(Constants.FC_IDLING_KEY);
+        ProblemInstance.fcServicing = (double) jsonVesselInfo.get(Constants.FC_SERVICING_KEY);
+        ProblemInstance.fuelPrice = (double) jsonVesselInfo.get(Constants.FUEL_PRICE_KEY);
+        ProblemInstance.spotHourRate = (double) jsonVesselInfo.get(Constants.SPOT_HOUR_RATE_KEY);
+        ProblemInstance.realServiceTimeUnit = (double) jsonVesselInfo.get(Constants.SERVICE_TIME_KEY);
     }
 
     private static void setUpWeather() {
