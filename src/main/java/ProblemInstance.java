@@ -1,6 +1,7 @@
 import objects.Installation;
 import objects.Order;
 import objects.Vessel;
+import org.json.simple.parser.JSONParser;
 
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,9 @@ public class ProblemInstance {
 
     private void setUpOrders() {
         // Read: fileName
+        JSONParser jsonParser = new JSONParser();
+
+
 
     }
 
