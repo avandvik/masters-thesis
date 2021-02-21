@@ -1,0 +1,43 @@
+package objects;
+
+public class Order {
+
+    private int orderId;
+    private boolean isMandatory;
+    private boolean isDelivery;
+    private double orderSize;
+    private int installationId;
+
+    public Order(int orderId, boolean isMandatory, boolean isDelivery, double orderSize, int installationId) {
+        this.orderId = orderId;
+        this.isMandatory = isMandatory;
+        this.isDelivery = isDelivery;
+        this.orderSize = orderSize;
+        this.installationId = installationId;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    @Override
+    public String toString() {
+        return "objects.Order " + orderId;
+    }
+
+    public boolean isMandatory() {
+        return isMandatory;
+    }
+
+    public boolean isDelivery() {
+        return isDelivery;
+    }
+
+    public double getOrderSize() {
+        return orderSize;
+    }
+
+    public int getInstallationId() {
+        return installationId;
+    }
+}

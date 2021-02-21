@@ -1,27 +1,29 @@
 {
-  "PSV_1": {
-    "id": 1,
-    "capacity": 1000.0
-  },
-  "PSV_2": {
-    "id": 2,
-    "capacity": 1000.0
-  },
-  "PSV_3": {
-    "id": 3,
-    "capacity": 1000.0
-  },
-  "PSV_4": {
-    "id": 4,
-    "capacity": 1000.0
-  },
-  "PSV_5": {
-  "id": 5,
-  "capacity": 1000.0
-  },
-  "SPOT": {
-    "id": 6,
-    "capacity": 1000.0
+  "fleet": {
+    "PSV_1": {
+      "id": 1,
+      "capacity": 1000.0
+    },
+    "PSV_2": {
+      "id": 2,
+      "capacity": 1000.0
+    },
+    "PSV_3": {
+      "id": 3,
+      "capacity": 1000.0
+    },
+    "PSV_4": {
+      "id": 4,
+      "capacity": 1000.0
+    },
+    "PSV_5": {
+      "id": 5,
+      "capacity": 1000.0
+    },
+    "SPOT": {
+      "id": 6,
+      "capacity": 1000.0
+    }
   },
   "min_speed": 7.0,
   "design_speed": 12.0,
