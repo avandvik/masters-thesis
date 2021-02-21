@@ -66,6 +66,22 @@ public class ProblemInstance {
 
     private void setUpOrders() {
         // Read: fileName
+        JSONObject jsonObject = getJSONObject(pathToInstanceFile);
+        JSONObject jsonOrders = (JSONObject) jsonObject.get("orders");
+        System.out.println(jsonOrders);
+
+        for(Object key : jsonOrders.keySet()) {
+            JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
+            double size = (double) jsonOrder.get("size");
+            int installationId = (int) jsonOrder.get("installation");
+            boolean isDelivery = ((jsonOrder.get("transport")).equals("delivery") ? true : false);
+            boolean isMandatory = ((jsonOrder.get("mandatory")).equals("true") ? true : false);
+
+        }
+
+
+
+
 
     }
 
@@ -102,6 +118,6 @@ public class ProblemInstance {
 
     public static void main(String[] args) {
         ProblemInstance problemInstance = new ProblemInstance("example.json");
-        problemInstance.setUpInstallations();
+        problemInstance.setUpOrders();
     }
 }
