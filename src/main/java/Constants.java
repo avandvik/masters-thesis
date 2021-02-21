@@ -15,4 +15,7 @@ public class Constants {
     public static final String LATITUDE_KEY = "latitude";
     public static final String LONGITUDE_KEY = "longitude";
     public static final String TYPICAL_DEMAND_KEY = "typical_demand";
+    public static final String CAPACITY_KEY = "capacity";
+    public static final String AVAILABLE_VESSELS_KEY = "available_vessels";
+    public static final String FLEET_KEY = "fleet";
 }

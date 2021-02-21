@@ -9,6 +9,9 @@
     },
     "PSV_4": {
       "return_time": 80.0
+    },
+    "SPOT": {
+      "return_time": 80.0
     }
   },
   "orders": {

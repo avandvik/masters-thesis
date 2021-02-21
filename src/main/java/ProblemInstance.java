@@ -45,7 +45,7 @@ public class ProblemInstance {
     public static Map<Integer, Integer> wsToServiceImpact;
     public static List<Integer> weatherForecast;
 
-    public void setUpProblem(String fileName) {
+    public static void setUpProblem(String fileName) {
         ProblemInstance.fileName = fileName;
         ProblemInstance.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;
         setUpInstallations();
@@ -79,7 +79,6 @@ public class ProblemInstance {
         // Read: fileName
         JSONObject jsonObject = getJSONObject(pathToInstanceFile);
         JSONObject jsonOrders = (JSONObject) jsonObject.get("orders");
-        System.out.println(jsonOrders);
 
         for(Object key : jsonOrders.keySet()) {
             JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
@@ -96,9 +95,20 @@ public class ProblemInstance {
     }
 
     private static void setUpVessels() {
-        // Read: VESSEL_FILE and fileName
-
-        // Add return time to each vessel object after they are created
+        ProblemInstance.vessels = new ArrayList<>();
+        JSONObject jsonVessels = (JSONObject) getJSONObject(Constants.VESSEL_FILE).get(Constants.FLEET_KEY);
+        JSONObject jsonAvailableVessels =
+                (JSONObject) getJSONObject(pathToInstanceFile).get(Constants.AVAILABLE_VESSELS_KEY);
+        for (Object key : jsonAvailableVessels.keySet()) {
+            String name = (String) key;
+            JSONObject jsonVessel = (JSONObject) jsonVessels.get(key);
+            int id = Math.toIntExact((long) jsonVessel.get(Constants.ID_KEY));
+            double capacity = (double) jsonVessel.get(Constants.CAPACITY_KEY);
+            double returnTime = (double) ((JSONObject) jsonAvailableVessels.get(key)).get("return_time");
+            Vessel vessel = new Vessel(id, name, capacity, returnTime);
+            ProblemInstance.vessels.add(vessel);
+        }
+        Collections.sort(ProblemInstance.vessels);
     }
 
     private static void setUpInstanceInfo() {
@@ -127,6 +137,9 @@ public class ProblemInstance {
     }
 
     public static void main(String[] args) {
+        ProblemInstance.setUpProblem("example.json");
+        System.out.println(ProblemInstance.installations);
+        System.out.println(ProblemInstance.vessels);
 
     }
 }
