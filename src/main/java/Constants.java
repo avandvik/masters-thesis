@@ -18,4 +18,9 @@ public class Constants {
     public static final String CAPACITY_KEY = "capacity";
     public static final String AVAILABLE_VESSELS_KEY = "available_vessels";
     public static final String FLEET_KEY = "fleet";
+    public static final String RETURN_TIME_KEY = "return_time";
+    public static final String PLANNING_PERIOD_KEY = "planning_period_hours";
+    public static final String DISCRETIZATION_KEY = "discretization_parameter";
+    public static final String WEATHER_SCENARIO_KEY = "weather_scenario";
+    public static final String INSTALLATION_ORDERING_KEY = "installation_ordering";
 }

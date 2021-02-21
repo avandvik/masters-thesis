@@ -23,8 +23,8 @@ public class ProblemInstance {
     public static List<Vessel> vessels;
 
     // Instance info
-    public static int planningPeriodHours;
-    public static int discretizationParam;
+    public static double planningPeriodHours;
+    public static double discretizationParam;
     public static String weatherScenario;
     public static String installationOrdering;
 
@@ -49,7 +49,7 @@ public class ProblemInstance {
         ProblemInstance.fileName = fileName;
         ProblemInstance.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;
         setUpInstallations();
-        setUpOrders();
+        // setUpOrders();
         setUpInstanceInfo();
         setUpVessels();
         setUpVesselInfo();
@@ -104,7 +104,7 @@ public class ProblemInstance {
             JSONObject jsonVessel = (JSONObject) jsonVessels.get(key);
             int id = Math.toIntExact((long) jsonVessel.get(Constants.ID_KEY));
             double capacity = (double) jsonVessel.get(Constants.CAPACITY_KEY);
-            double returnTime = (double) ((JSONObject) jsonAvailableVessels.get(key)).get("return_time");
+            double returnTime = (double) ((JSONObject) jsonAvailableVessels.get(key)).get(Constants.RETURN_TIME_KEY);
             Vessel vessel = new Vessel(id, name, capacity, returnTime);
             ProblemInstance.vessels.add(vessel);
         }
@@ -112,8 +112,11 @@ public class ProblemInstance {
     }
 
     private static void setUpInstanceInfo() {
-        // Read: fileName
-
+        JSONObject jsonInstance = getJSONObject(pathToInstanceFile);
+        ProblemInstance.planningPeriodHours = (double) jsonInstance.get(Constants.PLANNING_PERIOD_KEY);
+        ProblemInstance.discretizationParam = (double) jsonInstance.get(Constants.DISCRETIZATION_KEY);
+        ProblemInstance.weatherScenario = (String) jsonInstance.get(Constants.WEATHER_SCENARIO_KEY);
+        ProblemInstance.installationOrdering = (String) jsonInstance.get(Constants.INSTALLATION_ORDERING_KEY);
     }
 
     private static void setUpVesselInfo() {
@@ -138,8 +141,6 @@ public class ProblemInstance {
 
     public static void main(String[] args) {
         ProblemInstance.setUpProblem("example.json");
-        System.out.println(ProblemInstance.installations);
-        System.out.println(ProblemInstance.vessels);
 
     }
 }
