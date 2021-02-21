@@ -1,6 +1,7 @@
 import objects.Installation;
 import objects.Order;
 import objects.Vessel;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -58,7 +59,8 @@ public class ProblemInstance {
     }
 
     private void setUpInstallations() {
-        Object jsonInstallations = getJSONObject(Constants.INSTALLATION_FILE);
+        Object installationObject = getJSONObject(Constants.INSTALLATION_FILE);
+        JSONObject jsonInstallations = (JSONObject) installationObject;
         System.out.println(jsonInstallations);
     }
 
@@ -88,10 +90,10 @@ public class ProblemInstance {
 
     }
 
-    private Object getJSONObject(String path) {
+    private JSONObject getJSONObject(String path) {
         JSONParser jsonParser = new JSONParser();
         try (FileReader reader = new FileReader(path)) {
-            return jsonParser.parse(reader);
+            return (JSONObject) jsonParser.parse(reader);
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
@@ -99,5 +101,7 @@ public class ProblemInstance {
     }
 
     public static void main(String[] args) {
+        ProblemInstance problemInstance = new ProblemInstance("example.json");
+        problemInstance.setUpInstallations();
     }
 }
