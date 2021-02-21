@@ -1,14 +1,6 @@
 {
-  "DEP": {
-    "id": "0a",
-    "opening_hour": 0,
-    "closing_hour": 24,
-    "latitude": 60.8024,
-    "longitude": 5.0107,
-    "typical_demand": 0.0
-  },
   "OFFSHORE": {
-    "id": "0b",
+    "id": 0,
     "opening_hour": 0,
     "closing_hour": 24,
     "latitude": 60.8621,
