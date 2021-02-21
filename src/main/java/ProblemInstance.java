@@ -49,7 +49,7 @@ public class ProblemInstance {
         ProblemInstance.fileName = fileName;
         ProblemInstance.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;
         setUpInstallations();
-        // setUpOrders();
+        setUpOrders();
         setUpInstanceInfo();
         setUpVessels();
         setUpVesselInfo();
@@ -77,21 +77,22 @@ public class ProblemInstance {
 
     private static void setUpOrders() {
         // Read: fileName
+        ProblemInstance.orders = new ArrayList<>();
         JSONObject jsonObject = getJSONObject(pathToInstanceFile);
         JSONObject jsonOrders = (JSONObject) jsonObject.get("orders");
+        int orderId = 0;
 
         for(Object key : jsonOrders.keySet()) {
             JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
-            double size = (double) jsonOrder.get("size");
-            int installationId = (int) jsonOrder.get("installation");
-            boolean isDelivery = ((jsonOrder.get("transport")).equals("delivery") ? true : false);
-            boolean isMandatory = ((jsonOrder.get("mandatory")).equals("true") ? true : false);
+            double orderSize = (double) jsonOrder.get("size");
+            int installationId = Math.toIntExact((long) jsonOrder.get("installation"));
+            boolean isDelivery = ((jsonOrder.get("transport")).equals("delivery"));
+            boolean isMandatory = ((jsonOrder.get("mandatory")).equals("true"));
+            Order order = new Order(orderId,isMandatory,isDelivery,
+                    orderSize,installationId);
+            ProblemInstance.orders.add(order);
+            orderId++;
         }
-
-
-
-
-
     }
 
     private static void setUpVessels() {
@@ -139,8 +140,10 @@ public class ProblemInstance {
         return null;
     }
 
-    public static void main(String[] args) {
+    public static void main (String[]args){
         ProblemInstance.setUpProblem("example.json");
 
     }
 }
+
+
