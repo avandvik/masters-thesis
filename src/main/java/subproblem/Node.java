@@ -27,7 +27,7 @@ public class Node implements Comparable<Node> {
         toString
      */
 
-
+    private String nodeName;
     private Set<Node> parents = new HashSet<>();
     private Set<Node> children = new HashSet<>();
     private final int discreteTime;
@@ -36,19 +36,28 @@ public class Node implements Comparable<Node> {
 
     private List<Node> bestPath = new LinkedList<>();
     private double bestCost = -1;
+    private boolean isVisited;
 
-    public Node(Set<Node> parents, Set<Node> children, int discreteTime) {
+    public Node(String nodeName, Set<Node> parents, Set<Node> children, int discreteTime) {
+        this.nodeName = nodeName;
         this.parents = parents;
         this.children = children;
         this.discreteTime = discreteTime;
+        this.isVisited = false;
     }
 
-    public Node(int discreteTime) {
+    public Node(String nodeName, int discreteTime) {
+        this.nodeName = nodeName;
         this.discreteTime = discreteTime;
+        this.isVisited = false;
     }
 
     public List<Node> getBestPath() {
         return bestPath;
+    }
+
+    public String getNodeName() {
+        return nodeName;
     }
 
     public double getBestCost() {
@@ -65,6 +74,14 @@ public class Node implements Comparable<Node> {
 
     public Set<Node> getChildren() {
         return children;
+    }
+
+    public boolean isVisited() {
+        return isVisited;
+    }
+
+    public void setVisited(boolean visited) {
+        isVisited = visited;
     }
 
     public double getCostOfChild(Node child) {
@@ -94,12 +111,17 @@ public class Node implements Comparable<Node> {
     // TODO: Implement (KP)
     @Override
     public String toString() {
-        return "";
+        return this.nodeName + ", " + getDiscreteTime();
     }
 
     // TODO: Implement (KP)
     @Override
     public int compareTo(Node o) {
-        return 0;
+        return Double.compare(getBestCost(), o.bestCost);
+        // Returns -1 if cost of o is higher, 0 if equal and 1 if lower
+    }
+
+    public static void main(String[] args) {
+
     }
 }
