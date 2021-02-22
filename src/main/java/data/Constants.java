@@ -32,6 +32,7 @@ public class Constants {
     public static final String FUEL_PRICE_KEY = "fuel_price";
     public static final String SPOT_HOUR_RATE_KEY = "spot_hour_rate";
     public static final String SERVICE_TIME_KEY = "real_service_time_per_unit";
+    public static final String PREP_END_KEY = "preparation_end_hour";
 
     public static final String ORDERS_KEY = "orders";
     public static final String ORDER_SIZE_KEY = "size";

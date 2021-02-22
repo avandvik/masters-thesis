@@ -36,7 +36,18 @@ public class Tree {
     }
 
     // TODO: Implement (Anders)
-    public void generateTree(List<Order> orderSequence) {
+    public void generateTree(LinkedList<Order> orderSequence) {
+        // Depot to first order
+        Order firstOrder = orderSequence.getFirst();
+
+
+        // Order to order
+        for (int i = 0; i < orderSequence.size(); i++) {
+            Order startOrder = orderSequence.get(i);
+            Order endOrder = orderSequence.get(i + 1);
+        }
+
+        // Order to depot
 
     }
 

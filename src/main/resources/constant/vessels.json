@@ -34,5 +34,6 @@
   "fc_servicing": 170.0,
   "fuel_price": 0.276,
   "spot_hour_rate": 608.0,
-  "real_service_time_per_unit": 0.1
+  "real_service_time_per_unit": 0.1,
+  "preparation_end_hour": 16
 }
