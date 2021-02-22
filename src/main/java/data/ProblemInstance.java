@@ -1,3 +1,5 @@
+package data;
+
 import objects.Installation;
 import objects.Order;
 import objects.Vessel;
@@ -73,18 +75,16 @@ public class ProblemInstance {
     }
 
     private static void setUpOrders() {
-        // Read: fileName
         ProblemInstance.orders = new ArrayList<>();
         JSONObject jsonOrders = (JSONObject) getJSONObject(pathToInstanceFile).get(Constants.ORDERS_KEY);
         int orderId = 0;
-
-        for(Object key : jsonOrders.keySet()) {
+        for (Object key : jsonOrders.keySet()) {
             JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
             double orderSize = (double) jsonOrder.get(Constants.ORDER_SIZE_KEY);
             int installationId = Math.toIntExact((long) jsonOrder.get(Constants.INSTALLATION_KEY));
             boolean isDelivery = ((jsonOrder.get(Constants.TRANSPORTATION_TYPE_KEY)).equals(Constants.DELIVERY_KEY));
             boolean isMandatory = ((jsonOrder.get(Constants.MANDATORY_KEY)).equals(Constants.TRUE_KEY));
-            Order order = new Order(orderId,isMandatory,isDelivery, orderSize,installationId);
+            Order order = new Order(orderId, isMandatory, isDelivery, orderSize, installationId);
             ProblemInstance.orders.add(order);
             orderId++;
         }
@@ -134,8 +134,7 @@ public class ProblemInstance {
         ProblemInstance.wsToServiceImpact = new HashMap<>();
         JSONObject jsonWeather = getJSONObject(Constants.WEATHER_FILE);
         JSONObject jsonWS = (JSONObject) jsonWeather.get(Constants.SCENARIOS_KEY);
-        ArrayList<Integer> weatherForecast = (ArrayList<Integer>) jsonWS.get(ProblemInstance.weatherScenario);
-        ProblemInstance.weatherForecast = weatherForecast;
+        ProblemInstance.weatherForecast = (ArrayList<Integer>) jsonWS.get(ProblemInstance.weatherScenario);
         JSONObject jsonSpeedImpact = (JSONObject) jsonWeather.get(Constants.SPEED_IMPACT_KEY);
         JSONObject jsonServiceImpact = (JSONObject) jsonWeather.get(Constants.SERVICE_IMPACT_KEY);
         addToHashMap(jsonSpeedImpact, ProblemInstance.wsToSpeedImpact);
@@ -160,7 +159,7 @@ public class ProblemInstance {
         return null;
     }
 
-    public static void main (String[]args){
+    public static void main(String[] args) {
         ProblemInstance.setUpProblem("example.json");
 
     }

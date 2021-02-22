@@ -1,7 +1,6 @@
-
+package data;
 
 public class Constants {
-
     public static final String PATH_TO_CONSTANT = System.getProperty("user.dir") + "/src/main/resources/constant/";
     public static final String PATH_TO_INSTANCE = System.getProperty("user.dir") + "/src/main/resources/instance/";
 
@@ -44,7 +43,4 @@ public class Constants {
     public static final String SCENARIOS_KEY = "scenarios";
     public static final String SPEED_IMPACT_KEY = "speed_impact";
     public static final String SERVICE_IMPACT_KEY = "service_impact";
-
-
-
 }
