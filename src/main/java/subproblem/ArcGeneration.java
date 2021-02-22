@@ -17,6 +17,8 @@ public class ArcGeneration {
         double distance = DistanceCalculator.distance(depot, firstInstallation, "N");
         List<Double> speeds = getSpeeds(distance, startTime);
         int serviceDuration = calculateServiceDuration(firstOrder);
+        // Speeds -> arrival times
+        // Arrival times -> servicing start time (possibly with idling times)
     }
 
     public static List<Double> getSpeeds(double distance, int startTime) {
