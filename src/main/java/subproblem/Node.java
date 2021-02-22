@@ -1,27 +1,105 @@
 package subproblem;
 
-public class Node {
-    /* Fields to include
-    Node identifiers
-        - Parent nodes in an array (null if root)
-        - Child nodes in an array (null if leaf)
-        - Discrete time
+import java.util.*;
 
-    Cost
-        - Map child -> cost
+public class Node implements Comparable<Node> {
+    /*
+    Fields to include
+        Node identifiers
+            - Parent nodes in an array (null if root)
+            - Child nodes in an array (null if leaf)
+            - Discrete time
 
-    Best path
-        - LinkedList / ArrayList or similar to hold best path here
-        - Cost of best path here
+        Cost
+            - Map child -> cost
+
+        Best path
+            - LinkedList / ArrayList or similar to hold best path here
+            - Cost of best path here
+
+    Functions to include
+        Getters and setters
+
+        Update best cost path
+
+        compareTo (based on cost)
+
+        toString
      */
 
-    /* Functions to include
-    Getters and setters
 
-    Update best cost path
+    private Set<Node> parents = new HashSet<>();
+    private Set<Node> children = new HashSet<>();
+    private final int discreteTime;
 
-    compareTo (based on cost)
+    private Map<Node, Double> childToCost = new HashMap<>();
 
-    toString
-     */
+    private List<Node> bestPath = new LinkedList<>();
+    private double bestCost = -1;
+
+    public Node(Set<Node> parents, Set<Node> children, int discreteTime) {
+        this.parents = parents;
+        this.children = children;
+        this.discreteTime = discreteTime;
+    }
+
+    public Node(int discreteTime) {
+        this.discreteTime = discreteTime;
+    }
+
+    public List<Node> getBestPath() {
+        return bestPath;
+    }
+
+    public double getBestCost() {
+        return bestCost;
+    }
+
+    public int getDiscreteTime() {
+        return discreteTime;
+    }
+
+    public Set<Node> getParents() {
+        return parents;
+    }
+
+    public Set<Node> getChildren() {
+        return children;
+    }
+
+    public double getCostOfChild(Node child) {
+        return this.childToCost.get(child);
+    }
+
+    public void setChildToCost(Node child, double cost) {
+        this.childToCost.put(child, cost);
+    }
+
+    public void setBestPath(List<Node> bestPath) {
+        this.bestPath = bestPath;
+    }
+
+    public void setBestCost(double bestCost) {
+        this.bestCost = bestCost;
+    }
+
+    public void addParent(Node parent) {
+        this.parents.add(parent);
+    }
+
+    public void addChild(Node child) {
+        this.children.add(child);
+    }
+
+    // TODO: Implement (KP)
+    @Override
+    public String toString() {
+        return "";
+    }
+
+    // TODO: Implement (KP)
+    @Override
+    public int compareTo(Node o) {
+        return 0;
+    }
 }
