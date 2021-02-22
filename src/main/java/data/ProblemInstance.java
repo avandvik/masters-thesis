@@ -3,6 +3,7 @@ package data;
 import objects.Installation;
 import objects.Order;
 import objects.Vessel;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -22,7 +23,8 @@ public class ProblemInstance {
     public static List<Vessel> vessels;
 
     // Instance info
-    public static double planningPeriodHours;
+    public static int planningPeriodHours;  // Should be int
+    public static int planningPeriodDisc;
     public static int discretizationParam;
     public static String weatherScenario;
     public static String installationOrdering;
@@ -44,6 +46,7 @@ public class ProblemInstance {
     public static Map<Integer, Double> wsToSpeedImpact;
     public static Map<Integer, Double> wsToServiceImpact;
     public static List<Integer> weatherForecast;
+    public static List<Integer> weatherForecastDisc;
 
     public static Installation getDepot() {
         return installations.get(0);
@@ -126,10 +129,12 @@ public class ProblemInstance {
 
     private static void setUpInstanceInfo() {
         JSONObject jsonInstanceInfo = getJSONObject(ProblemInstance.pathToInstanceFile);
-        ProblemInstance.planningPeriodHours = (double) jsonInstanceInfo.get(Constants.PLANNING_PERIOD_KEY);
-        ProblemInstance.discretizationParam = (int) jsonInstanceInfo.get(Constants.DISCRETIZATION_KEY);
+        ProblemInstance.planningPeriodHours = ((int) ((double) jsonInstanceInfo.get(Constants.PLANNING_PERIOD_KEY)));
+        ProblemInstance.discretizationParam = ((int) ((double) jsonInstanceInfo.get(Constants.DISCRETIZATION_KEY)));
         ProblemInstance.weatherScenario = (String) jsonInstanceInfo.get(Constants.WEATHER_SCENARIO_KEY);
         ProblemInstance.installationOrdering = (String) jsonInstanceInfo.get(Constants.INSTALLATION_ORDERING_KEY);
+
+        ProblemInstance.planningPeriodDisc = ProblemInstance.planningPeriodHours * ProblemInstance.discretizationParam;
     }
 
     private static void setUpVesselInfo() {
@@ -145,7 +150,7 @@ public class ProblemInstance {
         ProblemInstance.spotHourRate = (double) jsonVesselInfo.get(Constants.SPOT_HOUR_RATE_KEY);
         double realServiceTimeUnit = (double) jsonVesselInfo.get(Constants.SERVICE_TIME_KEY);
         ProblemInstance.discServiceTimeUnit = realServiceTimeUnit * ProblemInstance.discretizationParam;
-        int preparationEndHour = (int) jsonVesselInfo.get(Constants.PREP_END_KEY);
+        int preparationEndHour = Math.toIntExact((long) jsonVesselInfo.get(Constants.PREP_END_KEY));
         ProblemInstance.preparationEndTime = preparationEndHour * ProblemInstance.discretizationParam;
     }
 
@@ -154,16 +159,34 @@ public class ProblemInstance {
         ProblemInstance.wsToServiceImpact = new HashMap<>();
         JSONObject jsonWeather = getJSONObject(Constants.WEATHER_FILE);
         JSONObject jsonWS = (JSONObject) jsonWeather.get(Constants.SCENARIOS_KEY);
-        ProblemInstance.weatherForecast = (ArrayList<Integer>) jsonWS.get(ProblemInstance.weatherScenario);
+        JSONArray jsonWeatherForecast = (JSONArray) jsonWS.get(ProblemInstance.weatherScenario);
+        ProblemInstance.processWeatherForecast(jsonWeatherForecast);
+        ProblemInstance.createDiscWeatherForecast();
         JSONObject jsonSpeedImpact = (JSONObject) jsonWeather.get(Constants.SPEED_IMPACT_KEY);
         JSONObject jsonServiceImpact = (JSONObject) jsonWeather.get(Constants.SERVICE_IMPACT_KEY);
         addToHashMap(jsonSpeedImpact, ProblemInstance.wsToSpeedImpact);
         addToHashMap(jsonServiceImpact, ProblemInstance.wsToServiceImpact);
     }
 
+    private static void processWeatherForecast(JSONArray jsonWeatherForecast) {
+        ProblemInstance.weatherForecast = new ArrayList<>();
+        for (Object objWeatherState : jsonWeatherForecast) {
+            int weatherState = Math.toIntExact((long) objWeatherState);
+            ProblemInstance.weatherForecast.add(weatherState);
+        }
+    }
+
+    private static void createDiscWeatherForecast() {
+        ProblemInstance.weatherForecastDisc = new ArrayList<>();
+        for (int i = 0; i < ProblemInstance.planningPeriodDisc; i++) {
+            int idx = i / ProblemInstance.discretizationParam;
+            ProblemInstance.weatherForecastDisc.add(ProblemInstance.weatherForecast.get(idx));
+        }
+    }
+
     private static void addToHashMap(JSONObject jsonObject, Map<Integer, Double> map) {
         for (Object key : jsonObject.keySet()) {
-            int intKey = Integer.valueOf((String) key);
+            int intKey = Integer.parseInt((String) key);
             double doubleValue = (double) jsonObject.get(key);
             map.put(intKey, doubleValue);
         }

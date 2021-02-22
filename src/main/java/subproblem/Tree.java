@@ -1,5 +1,6 @@
 package subproblem;
 
+import data.ProblemInstance;
 import objects.Order;
 
 import java.util.LinkedList;
@@ -39,13 +40,9 @@ public class Tree {
     public void generateTree(LinkedList<Order> orderSequence) {
         // Depot to first order
         Order firstOrder = orderSequence.getFirst();
-
+        ArcGeneration.generateArcsFromDepotToOrder(firstOrder);
 
         // Order to order
-        for (int i = 0; i < orderSequence.size(); i++) {
-            Order startOrder = orderSequence.get(i);
-            Order endOrder = orderSequence.get(i + 1);
-        }
 
         // Order to depot
 
@@ -55,9 +52,23 @@ public class Tree {
 
     }
 
+    private List<Order> createDummyOrderSequence() {
+        List<Order> orderSequence = new LinkedList<>();
+        Order orderOne = new Order(1, true, true, 100, 1);
+        Order orderTwo = new Order(2, false, true, 100, 1);
+        Order orderThree = new Order(3, false, false, 100, 5);
+        Order orderFour = new Order(4, true, true, 100, 10);
+        orderSequence.add(orderOne);
+        orderSequence.add(orderTwo);
+        orderSequence.add(orderThree);
+        orderSequence.add(orderFour);
+        return orderSequence;
+    }
+
     public static void main(String[] args) {
+        ProblemInstance.setUpProblem("example.json");
         Tree tree = new Tree();
-        tree.createDummyTree();
-        tree.findShortestPath();
+        LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence();
+        tree.generateTree(orderSequence);
     }
 }
