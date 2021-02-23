@@ -39,7 +39,6 @@ public class Tree {
     // TODO: Implement (KP)
     public void breadthFirstSearch(Node root) {
         LinkedList<Node> queue = new LinkedList<>();
-        LinkedList<Node> visited = new LinkedList<>();
 
         queue.add(root);
         root.setVisited(true);
