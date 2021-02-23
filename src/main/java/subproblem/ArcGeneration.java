@@ -21,7 +21,6 @@ public class ArcGeneration {
         int serviceDuration = calculateServiceDuration(firstOrder);
         Map<Double, List<Integer>> speedsToTimePoints = mapSpeedsToTimePoints(speedsToArrTimes, distance,
                 serviceDuration, firstInstallation);
-        System.out.println(speedsToTimePoints);
         // Calculate speedsToCosts
     }
 
@@ -120,6 +119,25 @@ public class ArcGeneration {
         return (int) Math.ceil(order.getSize() * Problem.discServiceTimeUnit);
     }
 
+    public static double calculateFuelCostSailing(int startTime, int arrTime, double speed, double distance) {
+        if (distance == 0 || startTime == arrTime) return 0;
+        Map<Integer, Integer> wsToTimeSpent = mapWSToTimeSpent(startTime, arrTime);
+        Map<Integer, Double> wsToDistanceTravelled = mapWSToDistanceTravelled(wsToTimeSpent, speed);
+        double distanceInWSOneTwo = wsToDistanceTravelled.get(0) + wsToDistanceTravelled.get(1);
+
+        // TODO: Generalize
+        double consumption = calculateFuelConsumption(distanceInWSOneTwo, speed, 0)
+                + calculateFuelConsumption(wsToDistanceTravelled.get(2), speed, 2)
+                + calculateFuelConsumption(wsToDistanceTravelled.get(3), speed, 3);
+
+        return consumption * Problem.fuelPrice;
+    }
+
+    public static double calculateFuelConsumption(double distance, double speed, int weatherState) {
+        return (distance / (speed - Problem.wsToSpeedImpact.get(weatherState))
+                * Problem.fcDesignSpeed * Math.pow(speed / Problem.designSpeed, 3));
+    }
+
     public static double hourToDisc(double timeHour) {
         return timeHour * Problem.discretizationParam;
     }
@@ -130,6 +148,33 @@ public class ArcGeneration {
 
     public static int discToDiscDayTime(int timeDisc) {
         return timeDisc % (24 * Problem.discretizationParam);
+    }
+
+    public static Map<Integer, Double> mapWSToDistanceTravelled(Map<Integer, Integer> wsToTimeSpent, double speed) {
+        Map<Integer, Double> wsToDistanceTravelled = new HashMap<>();
+        for (int ws = 0; ws <= Problem.worstWeatherState; ws++) {
+            wsToDistanceTravelled.put(ws, wsToTimeSpent.get(ws) * speed);
+        }
+        return wsToDistanceTravelled;
+    }
+
+    public static Map<Integer, Integer> mapWSToTimeSpent(int startTime, int arrTime) {
+        Map<Integer, Integer> wsStateToTimeSpent = new HashMap<>();
+        for (int ws = 0; ws <= Problem.worstWeatherState; ws++) {
+            wsStateToTimeSpent.put(ws, getTimeInWS(startTime, arrTime, ws));
+        }
+        return wsStateToTimeSpent;
+    }
+
+    public static int getTimeInWS(int startTime, int arrTime, int weatherState) {
+        /* Returns the number of discrete time points spent in a weather state */
+        int currentTime = startTime;
+        int timeSpentInWS = 0;
+        while (currentTime < arrTime) {
+            if (Problem.weatherForecastDisc.get(currentTime) == weatherState) timeSpentInWS++;
+            currentTime++;
+        }
+        return timeSpentInWS;
     }
 
     public static double getAverageDoubleList(List<Double> list) {
