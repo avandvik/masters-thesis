@@ -42,6 +42,8 @@ public class Tree {
         Order firstOrder = orderSequence.getFirst();
         ArcGeneration.generateArcsFromDepotToOrder(firstOrder, isSpotVessel);
 
+        // NEXT STEP: Go from info in generateArcsFromDepotToOrder to nodes
+
         // Order to order
 
         // Order to depot
