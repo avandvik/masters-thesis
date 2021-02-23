@@ -41,6 +41,7 @@ public class Constants {
     public static final String DELIVERY_KEY = "delivery";
     public static final String MANDATORY_KEY = "mandatory";
     public static final String TRUE_KEY = "true";
+    public static final String WORST_WEATHER_KEY = "worst_weather_state";
     public static final String SCENARIOS_KEY = "scenarios";
     public static final String SPEED_IMPACT_KEY = "speed_impact";
     public static final String SERVICE_IMPACT_KEY = "service_impact";

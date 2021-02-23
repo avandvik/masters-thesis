@@ -43,6 +43,7 @@ public class Problem {
     public static double discServiceTimeUnit;
 
     // Weather
+    public static int worstWeatherState;
     public static Map<Integer, Double> wsToSpeedImpact;
     public static Map<Integer, Double> wsToServiceImpact;
     public static List<Integer> weatherForecast;
@@ -70,6 +71,14 @@ public class Problem {
 
     public static int getFinalTimePoint() {
         return Problem.planningPeriodDisc - 1;
+    }
+
+    public static int getFirstTimePoint() {
+        return 0;
+    }
+
+    public static int getEndOfDayTimePoint() {
+        return 24 * Problem.discretizationParam - 1;
     }
 
     public static void setUpProblem(String fileName) {
@@ -167,6 +176,7 @@ public class Problem {
         Problem.wsToSpeedImpact = new HashMap<>();
         Problem.wsToServiceImpact = new HashMap<>();
         JSONObject jsonWeather = getJSONObject(Constants.WEATHER_FILE);
+        Problem.worstWeatherState = Math.toIntExact((long) jsonWeather.get(Constants.WORST_WEATHER_KEY));
         JSONObject jsonWS = (JSONObject) jsonWeather.get(Constants.SCENARIOS_KEY);
         JSONArray jsonWeatherForecast = (JSONArray) jsonWS.get(Problem.weatherScenario);
         Problem.processWeatherForecast(jsonWeatherForecast);
@@ -215,6 +225,7 @@ public class Problem {
         Problem.setUpProblem("example.json");
         System.out.println(Problem.planningPeriodDisc);
         System.out.println(Problem.weatherForecastDisc.size());
+        System.out.println(Problem.worstWeatherState);
     }
 }
 

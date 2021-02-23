@@ -5,10 +5,7 @@ import objects.Installation;
 import objects.Order;
 import utils.DistanceCalculator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ArcGeneration {
 
@@ -20,11 +17,12 @@ public class ArcGeneration {
         int startTime = Problem.preparationEndTime;
         double distance = DistanceCalculator.distance(depot, firstInstallation, "N");
         List<Double> speeds = getSpeeds(distance, startTime);
-        Map<Integer, Double> arrTimesToSpeeds = mapArrTimesToSpeeds(distance, startTime, speeds);
         Map<Double, Integer> speedsToArrTimes = mapSpeedsToArrTimes(distance, startTime, speeds);
         int serviceDuration = calculateServiceDuration(firstOrder);
-        // Arrival times -> servicing start time (possibly with idling times)
-
+        Map<Double, List<Integer>> speedsToTimePoints = mapSpeedsToTimePoints(speedsToArrTimes, distance,
+                serviceDuration, firstInstallation);
+        System.out.println(speedsToTimePoints);
+        // Calculate speedsToCosts
     }
 
     public static List<Double> getSpeeds(double distance, int startTime) {
@@ -37,34 +35,48 @@ public class ArcGeneration {
         return speeds;
     }
 
-    public static Map<Integer, Double> mapArrTimesToSpeeds(double distance, int startTime, List<Double> speeds) {
-        Map<Integer, Double> arrTimesToSpeeds = new HashMap<>();
-        for (Double speed : speeds) {
-            int arrTime = startTime + ((int) Math.floor(hourToDisc(distance / speed)));
-            if (!arrTimesToSpeeds.containsKey(arrTime) || speed < arrTimesToSpeeds.get(arrTime)) {
-                arrTimesToSpeeds.put(arrTime, speed);
-            }
-        }
-        return arrTimesToSpeeds;
-    }
-
     public static Map<Double, Integer> mapSpeedsToArrTimes(double distance, int startTime, List<Double> speeds) {
         Map<Double, Integer> speedsToArrTimes = new HashMap<>();
         for (Double speed : speeds) {
-            int arrTime = startTime + ((int) Math.floor(hourToDisc(distance / speed)));
+            int arrTime = startTime + decimalDiscToDisc(distance / speed);
             if (!speedsToArrTimes.containsValue(arrTime)) speedsToArrTimes.put(speed, arrTime);
         }
         return speedsToArrTimes;
     }
 
-    public static Map<Double, List<Integer>> mapSpeedsToTimePoints(Map<Double, Integer> speedsToArrTimes) {
-        Map<Double, List<Integer>> speedsToAllTimes = new HashMap<>();
+    public static Map<Double, List<Integer>> mapSpeedsToTimePoints(Map<Double, Integer> speedsToArrTimes,
+                                                                   double distance, int serviceDuration,
+                                                                   Installation toInst) {
+        Map<Double, List<Integer>> speedsToTimePoints = new HashMap<>();
 
+        // No idling
         for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
-            Double speed = entry.getKey();
-            Integer arrTime = entry.getValue();
+            double speed = entry.getKey();
+            int arrTime = entry.getValue();
+            int serviceEndTime = arrTime + serviceDuration - 1;
+            if (!isReturnPossible(distance, serviceEndTime)) continue;
+            if (isServicingPossible(arrTime, serviceEndTime, toInst)) {
+                speedsToTimePoints.put(speed, createTimePoints(arrTime, arrTime, serviceEndTime));
+            }
         }
-        return new HashMap<>();
+
+        // Idling
+        if (speedsToTimePoints.isEmpty()) {
+            for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
+                double speed = entry.getKey();
+                int arrTime = entry.getValue();
+                int serviceStartTime = arrTime;
+                int serviceEndTime = serviceStartTime + serviceDuration - 1;
+                while (serviceEndTime < Problem.getGeneralReturnTime() - serviceDuration &&
+                        !isServicingPossible(serviceStartTime, serviceEndTime, toInst)) {
+                    serviceStartTime++;
+                    serviceEndTime++;
+                }
+                if (!isReturnPossible(distance, serviceEndTime)) continue;
+                speedsToTimePoints.put(speed, createTimePoints(arrTime, serviceStartTime, serviceEndTime));
+            }
+        }
+        return speedsToTimePoints;
     }
 
     public static boolean isReturnPossible(double distance, int endTime) {
@@ -75,11 +87,32 @@ public class ArcGeneration {
         return earliestArrTime <= Problem.getGeneralReturnTime();
     }
 
+    public static boolean isServicingPossible(int serviceStartTime, int serviceEndTime, Installation toInst) {
+        int startDayTime = discToDiscDayTime(serviceStartTime);
+        int endDayTime = discToDiscDayTime(serviceEndTime);
+        int openTime = toInst.getOpeningHour() * Problem.discretizationParam - 1;
+        int closeTime = toInst.getClosingHour() * Problem.discretizationParam - 1;
+        boolean instOpen = true;
+        if (openTime != Problem.getFirstTimePoint() && closeTime != Problem.getEndOfDayTimePoint()) {
+            instOpen = startDayTime >= openTime && endDayTime <= closeTime;
+        }
+        int worstWeatherState = Collections.max(Problem.weatherForecastDisc.subList(serviceStartTime, serviceEndTime));
+        return instOpen && worstWeatherState < Problem.worstWeatherState;
+    }
+
     public static List<Double> getAdjustedMaxSpeeds(int startSailingTime, int endSailingTime) {
         List<Integer> weather = Problem.weatherForecastDisc.subList(startSailingTime, endSailingTime);
         List<Double> adjustedMaxSpeeds = new ArrayList<>();
         for (Integer ws : weather) adjustedMaxSpeeds.add(Problem.maxSpeed - Problem.wsToSpeedImpact.get(ws));
         return adjustedMaxSpeeds;
+    }
+
+    public static List<Integer> createTimePoints(int arrTime, int serviceStartTime, int serviceEndTime) {
+        List<Integer> timePoints = new ArrayList<>();
+        timePoints.add(arrTime);
+        timePoints.add(serviceStartTime);
+        timePoints.add(serviceEndTime);
+        return timePoints;
     }
 
     // TODO: This is a bit different from the project-thesis
@@ -89,6 +122,14 @@ public class ArcGeneration {
 
     public static double hourToDisc(double timeHour) {
         return timeHour * Problem.discretizationParam;
+    }
+
+    public static int decimalDiscToDisc(double decimalDiscTime) {
+        return (int) Math.floor(hourToDisc(decimalDiscTime));
+    }
+
+    public static int discToDiscDayTime(int timeDisc) {
+        return timeDisc % (24 * Problem.discretizationParam);
     }
 
     public static double getAverageDoubleList(List<Double> list) {
