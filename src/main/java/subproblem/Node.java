@@ -111,7 +111,7 @@ public class Node implements Comparable<Node> {
     // TODO: Implement (KP)
     @Override
     public String toString() {
-        return this.nodeName + ", " + getDiscreteTime();
+        return "(" + this.nodeName + ", " + getDiscreteTime() + ")";
     }
 
     // TODO: Implement (KP)
