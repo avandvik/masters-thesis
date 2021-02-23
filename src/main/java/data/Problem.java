@@ -12,7 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-public class ProblemInstance {
+public class Problem {
 
     private static String fileName;
     private static String pathToInstanceFile;
@@ -64,9 +64,17 @@ public class ProblemInstance {
         return installations.get(order.getInstallationId());
     }
 
+    public static int getGeneralReturnTime() {
+        return vessels.get(0).getReturnTime() * Problem.discretizationParam - 1;
+    }
+
+    public static int getFinalTimePoint() {
+        return Problem.planningPeriodDisc - 1;
+    }
+
     public static void setUpProblem(String fileName) {
-        ProblemInstance.fileName = fileName;
-        ProblemInstance.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;
+        Problem.fileName = fileName;
+        Problem.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;
         setUpInstallations();
         setUpOrders();
         setUpInstanceInfo();
@@ -76,7 +84,7 @@ public class ProblemInstance {
     }
 
     private static void setUpInstallations() {
-        ProblemInstance.installations = new ArrayList<>();
+        Problem.installations = new ArrayList<>();
         JSONObject jsonInstallations = getJSONObject(Constants.INSTALLATION_FILE);
         for (Object key : jsonInstallations.keySet()) {
             JSONObject jsonInstallation = (JSONObject) jsonInstallations.get(key);
@@ -89,13 +97,13 @@ public class ProblemInstance {
             double typicalDemand = (double) jsonInstallation.get(Constants.TYPICAL_DEMAND_KEY);
             Installation installation = new Installation(id, name, openingHour, closingHour, latitude, longitude,
                     typicalDemand);
-            ProblemInstance.installations.add(installation);
+            Problem.installations.add(installation);
         }
-        Collections.sort(ProblemInstance.installations);
+        Collections.sort(Problem.installations);
     }
 
     private static void setUpOrders() {
-        ProblemInstance.orders = new ArrayList<>();
+        Problem.orders = new ArrayList<>();
         JSONObject jsonOrders = (JSONObject) getJSONObject(pathToInstanceFile).get(Constants.ORDERS_KEY);
         int orderId = 0;
         for (Object key : jsonOrders.keySet()) {
@@ -105,13 +113,13 @@ public class ProblemInstance {
             boolean isDelivery = ((jsonOrder.get(Constants.TRANSPORTATION_TYPE_KEY)).equals(Constants.DELIVERY_KEY));
             boolean isMandatory = ((jsonOrder.get(Constants.MANDATORY_KEY)).equals(Constants.TRUE_KEY));
             Order order = new Order(orderId, isMandatory, isDelivery, orderSize, installationId);
-            ProblemInstance.orders.add(order);
+            Problem.orders.add(order);
             orderId++;
         }
     }
 
     private static void setUpVessels() {
-        ProblemInstance.vessels = new ArrayList<>();
+        Problem.vessels = new ArrayList<>();
         JSONObject jsonVessels = (JSONObject) getJSONObject(Constants.VESSEL_FILE).get(Constants.FLEET_KEY);
         JSONObject jsonAvailableVessels =
                 (JSONObject) getJSONObject(pathToInstanceFile).get(Constants.AVAILABLE_VESSELS_KEY);
@@ -120,67 +128,68 @@ public class ProblemInstance {
             JSONObject jsonVessel = (JSONObject) jsonVessels.get(key);
             int id = Math.toIntExact((long) jsonVessel.get(Constants.ID_KEY));
             double capacity = (double) jsonVessel.get(Constants.CAPACITY_KEY);
-            double returnTime = (double) ((JSONObject) jsonAvailableVessels.get(key)).get(Constants.RETURN_TIME_KEY);
+            int returnTime =
+                    Math.toIntExact((long) ((JSONObject) jsonAvailableVessels.get(key)).get(Constants.RETURN_TIME_KEY));
             Vessel vessel = new Vessel(id, name, capacity, returnTime);
-            ProblemInstance.vessels.add(vessel);
+            Problem.vessels.add(vessel);
         }
-        Collections.sort(ProblemInstance.vessels);
+        Collections.sort(Problem.vessels);
     }
 
     private static void setUpInstanceInfo() {
-        JSONObject jsonInstanceInfo = getJSONObject(ProblemInstance.pathToInstanceFile);
-        ProblemInstance.planningPeriodHours = ((int) ((double) jsonInstanceInfo.get(Constants.PLANNING_PERIOD_KEY)));
-        ProblemInstance.discretizationParam = ((int) ((double) jsonInstanceInfo.get(Constants.DISCRETIZATION_KEY)));
-        ProblemInstance.weatherScenario = (String) jsonInstanceInfo.get(Constants.WEATHER_SCENARIO_KEY);
-        ProblemInstance.installationOrdering = (String) jsonInstanceInfo.get(Constants.INSTALLATION_ORDERING_KEY);
+        JSONObject jsonInstanceInfo = getJSONObject(Problem.pathToInstanceFile);
+        Problem.planningPeriodHours = ((int) ((double) jsonInstanceInfo.get(Constants.PLANNING_PERIOD_KEY)));
+        Problem.discretizationParam = ((int) ((double) jsonInstanceInfo.get(Constants.DISCRETIZATION_KEY)));
+        Problem.weatherScenario = (String) jsonInstanceInfo.get(Constants.WEATHER_SCENARIO_KEY);
+        Problem.installationOrdering = (String) jsonInstanceInfo.get(Constants.INSTALLATION_ORDERING_KEY);
 
-        ProblemInstance.planningPeriodDisc = ProblemInstance.planningPeriodHours * ProblemInstance.discretizationParam;
+        Problem.planningPeriodDisc = Problem.planningPeriodHours * Problem.discretizationParam;
     }
 
     private static void setUpVesselInfo() {
         JSONObject jsonVesselInfo = getJSONObject(Constants.VESSEL_FILE);
-        ProblemInstance.minSpeed = (double) jsonVesselInfo.get(Constants.MIN_SPEED_KEY);
-        ProblemInstance.designSpeed = (double) jsonVesselInfo.get(Constants.DESIGN_SPEED_KEY);
-        ProblemInstance.maxSpeed = (double) jsonVesselInfo.get(Constants.MAX_SPEED_KEY);
-        ProblemInstance.fcDesignSpeed = (double) jsonVesselInfo.get(Constants.FC_DESIGN_SPEED_KEY);
-        ProblemInstance.fcDepot = (double) jsonVesselInfo.get(Constants.FC_DEPOT_KEY);
-        ProblemInstance.fcIdling = (double) jsonVesselInfo.get(Constants.FC_IDLING_KEY);
-        ProblemInstance.fcServicing = (double) jsonVesselInfo.get(Constants.FC_SERVICING_KEY);
-        ProblemInstance.fuelPrice = (double) jsonVesselInfo.get(Constants.FUEL_PRICE_KEY);
-        ProblemInstance.spotHourRate = (double) jsonVesselInfo.get(Constants.SPOT_HOUR_RATE_KEY);
+        Problem.minSpeed = (double) jsonVesselInfo.get(Constants.MIN_SPEED_KEY);
+        Problem.designSpeed = (double) jsonVesselInfo.get(Constants.DESIGN_SPEED_KEY);
+        Problem.maxSpeed = (double) jsonVesselInfo.get(Constants.MAX_SPEED_KEY);
+        Problem.fcDesignSpeed = (double) jsonVesselInfo.get(Constants.FC_DESIGN_SPEED_KEY);
+        Problem.fcDepot = (double) jsonVesselInfo.get(Constants.FC_DEPOT_KEY);
+        Problem.fcIdling = (double) jsonVesselInfo.get(Constants.FC_IDLING_KEY);
+        Problem.fcServicing = (double) jsonVesselInfo.get(Constants.FC_SERVICING_KEY);
+        Problem.fuelPrice = (double) jsonVesselInfo.get(Constants.FUEL_PRICE_KEY);
+        Problem.spotHourRate = (double) jsonVesselInfo.get(Constants.SPOT_HOUR_RATE_KEY);
         double realServiceTimeUnit = (double) jsonVesselInfo.get(Constants.SERVICE_TIME_KEY);
-        ProblemInstance.discServiceTimeUnit = realServiceTimeUnit * ProblemInstance.discretizationParam;
+        Problem.discServiceTimeUnit = realServiceTimeUnit * Problem.discretizationParam;
         int preparationEndHour = Math.toIntExact((long) jsonVesselInfo.get(Constants.PREP_END_KEY));
-        ProblemInstance.preparationEndTime = preparationEndHour * ProblemInstance.discretizationParam;
+        Problem.preparationEndTime = preparationEndHour * Problem.discretizationParam - 1;
     }
 
     private static void setUpWeather() {
-        ProblemInstance.wsToSpeedImpact = new HashMap<>();
-        ProblemInstance.wsToServiceImpact = new HashMap<>();
+        Problem.wsToSpeedImpact = new HashMap<>();
+        Problem.wsToServiceImpact = new HashMap<>();
         JSONObject jsonWeather = getJSONObject(Constants.WEATHER_FILE);
         JSONObject jsonWS = (JSONObject) jsonWeather.get(Constants.SCENARIOS_KEY);
-        JSONArray jsonWeatherForecast = (JSONArray) jsonWS.get(ProblemInstance.weatherScenario);
-        ProblemInstance.processWeatherForecast(jsonWeatherForecast);
-        ProblemInstance.createDiscWeatherForecast();
+        JSONArray jsonWeatherForecast = (JSONArray) jsonWS.get(Problem.weatherScenario);
+        Problem.processWeatherForecast(jsonWeatherForecast);
+        Problem.createDiscWeatherForecast();
         JSONObject jsonSpeedImpact = (JSONObject) jsonWeather.get(Constants.SPEED_IMPACT_KEY);
         JSONObject jsonServiceImpact = (JSONObject) jsonWeather.get(Constants.SERVICE_IMPACT_KEY);
-        addToHashMap(jsonSpeedImpact, ProblemInstance.wsToSpeedImpact);
-        addToHashMap(jsonServiceImpact, ProblemInstance.wsToServiceImpact);
+        addToHashMap(jsonSpeedImpact, Problem.wsToSpeedImpact);
+        addToHashMap(jsonServiceImpact, Problem.wsToServiceImpact);
     }
 
     private static void processWeatherForecast(JSONArray jsonWeatherForecast) {
-        ProblemInstance.weatherForecast = new ArrayList<>();
+        Problem.weatherForecast = new ArrayList<>();
         for (Object objWeatherState : jsonWeatherForecast) {
             int weatherState = Math.toIntExact((long) objWeatherState);
-            ProblemInstance.weatherForecast.add(weatherState);
+            Problem.weatherForecast.add(weatherState);
         }
     }
 
     private static void createDiscWeatherForecast() {
-        ProblemInstance.weatherForecastDisc = new ArrayList<>();
-        for (int i = 0; i < ProblemInstance.planningPeriodDisc; i++) {
-            int idx = i / ProblemInstance.discretizationParam;
-            ProblemInstance.weatherForecastDisc.add(ProblemInstance.weatherForecast.get(idx));
+        Problem.weatherForecastDisc = new ArrayList<>();
+        for (int i = 0; i < Problem.planningPeriodDisc; i++) {
+            int idx = i / Problem.discretizationParam;
+            Problem.weatherForecastDisc.add(Problem.weatherForecast.get(idx));
         }
     }
 
@@ -203,8 +212,9 @@ public class ProblemInstance {
     }
 
     public static void main(String[] args) {
-        ProblemInstance.setUpProblem("example.json");
-
+        Problem.setUpProblem("example.json");
+        System.out.println(Problem.planningPeriodDisc);
+        System.out.println(Problem.weatherForecastDisc.size());
     }
 }
 

@@ -1,6 +1,6 @@
 package subproblem;
 
-import data.ProblemInstance;
+import data.Problem;
 import objects.Order;
 
 import java.util.LinkedList;
@@ -66,7 +66,7 @@ public class Tree {
     }
 
     public static void main(String[] args) {
-        ProblemInstance.setUpProblem("example.json");
+        Problem.setUpProblem("example.json");
         Tree tree = new Tree();
         LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence();
         tree.generateTree(orderSequence);

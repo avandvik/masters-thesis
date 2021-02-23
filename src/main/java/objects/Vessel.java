@@ -5,9 +5,9 @@ public class Vessel implements Comparable<Vessel>{
     private int id;
     private String name;
     private double capacity;
-    private double returnTime;
+    private int returnTime;
 
-    public Vessel(int id, String name, double capacity, double returnTime) {
+    public Vessel(int id, String name, double capacity, int returnTime) {
         this.id = id;
         this.name = name;
         this.capacity = capacity;
@@ -26,7 +26,7 @@ public class Vessel implements Comparable<Vessel>{
         return capacity;
     }
 
-    public double getReturnTime() {
+    public int getReturnTime() {
         return returnTime;
     }
 
