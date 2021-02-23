@@ -11,7 +11,8 @@ public class Tree {
     // Solve subproblem (or a separate subproblem class)
 
     private Node root;
-    private List<Node> nodes;
+    private List<Node> shortestPath;
+    private double globalBestCost;
 
     public Tree() {
     }
@@ -24,51 +25,21 @@ public class Tree {
         this.root = root;
     }
 
-    public void addNode(Node node) {
-        this.nodes.add(node);
-    }
-
     // TODO: Implement (KP)
-    public List<Node> findShortestPath(Node root) {
-        LinkedList<Node> queue = new LinkedList<>();
-        List<Node> shortestPath = new LinkedList<>();
+    public List<Node> findShortestPath() {
+        LinkedList<Node> queue = initialize();
 
-        double globalBestCost = Double.POSITIVE_INFINITY;
-
-        queue.add(root);
-        root.setVisited(true);
-
-        // This can be done when creating the root node
+        // TODO: This can be done when creating the root node
         List<Node> rootPath = new ArrayList<>();
-        rootPath.add(root);
-        root.setBestPath(rootPath);
-        root.setBestCost(0.0);
+        rootPath.add(this.root);
+        this.root.setBestPath(rootPath);
+        this.root.setBestCost(0.0);
 
         while (queue.size() != 0) {
             Node currentNode = queue.removeFirst();
             Set<Node> setOfChildren = currentNode.getChildren(); // Retrieved in order right to left in tree
-
-            if (currentNode != root) {
-                currentNode.setBestCost(Double.POSITIVE_INFINITY);
-                for (Node parent : currentNode.getParents()) {
-                    double currentCost = parent.getBestCost() + parent.getCostOfChild(currentNode);
-                    if (currentCost < currentNode.getBestCost()) {
-                        currentNode.setBestCost(currentCost);
-                        List<Node> path = deepCopy(parent.getBestPath());  // TODO: Research best way to copy
-                        path.add(currentNode);
-                        currentNode.setBestPath(path);
-                    }
-                }
-            }
-
-            if(setOfChildren.isEmpty()) {
-                if(currentNode.getBestCost() < globalBestCost) {
-                    globalBestCost = currentNode.getBestCost();
-                    List<Node> globalBestPath = deepCopy(currentNode.getBestPath());
-                    shortestPath = globalBestPath;
-                }
-            }
-
+            if (currentNode != this.root) updateCurrentBest(currentNode);
+            if(setOfChildren.isEmpty()) updateGlobalBest(currentNode);
             for (Node child : setOfChildren) {
                 if (!child.isVisited()) {
                     child.setVisited(true);
@@ -76,8 +47,36 @@ public class Tree {
                 }
             }
         }
-
         return shortestPath;
+    }
+
+    private LinkedList<Node> initialize() {
+        LinkedList<Node> queue = new LinkedList<>();
+        this.shortestPath = new LinkedList<>();
+        this.globalBestCost = Double.POSITIVE_INFINITY;
+        queue.add(this.root);
+        this.root.setVisited(true);
+        return queue;
+    }
+
+    private void updateGlobalBest(Node currentNode) {
+        if(currentNode.getBestCost() < this.globalBestCost) {
+            this.globalBestCost = currentNode.getBestCost();
+            this.shortestPath = deepCopy(currentNode.getBestPath());
+        }
+    }
+
+    private void updateCurrentBest(Node currentNode) {
+        currentNode.setBestCost(Double.POSITIVE_INFINITY);
+        for (Node parent : currentNode.getParents()) {
+            double currentCost = parent.getBestCost() + parent.getCostOfChild(currentNode);
+            if (currentCost < currentNode.getBestCost()) {
+                currentNode.setBestCost(currentCost);
+                List<Node> path = deepCopy(parent.getBestPath());  // TODO: Research best way to copy
+                path.add(currentNode);
+                currentNode.setBestPath(path);
+            }
+        }
     }
 
     private List<Node> deepCopy(List<Node> original) {
@@ -142,7 +141,8 @@ public class Tree {
     public static void main(String[] args) {
         Tree tree = new Tree();
         Node root = tree.createDummyTree();
-        tree.findShortestPath(root);
+        tree.setRoot(root);
+        tree.findShortestPath();
 
     }
 }
