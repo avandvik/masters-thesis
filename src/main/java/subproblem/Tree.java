@@ -1,9 +1,8 @@
 package subproblem;
 
 import objects.Order;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 
 public class Tree {
     // Variable holding root node
@@ -30,31 +29,59 @@ public class Tree {
     }
 
     // TODO: Implement (KP)
-    public List<Node> findShortestPath() {
-
-        List<Node> shortestPath = new LinkedList<>();
-        return shortestPath;
-    }
-
-    // TODO: Implement (KP)
-    public void breadthFirstSearch(Node root) {
+    public List<Node> findShortestPath(Node root) {
         LinkedList<Node> queue = new LinkedList<>();
+        List<Node> shortestPath = new LinkedList<>();
+
+        double globalBestCost = Double.POSITIVE_INFINITY;
 
         queue.add(root);
         root.setVisited(true);
 
-        while(queue.size() != 0) {
-            Node s = queue.removeFirst();
-            Set<Node> setOfChildren = s.getChildren();
+        // This can be done when creating the root node
+        List<Node> rootPath = new ArrayList<>();
+        rootPath.add(root);
+        root.setBestPath(rootPath);
+        root.setBestCost(0.0);
 
-            for(Node child : setOfChildren) {
-                if(!child.isVisited()) {
+        while (queue.size() != 0) {
+            Node currentNode = queue.removeFirst();
+            Set<Node> setOfChildren = currentNode.getChildren(); // Retrieved in order right to left in tree
+
+            if (currentNode != root) {
+                currentNode.setBestCost(Double.POSITIVE_INFINITY);
+                for (Node parent : currentNode.getParents()) {
+                    double currentCost = parent.getBestCost() + parent.getCostOfChild(currentNode);
+                    if (currentCost < currentNode.getBestCost()) {
+                        currentNode.setBestCost(currentCost);
+                        List<Node> path = deepCopy(parent.getBestPath());  // TODO: Research best way to copy
+                        path.add(currentNode);
+                        currentNode.setBestPath(path);
+                    }
+                }
+            }
+
+            if(setOfChildren.isEmpty()) {
+                if(currentNode.getBestCost() < globalBestCost) {
+                    globalBestCost = currentNode.getBestCost();
+                    List<Node> globalBestPath = deepCopy(currentNode.getBestPath());
+                    shortestPath = globalBestPath;
+                }
+            }
+
+            for (Node child : setOfChildren) {
+                if (!child.isVisited()) {
                     child.setVisited(true);
                     queue.add(child);
                 }
             }
         }
 
+        return shortestPath;
+    }
+
+    private List<Node> deepCopy(List<Node> original) {
+        return new ArrayList<>(original);
     }
 
     // TODO: Implement (Anders)
@@ -62,28 +89,60 @@ public class Tree {
 
     }
 
-    private void createDummyTree() {
-    }
+    private Node createDummyTree() {
+        Node node0 = new Node("Root", 0);
+        Node node1 = new Node("1", 10);
+        Node node2 = new Node("2", 11);
+        Node node3 = new Node("3", 12);
+        Node node4 = new Node("4", 13);
+        Node node5 = new Node("5", 14);
+        Node node6 = new Node("6", 15);
+        Node node7 = new Node("7", 16);
+        Node node8 = new Node("8", 17);
 
-    public static void main(String[] args) {
-        /*Tree tree = new Tree();
-        Node node1 = new Node("Root",0);
-        Node node2 = new Node("A",10);
-        Node node3 = new Node("B",11);
-        Node node4 = new Node("C",12);
-        Node node5 = new Node("D",13);
-        Node node6 = new Node("E",14);
-        Node node7 = new Node("F",15);
-        Node node8 = new Node("G",16);
-        Node node9 = new Node("H",17);
-        node1.addChild(node2);
+        node1.addParent(node0);
+        node2.addParent(node0);
+        node3.addParent(node1);
+        node4.addParent(node1);
+        node4.addParent(node2);
+        node5.addParent(node2);
+        node6.addParent(node3);
+        node6.addParent(node4);
+        node7.addParent(node4);
+        node8.addParent(node4);
+        node8.addParent(node5);
+
+        node0.addChild(node1);
+        node0.addChild(node2);
         node1.addChild(node3);
+        node1.addChild(node4);
         node2.addChild(node4);
         node2.addChild(node5);
         node3.addChild(node6);
-        node3.addChild(node7);
+        node4.addChild(node6);
+        node4.addChild(node7);
         node4.addChild(node8);
-        node4.addChild(node9);
-        tree.breadthFirstSearch(node1);*/
+        node5.addChild(node8);
+
+        node0.setChildToCost(node1,1.0);
+        node0.setChildToCost(node2,2.0);
+        node1.setChildToCost(node3,2.0);
+        node1.setChildToCost(node4,1.0);
+        node2.setChildToCost(node4,2.0);
+        node2.setChildToCost(node5,2.0);
+        node3.setChildToCost(node6,2.0);
+        node4.setChildToCost(node6,1.0);
+        node4.setChildToCost(node7,2.0);
+        node4.setChildToCost(node8,2.0);
+        node5.setChildToCost(node8,2.0);
+
+        return node0;
+    }
+
+    public static void main(String[] args) {
+        Tree tree = new Tree();
+        Node root = tree.createDummyTree();
+        tree.findShortestPath(root);
+
     }
 }
