@@ -11,17 +11,14 @@ public class ArcGeneration {
 
     // TODO: Go over public/private
 
-    public static void generateArcsFromDepotToOrder(Order firstOrder) {
+    public static void generateArcsFromDepotToOrder(Order firstOrder, boolean isSpotVessel) {
         Installation depot = Problem.getDepot();
-        Installation firstInstallation = Problem.getInstallation(firstOrder);
         int startTime = Problem.preparationEndTime;
-        double distance = DistanceCalculator.distance(depot, firstInstallation, "N");
+        double distance = DistanceCalculator.distance(depot, firstOrder, "N");
         List<Double> speeds = getSpeeds(distance, startTime);
         Map<Double, Integer> speedsToArrTimes = mapSpeedsToArrTimes(distance, startTime, speeds);
-        int serviceDuration = calculateServiceDuration(firstOrder);
-        Map<Double, List<Integer>> speedsToTimePoints = mapSpeedsToTimePoints(speedsToArrTimes, distance,
-                serviceDuration, firstInstallation);
-        // Calculate speedsToCosts
+        Map<Double, List<Integer>> speedsToTimePoints = mapSpeedsToTimePoints(speedsToArrTimes, distance, firstOrder);
+        Map<Double, Double> speedsToCosts = mapSpeedsToCosts(speedsToTimePoints, distance, isSpotVessel);
     }
 
     public static List<Double> getSpeeds(double distance, int startTime) {
@@ -44,9 +41,9 @@ public class ArcGeneration {
     }
 
     public static Map<Double, List<Integer>> mapSpeedsToTimePoints(Map<Double, Integer> speedsToArrTimes,
-                                                                   double distance, int serviceDuration,
-                                                                   Installation toInst) {
+                                                                   double distance, Order toOrder) {
         Map<Double, List<Integer>> speedsToTimePoints = new HashMap<>();
+        int serviceDuration = calculateServiceDuration(toOrder);
 
         // No idling
         for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
@@ -54,7 +51,7 @@ public class ArcGeneration {
             int arrTime = entry.getValue();
             int serviceEndTime = arrTime + serviceDuration - 1;
             if (!isReturnPossible(distance, serviceEndTime)) continue;
-            if (isServicingPossible(arrTime, serviceEndTime, toInst)) {
+            if (isServicingPossible(arrTime, serviceEndTime, Problem.getInstallation(toOrder))) {
                 speedsToTimePoints.put(speed, createTimePoints(arrTime, arrTime, serviceEndTime));
             }
         }
@@ -67,7 +64,7 @@ public class ArcGeneration {
                 int serviceStartTime = arrTime;
                 int serviceEndTime = serviceStartTime + serviceDuration - 1;
                 while (serviceEndTime < Problem.getGeneralReturnTime() - serviceDuration &&
-                        !isServicingPossible(serviceStartTime, serviceEndTime, toInst)) {
+                        !isServicingPossible(serviceStartTime, serviceEndTime, Problem.getInstallation(toOrder))) {
                     serviceStartTime++;
                     serviceEndTime++;
                 }
@@ -99,6 +96,19 @@ public class ArcGeneration {
         return instOpen && worstWeatherState < Problem.worstWeatherState;
     }
 
+    public static Map<Double, Double> mapSpeedsToCosts(Map<Double, List<Integer>> speedsToTimePoints, double distance
+            , boolean isSpotVessel) {
+        Map<Double, Double> speedsToCosts = new HashMap<>();
+        for (Map.Entry<Double, List<Integer>> entry : speedsToTimePoints.entrySet()) {
+            double speed = entry.getKey();
+            List<Integer> timePoints = entry.getValue();
+            double cost = calculateArcCost(timePoints.get(0), timePoints.get(1), timePoints.get(2), timePoints.get(3)
+                    , speed, distance, isSpotVessel);
+            speedsToCosts.put(speed, cost);
+        }
+        return speedsToCosts;
+    }
+
     public static List<Double> getAdjustedMaxSpeeds(int startSailingTime, int endSailingTime) {
         List<Integer> weather = Problem.weatherForecastDisc.subList(startSailingTime, endSailingTime);
         List<Double> adjustedMaxSpeeds = new ArrayList<>();
@@ -117,6 +127,15 @@ public class ArcGeneration {
     // TODO: This is a bit different from the project-thesis
     public static int calculateServiceDuration(Order order) {
         return (int) Math.ceil(order.getSize() * Problem.discServiceTimeUnit);
+    }
+
+    public static double calculateArcCost(int startTime, int arrTime, int serviceStartTime, int serviceEndTime,
+                                          double speed, double distance, boolean isSpotVessel) {
+        double sailCost = calculateFuelCostSailing(startTime, arrTime, speed, distance);
+        double idlingCost = calculateFuelCostIdling(arrTime, serviceStartTime);
+        double serviceCost = calculateFuelCostServicing(serviceStartTime, serviceEndTime);
+        double charterCost = calculateCharterCost(startTime, serviceEndTime, isSpotVessel);
+        return sailCost + idlingCost + serviceCost + charterCost;
     }
 
     public static double calculateFuelCostSailing(int startTime, int arrTime, double speed, double distance) {
@@ -138,8 +157,35 @@ public class ArcGeneration {
                 * Problem.fcDesignSpeed * Math.pow(speed / Problem.designSpeed, 3));
     }
 
+    public static double calculateFuelCostIdling(int arrTime, int serviceStartTime) {
+        Map<Integer, Integer> wsToTimeSpent = mapWSToTimeSpent(arrTime, serviceStartTime);
+        double cost = 0.0;
+        for (int ws = 0; ws <= Problem.worstWeatherState; ws++) {
+            cost += wsToTimeSpent.get(ws) * Problem.wsToServiceImpact.get(ws) * Problem.fcIdling * Problem.fuelPrice;
+        }
+        return cost;
+    }
+
+    public static double calculateFuelCostServicing(int serviceStartTime, int serviceEndTime) {
+        Map<Integer, Integer> wsToTimeSpent = mapWSToTimeSpent(serviceStartTime, serviceEndTime);
+        double cost = 0.0;
+        for (int ws = 0; ws <= Problem.worstWeatherState; ws++) {
+            cost += wsToTimeSpent.get(ws) * Problem.wsToServiceImpact.get(ws)
+                    * Problem.wsToServiceImpact.get(ws) * Problem.fcIdling * Problem.fuelPrice;
+        }
+        return cost;
+    }
+
+    public static double calculateCharterCost(int startTime, int endTime, boolean isSpotVessel) {
+        return isSpotVessel ? Problem.spotHourRate * discToHour(endTime - startTime) : 0.0;
+    }
+
     public static double hourToDisc(double timeHour) {
         return timeHour * Problem.discretizationParam;
+    }
+
+    public static double discToHour(int timeDisc) {
+        return (double) timeDisc / Problem.discretizationParam;
     }
 
     public static int decimalDiscToDisc(double decimalDiscTime) {

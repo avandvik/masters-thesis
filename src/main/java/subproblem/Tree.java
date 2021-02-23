@@ -37,10 +37,10 @@ public class Tree {
     }
 
     // TODO: Implement (Anders)
-    public void generateTree(LinkedList<Order> orderSequence) {
+    public void generateTree(LinkedList<Order> orderSequence, boolean isSpotVessel) {
         // Depot to first order
         Order firstOrder = orderSequence.getFirst();
-        ArcGeneration.generateArcsFromDepotToOrder(firstOrder);
+        ArcGeneration.generateArcsFromDepotToOrder(firstOrder, isSpotVessel);
 
         // Order to order
 
@@ -69,6 +69,7 @@ public class Tree {
         Problem.setUpProblem("example.json");
         Tree tree = new Tree();
         LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence();
-        tree.generateTree(orderSequence);
+        boolean isSpotVessel = false;
+        tree.generateTree(orderSequence, isSpotVessel);
     }
 }

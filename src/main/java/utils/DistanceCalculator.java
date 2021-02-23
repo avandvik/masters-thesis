@@ -26,9 +26,19 @@ package utils;
 /*::                                                                         :*/
 /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
+import data.Problem;
 import objects.Installation;
+import objects.Order;
 
 public class DistanceCalculator {
+
+    public static double distance(Installation instOne, Order orderTwo, String unit) {
+        return distance(instOne, Problem.getInstallation(orderTwo), unit);
+    }
+
+    public static double distance(Order orderOne, Order orderTwo, String unit) {
+        return distance(Problem.getInstallation(orderOne), Problem.getInstallation(orderTwo), unit);
+    }
 
     public static double distance(Installation instOne, Installation instTwo, String unit) {
         double lat1 = instOne.getLatitude();
