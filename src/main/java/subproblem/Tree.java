@@ -1,46 +1,51 @@
 package subproblem;
 
 import data.Problem;
+import objects.Installation;
 import objects.Order;
+import utils.DistanceCalculator;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class Tree {
-    // Variable holding root node
-    // Tree search (BFS) to find shortest path
-    // Generate tree (calling ArcGeneration to find cost)
-    // Solve subproblem (or a separate subproblem class)
 
     private Node root;
+    private List<Node> nodes = new ArrayList<>();
     private List<Node> shortestPath;
     private double globalBestCost;
 
     public Tree() {
     }
 
-    public Node getRoot() {
-        return root;
-    }
-
-    public void setRoot(Node root) {
+    private void setRoot(Node root) {
         this.root = root;
+        this.root.setBestPath(new ArrayList<>(Collections.singletonList(this.root)));
     }
 
-    // TODO: Implement (KP)
+    private void addNode(Node node) {
+        Node existingNode = getExistingNode(node.getDiscreteTime(), node.getOrder());
+        if (existingNode == null) {
+            this.nodes.add(node);
+        }
+    }
+
+    private Node getExistingNode(int time, Order order) {
+        for (Node node : this.nodes) {
+            if (node.getDiscreteTime() == time && node.getOrder().equals(order)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
     public List<Node> findShortestPath() {
         LinkedList<Node> queue = initialize();
-
-        // TODO: This can be done when creating the root node
-        List<Node> rootPath = new ArrayList<>();
-        rootPath.add(this.root);
-        this.root.setBestPath(rootPath);
-        this.root.setBestCost(0.0);
-
         while (queue.size() != 0) {
             Node currentNode = queue.removeFirst();
-            Set<Node> setOfChildren = currentNode.getChildren(); // Retrieved in order right to left in tree
+            Set<Node> setOfChildren = currentNode.getChildren();  // Retrieved in order right to left in tree
             if (currentNode != this.root) updateCurrentBest(currentNode);
-            if(setOfChildren.isEmpty()) updateGlobalBest(currentNode);
+            if (setOfChildren.isEmpty()) updateGlobalBest(currentNode);
             for (Node child : setOfChildren) {
                 if (!child.isVisited()) {
                     child.setVisited(true);
@@ -61,14 +66,14 @@ public class Tree {
     }
 
     private void updateGlobalBest(Node currentNode) {
-        if(currentNode.getBestCost() < this.globalBestCost) {
+        if (currentNode.getBestCost() < this.globalBestCost) {
             this.globalBestCost = currentNode.getBestCost();
             this.shortestPath = deepCopy(currentNode.getBestPath());
         }
     }
 
     private void updateCurrentBest(Node currentNode) {
-        currentNode.setBestCost(Double.POSITIVE_INFINITY);
+        currentNode.setBestCost(Double.POSITIVE_INFINITY);  // TODO: This can be removed, but double check first
         for (Node parent : currentNode.getParents()) {
             double currentCost = parent.getBestCost() + parent.getCostOfChild(currentNode);
             if (currentCost < currentNode.getBestCost()) {
@@ -84,94 +89,133 @@ public class Tree {
         return new ArrayList<>(original);
     }
 
-    // TODO: Implement (Anders)
     public void generateTree(LinkedList<Order> orderSequence, boolean isSpotVessel) {
-        // Depot to first order
         Order firstOrder = orderSequence.getFirst();
-        ArcGeneration.generateArcsFromDepotToOrder(firstOrder, isSpotVessel);
+        this.generateNodesDepotToOrder(firstOrder, isSpotVessel);
+        Node firstOrderNode = this.nodes.get(1);
+        Order secondOrder = orderSequence.get(1);
+        this.generateNodesOrderToOrder(firstOrderNode, secondOrder, isSpotVessel);
+        Node secondOrderNode = this.nodes.get(this.nodes.size() - 1);
+        this.generateNodesOrderToDepot(secondOrderNode, isSpotVessel);
 
-        // NEXT STEP: Go from info in generateArcsFromDepotToOrder to nodes
-
-        // Order to order
-
-        // Order to depot
-
+        System.out.println(this.nodes);
     }
 
-    private Node createDummyTree() {
-        Node node0 = new Node("Root", 0);
-        Node node1 = new Node("1", 10);
-        Node node2 = new Node("2", 11);
-        Node node3 = new Node("3", 12);
-        Node node4 = new Node("4", 13);
-        Node node5 = new Node("5", 14);
-        Node node6 = new Node("6", 15);
-        Node node7 = new Node("7", 16);
-        Node node8 = new Node("8", 17);
-
-        node1.addParent(node0);
-        node2.addParent(node0);
-        node3.addParent(node1);
-        node4.addParent(node1);
-        node4.addParent(node2);
-        node5.addParent(node2);
-        node6.addParent(node3);
-        node6.addParent(node4);
-        node7.addParent(node4);
-        node8.addParent(node4);
-        node8.addParent(node5);
-
-        node0.addChild(node1);
-        node0.addChild(node2);
-        node1.addChild(node3);
-        node1.addChild(node4);
-        node2.addChild(node4);
-        node2.addChild(node5);
-        node3.addChild(node6);
-        node4.addChild(node6);
-        node4.addChild(node7);
-        node4.addChild(node8);
-        node5.addChild(node8);
-
-        node0.setChildToCost(node1,1.0);
-        node0.setChildToCost(node2,2.0);
-        node1.setChildToCost(node3,2.0);
-        node1.setChildToCost(node4,1.0);
-        node2.setChildToCost(node4,2.0);
-        node2.setChildToCost(node5,2.0);
-        node3.setChildToCost(node6,2.0);
-        node4.setChildToCost(node6,1.0);
-        node4.setChildToCost(node7,2.0);
-        node4.setChildToCost(node8,2.0);
-        node5.setChildToCost(node8,2.0);
-
-        return node0;
+    private void generateNodesDepotToOrder(Order firstOrder, boolean isSpotVessel) {
+        Installation depot = Problem.getDepot();
+        double distance = DistanceCalculator.distance(depot, firstOrder, "N");
+        int startTime = Problem.preparationEndTime;
+        createNodes(null, firstOrder, isSpotVessel, distance, startTime, 1);
     }
 
-    private List<Order> createDummyOrderSequence() {
+    private void generateNodesOrderToOrder(Node fromNode, Order toOrder, boolean isSpotVessel) {
+        Order fromOrder = fromNode.getOrder();
+        int startTime = fromNode.getDiscreteTime();
+        double distance = DistanceCalculator.distance(fromOrder, toOrder, "N");
+        createNodes(fromNode, toOrder, isSpotVessel, distance, startTime, 2);
+    }
+
+    private void generateNodesOrderToDepot(Node fromNode, boolean isSpotVessel) {
+        Installation depot = Problem.getDepot();
+        int startTime = fromNode.getDiscreteTime();
+        double distance = DistanceCalculator.distance(depot, fromNode.getOrder(), "N");
+        createNodes(fromNode, null, isSpotVessel, distance, startTime, 3);
+    }
+
+    private void createNodes(Node fromNode, Order toOrder, boolean isSpot, double distance, int startTime, int c) {
+        List<Double> speeds = ArcGeneration.getSpeeds(distance, startTime);
+        Map<Double, Integer> speedsToArrTimes = ArcGeneration.mapSpeedsToArrTimes(distance, startTime, speeds);
+        int serviceDuration = toOrder != null ? ArcGeneration.calculateServiceDuration(toOrder) : 0;
+        Map<Double, List<Integer>> speedsToTimePoints = ArcGeneration.mapSpeedsToTimePoints(speedsToArrTimes, distance,
+                serviceDuration, toOrder != null ? Problem.getInstallation(toOrder) : Problem.getDepot());
+        Map<Double, Double> speedsToCosts = ArcGeneration.mapSpeedsToCosts(speedsToTimePoints, distance, startTime,
+                isSpot);
+        Map<Double, Integer> speedsToEndTimes = ArcGeneration.mapSpeedsToEndTimes(speedsToTimePoints);
+        switch (c) {
+            case 1:
+                addNodesDepotOrder(speedsToCosts, speedsToEndTimes, toOrder);
+                break;
+            case 2:
+                addNodesOrderOrder(speedsToCosts, speedsToEndTimes, fromNode, toOrder);
+                break;
+            case 3:
+                addNodesOrderDepot(speedsToCosts, speedsToEndTimes, fromNode);
+                break;
+            default:
+                System.out.println("Case not recognized.");
+        }
+    }
+
+    private void addNodesDepotOrder(Map<Double, Double> speedsToCosts, Map<Double, Integer> speedsToEndTimes,
+                                    Order toOrder) {
+        Node depotNode = new Node(null, Problem.preparationEndTime, null);
+        this.addNode(depotNode);
+        this.setRoot(depotNode);
+        for (double speed : speedsToCosts.keySet()) {
+            double cost = speedsToCosts.get(speed);
+            int endTime = speedsToEndTimes.get(speed);
+            Node newNode = new Node(toOrder, endTime, depotNode);
+            depotNode.addChild(newNode);
+            depotNode.setChildToCost(newNode, cost);
+            this.addNode(newNode);
+        }
+    }
+
+    private void addNodesOrderOrder(Map<Double, Double> speedsToCosts, Map<Double, Integer> speedsToEndTimes,
+                                    Node fromNode, Order toOrder) {
+        for (double speed : speedsToCosts.keySet()) {
+            double cost = speedsToCosts.get(speed);
+            int endTime = speedsToEndTimes.get(speed);
+            Node node = getExistingNode(endTime, toOrder);
+            if (node != null) {
+                node.addParent(fromNode);
+            } else {
+                node = new Node(toOrder, endTime, fromNode);
+            }
+            fromNode.addChild(node);
+            fromNode.setChildToCost(node, cost);
+            this.addNode(node);
+        }
+    }
+
+    private void addNodesOrderDepot(Map<Double, Double> speedsToCosts, Map<Double, Integer> speedsToEndTimes,
+                                    Node fromNode) {
+        double minCostSpeed = getMinCostSpeed(speedsToCosts);
+        double cost = speedsToCosts.get(minCostSpeed);
+        int endTime = speedsToEndTimes.get(minCostSpeed);
+        Node depotNode = new Node(null, endTime, fromNode);
+        fromNode.addChild(depotNode);
+        fromNode.setChildToCost(depotNode, cost);
+        this.addNode(depotNode);
+    }
+
+    private double getMinCostSpeed(Map<Double, Double> speedsToCosts) {
+        Map.Entry<Double, Double> min = null;
+        for (Map.Entry<Double, Double> entry : speedsToCosts.entrySet()) {
+            if (min == null || entry.getValue() < min.getValue()) {
+                min = entry;
+            }
+        }
+        return min.getKey();
+    }
+
+    private List<Order> createDummyOrderSequence(int length, int seedValue) {
+        Integer[] indicesArray = IntStream.range(0, Problem.orders.size()).boxed().toArray( Integer[]::new );
+        List<Integer> indices = Arrays.asList(indicesArray);
+        Collections.shuffle(indices, new Random(seedValue));
         List<Order> orderSequence = new LinkedList<>();
-        Order orderOne = new Order(1, true, true, 100, 1);
-        Order orderTwo = new Order(2, false, true, 100, 1);
-        Order orderThree = new Order(3, false, false, 100, 5);
-        Order orderFour = new Order(4, true, true, 100, 10);
-        orderSequence.add(orderOne);
-        orderSequence.add(orderTwo);
-        orderSequence.add(orderThree);
-        orderSequence.add(orderFour);
+        for (int i = 0; i < length; i++) orderSequence.add(Problem.orders.get(indices.get(i)));
         return orderSequence;
     }
 
     public static void main(String[] args) {
         Problem.setUpProblem("example.json");
         Tree tree = new Tree();
-      
-        LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence();
+
+        int numberOfOrders = 4;
+        int seedValue = 69;
+        LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence(numberOfOrders, seedValue);
         boolean isSpotVessel = false;
         tree.generateTree(orderSequence, isSpotVessel);
-        
-     
-        Node root = tree.createDummyTree();
-        tree.setRoot(root);
-        tree.findShortestPath();
     }
 }
