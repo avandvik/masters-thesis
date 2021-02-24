@@ -3,45 +3,13 @@ package subproblem;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
-import utils.DistanceCalculator;
 
 import java.util.*;
 
 public class ArcGeneration {
 
-    // TODO: Go over public/private
-
-    public static void generateArcsFromDepotToOrder(Order firstOrder, boolean isSpotVessel) {
-        Installation depot = Problem.getDepot();
-        double distance = DistanceCalculator.distance(depot, firstOrder, "N");
-        int startTime = Problem.preparationEndTime;
-        calculate(firstOrder, null, isSpotVessel, distance, startTime);
-    }
-
-    public static void generateArcsFromOrderToOrder(Node fromNode, Order toOrder, boolean isSpotVessel) {
-        Order fromOrder = fromNode.getOrder();
-        int startTime = fromNode.getDiscreteTime();
-        double distance = DistanceCalculator.distance(fromOrder, toOrder, "N");
-        calculate(toOrder, null, isSpotVessel, distance, startTime);
-    }
-
-    public static void generateArcsFromOrderToDepot(Node fromNode, boolean isSpotVessel) {
-        Installation depot = Problem.getDepot();
-        int startTime = fromNode.getDiscreteTime();
-        double distance = DistanceCalculator.distance(depot, fromNode.getOrder(), "N");
-        calculate(null, depot, isSpotVessel, distance, startTime);
-    }
-
-    public static void calculate(Order toOrder, Installation toInst, boolean isSpot, double distance, int startTime) {
-        List<Double> speeds = getSpeeds(distance, startTime);
-        Map<Double, Integer> speedsToArrTimes = mapSpeedsToArrTimes(distance, startTime, speeds);
-        int serviceDuration = toInst == null ? calculateServiceDuration(toOrder) : 0;
-        Map<Double, List<Integer>> speedsToTimePoints = mapSpeedsToTimePoints(speedsToArrTimes, distance,
-                serviceDuration, toInst == null ? Problem.getInstallation(toOrder) : toInst);
-        Map<Double, Double> speedsToCosts = mapSpeedsToCosts(speedsToTimePoints, distance, isSpot);
-    }
-
     public static List<Double> getSpeeds(double distance, int startTime) {
+        if (distance == 0) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
         int maxDuration = (int) Math.ceil(hourToDisc(distance / Problem.minSpeed));
         List<Double> adjustedMaxSpeeds = getAdjustedMaxSpeeds(startTime, startTime + maxDuration);
         double averageMaxSpeed = getAverageDoubleList(adjustedMaxSpeeds);
@@ -62,35 +30,65 @@ public class ArcGeneration {
 
     public static Map<Double, List<Integer>> mapSpeedsToTimePoints(Map<Double, Integer> speedsToArrTimes,
                                                                    double distance, int serviceDuration,
-                                                                   Installation toInstallation) {
-        Map<Double, List<Integer>> speedsToTimePoints = new HashMap<>();
+                                                                   Installation toInst) {
+        // Return to depot
+        if (toInst.equals(Problem.getDepot())) return mapSpeedsToTimePointsDepot(speedsToArrTimes);
 
         // No idling
+        Map<Double, List<Integer>> speedsToTimePoints = mapSpeedsToTimePointsNoIdling(speedsToArrTimes, distance,
+                serviceDuration, toInst);
+
+        // Idling
+        if (speedsToTimePoints.isEmpty())
+            return mapSpeedsToTimePointsIdling(speedsToArrTimes, distance, serviceDuration, toInst);
+
+        return speedsToTimePoints;
+    }
+
+    private static Map<Double, List<Integer>> mapSpeedsToTimePointsDepot(Map<Double, Integer> speedsToArrTimes) {
+        Map<Double, List<Integer>> speedsToTimePoints = new HashMap<>();
+        for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
+            double speed = entry.getKey();
+            int arrTime = entry.getValue();
+            if (arrTime <= Problem.getGeneralReturnTime()) {
+                speedsToTimePoints.put(speed, createTimePoints(arrTime, arrTime, arrTime));
+            }
+        }
+        return speedsToTimePoints;
+    }
+
+    private static Map<Double, List<Integer>> mapSpeedsToTimePointsNoIdling(Map<Double, Integer> speedsToArrTimes,
+                                                                            double distance, int serviceDuration,
+                                                                            Installation toInst) {
+        Map<Double, List<Integer>> speedsToTimePoints = new HashMap<>();
         for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
             double speed = entry.getKey();
             int arrTime = entry.getValue();
             int serviceEndTime = arrTime + serviceDuration - 1;
             if (!isReturnPossible(distance, serviceEndTime)) continue;
-            if (isServicingPossible(arrTime, serviceEndTime, toInstallation)) {
+            if (isServicingPossible(arrTime, serviceEndTime, toInst)) {
                 speedsToTimePoints.put(speed, createTimePoints(arrTime, arrTime, serviceEndTime));
             }
         }
+        return speedsToTimePoints;
+    }
 
-        // Idling
-        if (speedsToTimePoints.isEmpty()) {
-            for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
-                double speed = entry.getKey();
-                int arrTime = entry.getValue();
-                int serviceStartTime = arrTime;
-                int serviceEndTime = serviceStartTime + serviceDuration - 1;
-                while (serviceEndTime < Problem.getGeneralReturnTime() - serviceDuration &&
-                        !isServicingPossible(serviceStartTime, serviceEndTime, toInstallation)) {
-                    serviceStartTime++;
-                    serviceEndTime++;
-                }
-                if (!isReturnPossible(distance, serviceEndTime)) continue;
-                speedsToTimePoints.put(speed, createTimePoints(arrTime, serviceStartTime, serviceEndTime));
+    private static Map<Double, List<Integer>> mapSpeedsToTimePointsIdling(Map<Double, Integer> speedsToArrTimes,
+                                                                          double distance, int serviceDuration,
+                                                                          Installation toInst) {
+        Map<Double, List<Integer>> speedsToTimePoints = new HashMap<>();
+        for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
+            double speed = entry.getKey();
+            int arrTime = entry.getValue();
+            int serviceStartTime = arrTime;
+            int serviceEndTime = serviceStartTime + serviceDuration - 1;
+            while (serviceEndTime < Problem.getGeneralReturnTime() - serviceDuration &&
+                    !isServicingPossible(serviceStartTime, serviceEndTime, toInst)) {
+                serviceStartTime++;
+                serviceEndTime++;
             }
+            if (!isReturnPossible(distance, serviceEndTime)) continue;
+            speedsToTimePoints.put(speed, createTimePoints(arrTime, serviceStartTime, serviceEndTime));
         }
         return speedsToTimePoints;
     }
@@ -117,16 +115,26 @@ public class ArcGeneration {
     }
 
     public static Map<Double, Double> mapSpeedsToCosts(Map<Double, List<Integer>> speedsToTimePoints, double distance
-            , boolean isSpotVessel) {
+            , int startTime, boolean isSpotVessel) {
         Map<Double, Double> speedsToCosts = new HashMap<>();
         for (Map.Entry<Double, List<Integer>> entry : speedsToTimePoints.entrySet()) {
             double speed = entry.getKey();
             List<Integer> timePoints = entry.getValue();
-            double cost = calculateArcCost(timePoints.get(0), timePoints.get(1), timePoints.get(2), timePoints.get(3)
+            double cost = calculateArcCost(startTime, timePoints.get(0), timePoints.get(1), timePoints.get(2)
                     , speed, distance, isSpotVessel);
             speedsToCosts.put(speed, cost);
         }
         return speedsToCosts;
+    }
+
+    public static Map<Double, Integer> mapSpeedsToEndTimes(Map<Double, List<Integer>> speedsToTimePoints) {
+        Map<Double, Integer> speedsToEndTimes = new HashMap<>();
+        for (Map.Entry<Double, List<Integer>> entry : speedsToTimePoints.entrySet()) {
+            double speed = entry.getKey();
+            List<Integer> timePoints = entry.getValue();
+            speedsToEndTimes.put(speed, timePoints.get(timePoints.size() - 1));
+        }
+        return speedsToEndTimes;
     }
 
     public static List<Double> getAdjustedMaxSpeeds(int startSailingTime, int endSailingTime) {

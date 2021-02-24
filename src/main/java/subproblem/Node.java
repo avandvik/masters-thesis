@@ -6,7 +6,6 @@ import java.util.*;
 
 public class Node implements Comparable<Node> {
 
-    private String nodeName;
     private Order order;
     private Set<Node> parents = new HashSet<>();
     private Set<Node> children = new HashSet<>();
@@ -15,34 +14,17 @@ public class Node implements Comparable<Node> {
     private Map<Node, Double> childToCost = new HashMap<>();
 
     private List<Node> bestPath = new LinkedList<>();
-    private double bestCost = -1;
-    private boolean isVisited;
+    private double bestCost = Double.POSITIVE_INFINITY;
+    private boolean isVisited = false;
 
-    public Node(String nodeName, Set<Node> parents, Set<Node> children, int discreteTime) {
-        this.nodeName = nodeName;
-        this.parents = parents;
-        this.children = children;
-        this.discreteTime = discreteTime;
-        this.isVisited = false;
-    }
-
-    public Node(String nodeName, int discreteTime) {
-        this.nodeName = nodeName;
-        this.discreteTime = discreteTime;
-        this.isVisited = false;
-    }
-
-    public Node(Order order, int discreteTime) {
+    public Node(Order order, int discreteTime, Node parent) {
         this.order = order;
         this.discreteTime = discreteTime;
+        if (parent != null) this.parents.add(parent);
     }
 
     public List<Node> getBestPath() {
         return bestPath;
-    }
-
-    public String getNodeName() {
-        return nodeName;
     }
 
     public Order getOrder() {
@@ -85,6 +67,10 @@ public class Node implements Comparable<Node> {
         this.bestPath = bestPath;
     }
 
+    public void addToBestPath(Node node) {
+        if (!this.bestPath.contains(node)) this.bestPath.add(node);
+    }
+
     public void setBestCost(double bestCost) {
         this.bestCost = bestCost;
     }
@@ -99,7 +85,7 @@ public class Node implements Comparable<Node> {
 
     @Override
     public String toString() {
-        return "(" + this.nodeName + ", " + getDiscreteTime() + ")";
+        return "(" + (this.order == null ? "Depot" : this.order) + ", " + getDiscreteTime() + ")";
     }
 
     @Override
