@@ -13,12 +13,32 @@ public class ArcGeneration {
 
     public static void generateArcsFromDepotToOrder(Order firstOrder, boolean isSpotVessel) {
         Installation depot = Problem.getDepot();
-        int startTime = Problem.preparationEndTime;
         double distance = DistanceCalculator.distance(depot, firstOrder, "N");
+        int startTime = Problem.preparationEndTime;
+        calculate(firstOrder, null, isSpotVessel, distance, startTime);
+    }
+
+    public static void generateArcsFromOrderToOrder(Node fromNode, Order toOrder, boolean isSpotVessel) {
+        Order fromOrder = fromNode.getOrder();
+        int startTime = fromNode.getDiscreteTime();
+        double distance = DistanceCalculator.distance(fromOrder, toOrder, "N");
+        calculate(toOrder, null, isSpotVessel, distance, startTime);
+    }
+
+    public static void generateArcsFromOrderToDepot(Node fromNode, boolean isSpotVessel) {
+        Installation depot = Problem.getDepot();
+        int startTime = fromNode.getDiscreteTime();
+        double distance = DistanceCalculator.distance(depot, fromNode.getOrder(), "N");
+        calculate(null, depot, isSpotVessel, distance, startTime);
+    }
+
+    public static void calculate(Order toOrder, Installation toInst, boolean isSpot, double distance, int startTime) {
         List<Double> speeds = getSpeeds(distance, startTime);
         Map<Double, Integer> speedsToArrTimes = mapSpeedsToArrTimes(distance, startTime, speeds);
-        Map<Double, List<Integer>> speedsToTimePoints = mapSpeedsToTimePoints(speedsToArrTimes, distance, firstOrder);
-        Map<Double, Double> speedsToCosts = mapSpeedsToCosts(speedsToTimePoints, distance, isSpotVessel);
+        int serviceDuration = toInst == null ? calculateServiceDuration(toOrder) : 0;
+        Map<Double, List<Integer>> speedsToTimePoints = mapSpeedsToTimePoints(speedsToArrTimes, distance,
+                serviceDuration, toInst == null ? Problem.getInstallation(toOrder) : toInst);
+        Map<Double, Double> speedsToCosts = mapSpeedsToCosts(speedsToTimePoints, distance, isSpot);
     }
 
     public static List<Double> getSpeeds(double distance, int startTime) {
@@ -41,9 +61,9 @@ public class ArcGeneration {
     }
 
     public static Map<Double, List<Integer>> mapSpeedsToTimePoints(Map<Double, Integer> speedsToArrTimes,
-                                                                   double distance, Order toOrder) {
+                                                                   double distance, int serviceDuration,
+                                                                   Installation toInstallation) {
         Map<Double, List<Integer>> speedsToTimePoints = new HashMap<>();
-        int serviceDuration = calculateServiceDuration(toOrder);
 
         // No idling
         for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
@@ -51,7 +71,7 @@ public class ArcGeneration {
             int arrTime = entry.getValue();
             int serviceEndTime = arrTime + serviceDuration - 1;
             if (!isReturnPossible(distance, serviceEndTime)) continue;
-            if (isServicingPossible(arrTime, serviceEndTime, Problem.getInstallation(toOrder))) {
+            if (isServicingPossible(arrTime, serviceEndTime, toInstallation)) {
                 speedsToTimePoints.put(speed, createTimePoints(arrTime, arrTime, serviceEndTime));
             }
         }
@@ -64,7 +84,7 @@ public class ArcGeneration {
                 int serviceStartTime = arrTime;
                 int serviceEndTime = serviceStartTime + serviceDuration - 1;
                 while (serviceEndTime < Problem.getGeneralReturnTime() - serviceDuration &&
-                        !isServicingPossible(serviceStartTime, serviceEndTime, Problem.getInstallation(toOrder))) {
+                        !isServicingPossible(serviceStartTime, serviceEndTime, toInstallation)) {
                     serviceStartTime++;
                     serviceEndTime++;
                 }
