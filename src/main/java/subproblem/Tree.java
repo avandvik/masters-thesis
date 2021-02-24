@@ -1,5 +1,6 @@
 package subproblem;
 
+import data.Problem;
 import objects.Order;
 
 import java.util.*;
@@ -84,7 +85,16 @@ public class Tree {
     }
 
     // TODO: Implement (Anders)
-    public void generateTree(List<Order> orderSequence) {
+    public void generateTree(LinkedList<Order> orderSequence, boolean isSpotVessel) {
+        // Depot to first order
+        Order firstOrder = orderSequence.getFirst();
+        ArcGeneration.generateArcsFromDepotToOrder(firstOrder, isSpotVessel);
+
+        // NEXT STEP: Go from info in generateArcsFromDepotToOrder to nodes
+
+        // Order to order
+
+        // Order to depot
 
     }
 
@@ -138,11 +148,30 @@ public class Tree {
         return node0;
     }
 
+    private List<Order> createDummyOrderSequence() {
+        List<Order> orderSequence = new LinkedList<>();
+        Order orderOne = new Order(1, true, true, 100, 1);
+        Order orderTwo = new Order(2, false, true, 100, 1);
+        Order orderThree = new Order(3, false, false, 100, 5);
+        Order orderFour = new Order(4, true, true, 100, 10);
+        orderSequence.add(orderOne);
+        orderSequence.add(orderTwo);
+        orderSequence.add(orderThree);
+        orderSequence.add(orderFour);
+        return orderSequence;
+    }
+
     public static void main(String[] args) {
+        Problem.setUpProblem("example.json");
         Tree tree = new Tree();
+      
+        LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence();
+        boolean isSpotVessel = false;
+        tree.generateTree(orderSequence, isSpotVessel);
+        
+     
         Node root = tree.createDummyTree();
         tree.setRoot(root);
         tree.findShortestPath();
-
     }
 }

@@ -5,24 +5,19 @@ public class Order {
     private int orderId;
     private boolean isMandatory;
     private boolean isDelivery;
-    private double orderSize;
+    private double size;
     private int installationId;
 
-    public Order(int orderId, boolean isMandatory, boolean isDelivery, double orderSize, int installationId) {
+    public Order(int orderId, boolean isMandatory, boolean isDelivery, double size, int installationId) {
         this.orderId = orderId;
         this.isMandatory = isMandatory;
         this.isDelivery = isDelivery;
-        this.orderSize = orderSize;
+        this.size = size;
         this.installationId = installationId;
     }
 
     public int getOrderId() {
         return orderId;
-    }
-
-    @Override
-    public String toString() {
-        return "objects.Order " + orderId;
     }
 
     public boolean isMandatory() {
@@ -33,11 +28,16 @@ public class Order {
         return isDelivery;
     }
 
-    public double getOrderSize() {
-        return orderSize;
+    public double getSize() {
+        return size;
     }
 
     public int getInstallationId() {
         return installationId;
+    }
+
+    @Override
+    public String toString() {
+        return "Order " + orderId;
     }
 }

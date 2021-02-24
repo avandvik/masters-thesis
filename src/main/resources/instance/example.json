@@ -5,13 +5,13 @@
   "installation_ordering": "random",
   "available_vessels": {
     "PSV_1": {
-      "return_time": 80.0
+      "return_time": 80
     },
     "PSV_4": {
-      "return_time": 80.0
+      "return_time": 80
     },
     "SPOT": {
-      "return_time": 80.0
+      "return_time": 80
     }
   },
   "orders": {

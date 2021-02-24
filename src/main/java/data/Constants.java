@@ -32,6 +32,7 @@ public class Constants {
     public static final String FUEL_PRICE_KEY = "fuel_price";
     public static final String SPOT_HOUR_RATE_KEY = "spot_hour_rate";
     public static final String SERVICE_TIME_KEY = "real_service_time_per_unit";
+    public static final String PREP_END_KEY = "preparation_end_hour";
 
     public static final String ORDERS_KEY = "orders";
     public static final String ORDER_SIZE_KEY = "size";
@@ -40,6 +41,7 @@ public class Constants {
     public static final String DELIVERY_KEY = "delivery";
     public static final String MANDATORY_KEY = "mandatory";
     public static final String TRUE_KEY = "true";
+    public static final String WORST_WEATHER_KEY = "worst_weather_state";
     public static final String SCENARIOS_KEY = "scenarios";
     public static final String SPEED_IMPACT_KEY = "speed_impact";
     public static final String SERVICE_IMPACT_KEY = "service_impact";
