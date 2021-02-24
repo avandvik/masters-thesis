@@ -8,6 +8,10 @@ public class Order {
     private double size;
     private int installationId;
 
+    public Order(int orderId) {
+        this.orderId = orderId;
+    }
+
     public Order(int orderId, boolean isMandatory, boolean isDelivery, double size, int installationId) {
         this.orderId = orderId;
         this.isMandatory = isMandatory;

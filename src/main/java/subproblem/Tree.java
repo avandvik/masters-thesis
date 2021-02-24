@@ -164,14 +164,15 @@ public class Tree {
     public static void main(String[] args) {
         Problem.setUpProblem("example.json");
         Tree tree = new Tree();
-      
+
         LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence();
         boolean isSpotVessel = false;
         tree.generateTree(orderSequence, isSpotVessel);
-        
-     
+
+
         Node root = tree.createDummyTree();
         tree.setRoot(root);
         tree.findShortestPath();
+
     }
 }
