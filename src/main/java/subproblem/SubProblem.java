@@ -4,7 +4,6 @@ import data.Problem;
 import objects.Order;
 import objects.Vessel;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class SubProblem {
@@ -32,7 +31,7 @@ public class SubProblem {
 
     public void solve() {
         Tree tree = new Tree();
-        tree.generateTree((LinkedList<Order>) this.orderSequence, this.isSpotVessel);
+        tree.generateTree(this.orderSequence, this.isSpotVessel);
         this.shortestPath = tree.findShortestPath();
         this.shortestPathCost = tree.getGlobalBestCost();
     }
