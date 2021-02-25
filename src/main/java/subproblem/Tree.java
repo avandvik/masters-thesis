@@ -257,7 +257,6 @@ public class Tree {
     public static void main(String[] args) {
         Problem.setUpProblem("example.json");
         Tree tree = new Tree();
-
         int numberOfOrders = 4;
         int seedValue = 69;
         LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence(numberOfOrders, seedValue);
