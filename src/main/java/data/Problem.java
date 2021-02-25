@@ -82,6 +82,18 @@ public class Problem {
         return 24 * Problem.discretizationParam - 1;
     }
 
+    public static int getNumberOfVessels() {
+        return Problem.vessels.size();
+    }
+
+    public static boolean isSpotVessel(Vessel vessel) {
+        return Problem.vessels.indexOf(vessel) == Problem.getNumberOfVessels() - 1;
+    }
+
+    public static Vessel getVessel(int vesselNumber) {
+        return Problem.vessels.get(vesselNumber);
+    }
+
     public static void setUpProblem(String fileName) {
         Problem.fileName = fileName;
         Problem.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;

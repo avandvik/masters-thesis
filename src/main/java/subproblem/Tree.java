@@ -6,7 +6,6 @@ import objects.Order;
 import utils.DistanceCalculator;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 public class Tree {
 
@@ -39,7 +38,15 @@ public class Tree {
         return null;
     }
 
-    public List<Node> findShortestPath() {
+    protected double getGlobalBestCost() {
+        return globalBestCost;
+    }
+
+    protected List<Node> getShortestPath() {
+        return shortestPath;
+    }
+
+    protected List<Node> findShortestPath() {
         LinkedList<Node> queue = initialize();
         while (queue.size() != 0) {
             Node currentNode = queue.removeFirst();
@@ -88,7 +95,7 @@ public class Tree {
         return new ArrayList<>(original);
     }
 
-    public void generateTree(LinkedList<Order> orderSequence, boolean isSpotVessel) {
+    protected void generateTree(LinkedList<Order> orderSequence, boolean isSpotVessel) {
         Order firstOrder = orderSequence.getFirst();
         this.generateNodesDepotToOrder(firstOrder, isSpotVessel);
 
@@ -231,39 +238,17 @@ public class Tree {
         return min.getKey();
     }
 
-    private List<Order> createDummyOrderSequence(int length, int seedValue) {
-        Integer[] indicesArray = IntStream.range(0, Problem.orders.size()).boxed().toArray(Integer[]::new);
-        List<Integer> indices = Arrays.asList(indicesArray);
-        Collections.shuffle(indices, new Random(seedValue));
-        List<Order> orderSequence = new LinkedList<>();
-        for (int i = 0; i < length; i++) orderSequence.add(Problem.orders.get(indices.get(i)));
-        return orderSequence;
-    }
-
     private void printTree(Tree tree) {
         for (Node node : tree.nodes) {
             System.out.println(node);
-            System.out.println("\tCHILDREN");
+            System.out.println("\tChildren");
             for (Node child : node.getChildren()) {
                 System.out.println("\t" + child + " at cost " + node.getCostOfChild(child));
             }
-            System.out.println("\tPARENTS");
+            System.out.println("\tParents");
             for (Node parent : node.getParents()) {
                 System.out.println("\t" + parent);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        Problem.setUpProblem("example.json");
-        Tree tree = new Tree();
-        int numberOfOrders = 4;
-        int seedValue = 69;
-        LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence(numberOfOrders, seedValue);
-        System.out.println("Order sequence: " + orderSequence);
-        boolean isSpotVessel = false;
-        tree.generateTree(orderSequence, isSpotVessel);
-        System.out.println("Tree: " + tree.nodes);
-        System.out.println("Shortest path: " + tree.findShortestPath());
     }
 }
