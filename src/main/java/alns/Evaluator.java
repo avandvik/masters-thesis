@@ -7,17 +7,18 @@ import java.util.List;
 
 public class Evaluator {
 
-    public static boolean evaluateLoad(List<List<Order>> orderSequences) {
-        for(int i = 0; i < orderSequences.size(); i++) {
-            double currentLoad = findTotalStartLoad(orderSequences.get(i));
-            if(currentLoad > Problem.vessels.get(i).getCapacity()) return false;
-            for(int j = 0; j < orderSequences.get(i).size(); j++) {
-                if(orderSequences.get(i).get(j).isDelivery()) {
-                    currentLoad -= orderSequences.get(i).get(j).getSize();
+    public static boolean evaluateLoad(Solution solution) {
+        List<List<Order>> orderSequences = solution.getOrderSequences();
+        for(int vesselNumber = 0; vesselNumber < orderSequences.size(); vesselNumber++) {
+            double currentLoad = findTotalStartLoad(orderSequences.get(vesselNumber));
+            if(currentLoad > Problem.vessels.get(vesselNumber).getCapacity()) return false;
+            for(Order order : orderSequences.get(vesselNumber)) {
+                if(order.isDelivery()) {
+                    currentLoad -= order.getSize();
                 } else {
-                    currentLoad += orderSequences.get(i).get(j).getSize();
+                    currentLoad += order.getSize();
                 }
-                if(currentLoad > Problem.vessels.get(i).getCapacity()) {
+                if(currentLoad > Problem.vessels.get(vesselNumber).getCapacity()) {
                     return false;
                 }
             }
@@ -40,7 +41,6 @@ public class Evaluator {
     public static void main(String[] args) {
         Problem.setUpProblem("example.json");
         Solution solution = new Solution();
-        List<List<Order>> orderSequences = solution.getOrderSequences();
-        evaluateLoad(orderSequences);
+        evaluateLoad(solution);
     }
 }
