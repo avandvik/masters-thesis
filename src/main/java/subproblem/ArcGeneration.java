@@ -153,8 +153,11 @@ public class ArcGeneration {
         return timePoints;
     }
 
-    // TODO: This is a bit different from the project-thesis
+    // TODO: The pickup duration must be addressed as an assumption if this is how we want to do this
     public static int calculateServiceDuration(Order order) {
+        if (!order.isMandatory() && !order.isDelivery()) {
+            return 1;
+        }
         return (int) Math.ceil(order.getSize() * Problem.discServiceTimeUnit);
     }
 
