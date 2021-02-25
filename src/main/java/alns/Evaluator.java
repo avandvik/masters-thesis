@@ -33,6 +33,10 @@ public class Evaluator {
         return totalStartLoad;
     }
 
+    public static boolean evaluateTime() {
+        
+    }
+
     public static void main(String[] args) {
         Problem.setUpProblem("example.json");
         Solution solution = new Solution();
