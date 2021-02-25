@@ -1,33 +1,12 @@
 package subproblem;
 
+import objects.Order;
+
 import java.util.*;
 
 public class Node implements Comparable<Node> {
-    /*
-    Fields to include
-        Node identifiers
-            - Parent nodes in an array (null if root)
-            - Child nodes in an array (null if leaf)
-            - Discrete time
 
-        Cost
-            - Map child -> cost
-
-        Best path
-            - LinkedList / ArrayList or similar to hold best path here
-            - Cost of best path here
-
-    Functions to include
-        Getters and setters
-
-        Update best cost path
-
-        compareTo (based on cost)
-
-        toString
-     */
-
-    private String nodeName;
+    private Order order;
     private Set<Node> parents = new HashSet<>();
     private Set<Node> children = new HashSet<>();
     private final int discreteTime;
@@ -35,29 +14,21 @@ public class Node implements Comparable<Node> {
     private Map<Node, Double> childToCost = new HashMap<>();
 
     private List<Node> bestPath = new LinkedList<>();
-    private double bestCost = -1;
-    private boolean isVisited;
+    private double bestCost = Double.POSITIVE_INFINITY;
+    private boolean isVisited = false;
 
-    public Node(String nodeName, Set<Node> parents, Set<Node> children, int discreteTime) {
-        this.nodeName = nodeName;
-        this.parents = parents;
-        this.children = children;
+    public Node(Order order, int discreteTime, Node parent) {
+        this.order = order;
         this.discreteTime = discreteTime;
-        this.isVisited = false;
-    }
-
-    public Node(String nodeName, int discreteTime) {
-        this.nodeName = nodeName;
-        this.discreteTime = discreteTime;
-        this.isVisited = false;
+        if (parent != null) this.parents.add(parent);
     }
 
     public List<Node> getBestPath() {
         return bestPath;
     }
 
-    public String getNodeName() {
-        return nodeName;
+    public Order getOrder() {
+        return order;
     }
 
     public double getBestCost() {
@@ -96,6 +67,10 @@ public class Node implements Comparable<Node> {
         this.bestPath = bestPath;
     }
 
+    public void addToBestPath(Node node) {
+        if (!this.bestPath.contains(node)) this.bestPath.add(node);
+    }
+
     public void setBestCost(double bestCost) {
         this.bestCost = bestCost;
     }
@@ -108,20 +83,14 @@ public class Node implements Comparable<Node> {
         this.children.add(child);
     }
 
-    // TODO: Implement (KP)
     @Override
     public String toString() {
-        return "(" + this.nodeName + ", " + getDiscreteTime() + ")";
+        return "(" + (this.order == null ? "Depot" : this.order) + ", " + getDiscreteTime() + ")";
     }
 
-    // TODO: Implement (KP)
     @Override
     public int compareTo(Node o) {
         return Double.compare(getBestCost(), o.bestCost);
         // Returns -1 if cost of o is higher, 0 if equal and 1 if lower
-    }
-
-    public static void main(String[] args) {
-
     }
 }
