@@ -110,7 +110,8 @@ public class ArcGeneration {
         if (openTime != Problem.getFirstTimePoint() && closeTime != Problem.getEndOfDayTimePoint()) {
             instOpen = startDayTime >= openTime && endDayTime <= closeTime;
         }
-        int worstWeatherState = Collections.max(Problem.weatherForecastDisc.subList(serviceStartTime, serviceEndTime));
+        int worstWeatherState = Collections.max(Problem.weatherForecastDisc.subList(serviceStartTime,
+                serviceEndTime + 1));
         return instOpen && worstWeatherState < Problem.worstWeatherState;
     }
 

@@ -118,6 +118,9 @@ public class Problem {
         for (Object key : jsonOrders.keySet()) {
             JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
             double orderSize = (double) jsonOrder.get(Constants.ORDER_SIZE_KEY);
+
+            // Transform orderSize to cargo units
+
             int installationId = Math.toIntExact((long) jsonOrder.get(Constants.INSTALLATION_KEY));
             boolean isDelivery = ((jsonOrder.get(Constants.TRANSPORTATION_TYPE_KEY)).equals(Constants.DELIVERY_KEY));
             boolean isMandatory = ((jsonOrder.get(Constants.MANDATORY_KEY)).equals(Constants.TRUE_KEY));
@@ -168,6 +171,10 @@ public class Problem {
         Problem.spotHourRate = (double) jsonVesselInfo.get(Constants.SPOT_HOUR_RATE_KEY);
         double realServiceTimeUnit = (double) jsonVesselInfo.get(Constants.SERVICE_TIME_KEY);
         Problem.discServiceTimeUnit = realServiceTimeUnit * Problem.discretizationParam;
+
+        // TODO: Remove later
+        Problem.discServiceTimeUnit = 0.01;
+
         int preparationEndHour = Math.toIntExact((long) jsonVesselInfo.get(Constants.PREP_END_KEY));
         Problem.preparationEndTime = preparationEndHour * Problem.discretizationParam - 1;
     }
