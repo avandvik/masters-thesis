@@ -2,7 +2,6 @@ package alns;
 
 import data.Problem;
 import objects.Order;
-import objects.Vessel;
 
 import java.util.*;
 
@@ -12,8 +11,6 @@ public class Solution {
     private Random random = new Random();
 
     public Solution() {
-
-        List<Vessel> vesselList = new ArrayList<>();
         List<Order> orderList = new ArrayList<>(Problem.orders);
         Collections.shuffle(orderList);
 
@@ -35,6 +32,10 @@ public class Solution {
 
     public List<List<Order>> getOrderSequences() {
         return orderSequences;
+    }
+
+    public List<Order> getOrderSequence(int vesselNumber) {
+        return this.orderSequences.get(vesselNumber);
     }
 
     @Override

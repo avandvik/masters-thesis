@@ -4,9 +4,9 @@ import data.Problem;
 import objects.Installation;
 import objects.Order;
 import utils.DistanceCalculator;
+import utils.Helpers;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 public class Tree {
 
@@ -15,7 +15,8 @@ public class Tree {
     private List<Node> shortestPath;
     private double globalBestCost;
 
-    public Tree() {}
+    public Tree() {
+    }
 
     private void setRoot(Node root) {
         this.root = root;
@@ -39,11 +40,23 @@ public class Tree {
         return null;
     }
 
-    public List<Node> findShortestPath() {
-        LinkedList<Node> queue = initialize();
+    private List<Node> getNodesExclDepot()  {
+        return this.nodes.subList(1, this.nodes.size());
+    }
+
+    protected double getGlobalBestCost() {
+        return globalBestCost;
+    }
+
+    protected List<Node> getShortestPath() {
+        return shortestPath;
+    }
+
+    protected List<Node> findShortestPath() {
+        List<Node> queue = initialize();
         while (queue.size() != 0) {
-            Node currentNode = queue.removeFirst();
-            Set<Node> setOfChildren = currentNode.getChildren();  // Retrieved in order right to left in tree
+            Node currentNode = ((LinkedList<Node>) queue).removeFirst();
+            Set<Node> setOfChildren = currentNode.getChildren();
             if (currentNode != this.root) updateCurrentBest(currentNode);
             if (setOfChildren.isEmpty()) updateGlobalBest(currentNode);
             for (Node child : setOfChildren) {
@@ -56,8 +69,8 @@ public class Tree {
         return this.shortestPath;
     }
 
-    private LinkedList<Node> initialize() {
-        LinkedList<Node> queue = new LinkedList<>();
+    private List<Node> initialize() {
+        List<Node> queue = new LinkedList<>();
         this.shortestPath = new LinkedList<>();
         this.globalBestCost = Double.POSITIVE_INFINITY;
         queue.add(this.root);
@@ -68,7 +81,7 @@ public class Tree {
     private void updateGlobalBest(Node currentNode) {
         if (currentNode.getBestCost() < this.globalBestCost) {
             this.globalBestCost = currentNode.getBestCost();
-            this.shortestPath = deepCopy(currentNode.getBestPath());
+            this.shortestPath = Helpers.deepCopyList(currentNode.getBestPath());
         }
     }
 
@@ -77,26 +90,22 @@ public class Tree {
             double currentCost = parent.getBestCost() + parent.getCostOfChild(currentNode);
             if (currentCost < currentNode.getBestCost()) {
                 currentNode.setBestCost(currentCost);
-                List<Node> path = deepCopy(parent.getBestPath());  // TODO: Research best way to copy
+                List<Node> path = Helpers.deepCopyList(parent.getBestPath());
                 path.add(currentNode);
                 currentNode.setBestPath(path);
             }
         }
     }
 
-    private List<Node> deepCopy(List<Node> original) {
-        return new ArrayList<>(original);
-    }
-
-    public void generateTree(LinkedList<Order> orderSequence, boolean isSpotVessel) {
-        Order firstOrder = orderSequence.getFirst();
+    protected void generateTree(List<Order> orderSequence, boolean isSpotVessel) {
+        Order firstOrder = ((LinkedList<Order>) orderSequence).getFirst();
         this.generateNodesDepotToOrder(firstOrder, isSpotVessel);
 
-        List<Node> queue = deepCopy(this.nodes.subList(1, this.nodes.size()));
+        List<Node> queue = Helpers.deepCopyList(this.getNodesExclDepot());
         Set<Node> addedNodes = new HashSet<>();
         while (!queue.isEmpty()) {
             Node fromNode = queue.remove(0);
-            Order toOrder = getNextOrder(orderSequence, fromNode.getOrder());
+            Order toOrder = Helpers.getNextElement((LinkedList<Order>) orderSequence, fromNode.getOrder());
             if (toOrder == null) break;
             this.generateNodesOrderToOrder(fromNode, toOrder, isSpotVessel);
             List<Node> newNodes = getNewNodes(addedNodes, toOrder);
@@ -104,20 +113,13 @@ public class Tree {
             queue.addAll(newNodes);
         }
 
-        List<Node> lastLayer = getLastLayer(orderSequence.getLast(), this.nodes.subList(1, this.nodes.size()));
+        List<Node> lastLayer = getLastLayer(((LinkedList<Order>) orderSequence).getLast(), this.getNodesExclDepot());
         for (Node lastNode : lastLayer) generateNodesOrderToDepot(lastNode, isSpotVessel);
-    }
-
-    private Order getNextOrder(LinkedList<Order> orderSequence, Order order) {
-        if (!order.equals(orderSequence.getLast())) {
-            return orderSequence.get(orderSequence.indexOf(order) + 1);
-        }
-        return null;
     }
 
     private List<Node> getNewNodes(Set<Node> addedNodes, Order toOrder) {
         List<Node> newNodes = new ArrayList<>();
-        for (Node node : this.nodes.subList(1, this.nodes.size())) {
+        for (Node node : this.getNodesExclDepot()) {
             if (node.getOrder().equals(toOrder) && !addedNodes.contains(node)) {
                 newNodes.add(node);
             }
@@ -163,6 +165,12 @@ public class Tree {
         Map<Double, Double> speedsToCosts = ArcGeneration.mapSpeedsToCosts(speedsToTimePoints, distance, startTime,
                 isSpot);
         Map<Double, Integer> speedsToEndTimes = ArcGeneration.mapSpeedsToEndTimes(speedsToTimePoints);
+        addNodesToTree(speedsToCosts, speedsToEndTimes, fromNode, toOrder, c);
+
+    }
+
+    private void addNodesToTree(Map<Double, Double> speedsToCosts, Map<Double, Integer> speedsToEndTimes,
+                                Node fromNode, Order toOrder, int c) {
         switch (c) {
             case 1:
                 addNodesDepotOrder(speedsToCosts, speedsToEndTimes, toOrder);
@@ -212,7 +220,7 @@ public class Tree {
 
     private void addNodesOrderDepot(Map<Double, Double> speedsToCosts, Map<Double, Integer> speedsToEndTimes,
                                     Node fromNode) {
-        double minCostSpeed = getMinCostSpeed(speedsToCosts);
+        double minCostSpeed = Helpers.getKeyWithMinValue(speedsToCosts);
         double cost = speedsToCosts.get(minCostSpeed);
         int endTime = speedsToEndTimes.get(minCostSpeed);
         Node depotNode = new Node(null, endTime, fromNode);
@@ -221,49 +229,17 @@ public class Tree {
         this.addNode(depotNode);
     }
 
-    private double getMinCostSpeed(Map<Double, Double> speedsToCosts) {
-        Map.Entry<Double, Double> min = null;
-        for (Map.Entry<Double, Double> entry : speedsToCosts.entrySet()) {
-            if (min == null || entry.getValue() < min.getValue()) {
-                min = entry;
-            }
-        }
-        return min.getKey();
-    }
-
-    private List<Order> createDummyOrderSequence(int length, int seedValue) {
-        Integer[] indicesArray = IntStream.range(0, Problem.orders.size()).boxed().toArray(Integer[]::new);
-        List<Integer> indices = Arrays.asList(indicesArray);
-        Collections.shuffle(indices, new Random(seedValue));
-        List<Order> orderSequence = new LinkedList<>();
-        for (int i = 0; i < length; i++) orderSequence.add(Problem.orders.get(indices.get(i)));
-        return orderSequence;
-    }
-
-    private void printTree(Tree tree) {
+    protected void printTree(Tree tree) {
         for (Node node : tree.nodes) {
             System.out.println(node);
-            System.out.println("\tCHILDREN");
+            System.out.println("\tChildren");
             for (Node child : node.getChildren()) {
                 System.out.println("\t" + child + " at cost " + node.getCostOfChild(child));
             }
-            System.out.println("\tPARENTS");
+            System.out.println("\tParents");
             for (Node parent : node.getParents()) {
                 System.out.println("\t" + parent);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        Problem.setUpProblem("example.json");
-        Tree tree = new Tree();
-        int numberOfOrders = 4;
-        int seedValue = 69;
-        LinkedList<Order> orderSequence = (LinkedList<Order>) tree.createDummyOrderSequence(numberOfOrders, seedValue);
-        System.out.println("Order sequence: " + orderSequence);
-        boolean isSpotVessel = false;
-        tree.generateTree(orderSequence, isSpotVessel);
-        System.out.println("Tree: " + tree.nodes);
-        System.out.println("Shortest path: " + tree.findShortestPath());
     }
 }

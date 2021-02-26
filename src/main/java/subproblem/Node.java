@@ -93,4 +93,12 @@ public class Node implements Comparable<Node> {
         return Double.compare(getBestCost(), o.bestCost);
         // Returns -1 if cost of o is higher, 0 if equal and 1 if lower
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return discreteTime == node.discreteTime && order.equals(node.order);
+    }
 }
