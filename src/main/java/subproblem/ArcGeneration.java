@@ -155,10 +155,6 @@ public class ArcGeneration {
         return overshootDistance / (Problem.maxSpeed - Problem.getSpeedImpact(ws));
     }
 
-    public static double calculateAverageMaxSpeed(int startSailingTime, double distance) {
-        return 0.0;
-    }
-
     public static List<Integer> createTimePoints(int arrTime, int serviceStartTime, int serviceEndTime) {
         List<Integer> timePoints = new ArrayList<>();
         timePoints.add(arrTime);
