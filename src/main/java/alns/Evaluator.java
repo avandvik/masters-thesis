@@ -5,7 +5,9 @@ import objects.Installation;
 import objects.Order;
 import subproblem.ArcGeneration;
 import utils.DistanceCalculator;
+import utils.Helpers;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Evaluator {
@@ -39,16 +41,14 @@ public class Evaluator {
 
     public static boolean evaluateTime(Solution solution) {
         List<List<Order>> orderSequences = solution.getOrderSequences();
-        // We want to do the same calculations for all vessels
+
         for (int vesselNumber = 0; vesselNumber < orderSequences.size(); vesselNumber++) {
             List<Order> orderSequence = orderSequences.get(vesselNumber);
 
-            // If a vessel has no orders, it does not leave
             if(orderSequence.size() == 0) {
                 continue;
             }
 
-            // Handling from depot to first order
             Order firstOrder = orderSequence.get(0);
             int currentTime = Problem.preparationEndTime;
             Installation depot = Problem.getDepot();
@@ -62,15 +62,9 @@ public class Evaluator {
             }
             currentTime += firstServiceDuration;
 
-           // Handling between all orders in a sequence
             if(orderSequence.size() > 1) {
-
                 for (Order fromOrder : orderSequence.subList(0, orderSequence.size() - 1)) {
-
-                }
-                for (int orderNum = 0; orderNum < orderSequences.get(vesselNumber).size() - 1; orderNum++) {
-                    Order fromOrder = orderSequences.get(vesselNumber).get(orderNum);
-                    Order toOrder = orderSequences.get(vesselNumber).get(orderNum + 1);
+                    Order toOrder = Helpers.getNextElement((LinkedList<Order>) orderSequence, fromOrder);
                     Installation fromInstallation = Problem.getInstallation(fromOrder);
                     Installation toInstallation = Problem.getInstallation(toOrder);
                     int sailingDuration = findSailingDuration(currentTime, fromInstallation, toInstallation);
@@ -80,11 +74,13 @@ public class Evaluator {
                     while(!ArcGeneration.isServicingPossible(currentTime,(currentTime + serviceDuration),toInstallation)) {
                         currentTime++;
                     }
+
                     currentTime += serviceDuration;
                 }
+
             }
-            // Handling from last order back to depot
-            Order lastOrder = orderSequences.get(vesselNumber).get(orderSequences.size() - 1);
+
+            Order lastOrder = ((LinkedList<Order>) orderSequence).getLast();
             Installation lastInstallation = Problem.getInstallation(lastOrder);
             int lastSailingDuration = findSailingDuration(currentTime, lastInstallation, depot);
             currentTime += lastSailingDuration;
@@ -115,7 +111,6 @@ public class Evaluator {
         Problem.setUpProblem("example.json");
         int randomSeed = 5;
         Solution solution = new Solution(randomSeed);
-        System.out.println(solution);
         evaluateLoad(solution);
         evaluateTime(solution);
     }
