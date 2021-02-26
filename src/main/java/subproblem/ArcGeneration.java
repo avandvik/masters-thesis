@@ -15,8 +15,9 @@ public class ArcGeneration {
     public static List<Double> getSpeeds(double distance, int startTime) {
         if (distance == 0) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
         int maxDuration = (int) Math.ceil(hourToDisc(distance / Problem.minSpeed));
-        List<Double> adjustedMaxSpeeds = getAdjustedMaxSpeeds(startTime, startTime + maxDuration);
-        double averageMaxSpeed = getAverageDoubleList(adjustedMaxSpeeds);
+        // List<Double> adjustedMaxSpeeds = getAdjustedMaxSpeeds(startTime, startTime + maxDuration);
+        // double averageMaxSpeed = getAverageDoubleList(adjustedMaxSpeeds);
+        double averageMaxSpeed = calculateAverageMaxSpeed(startTime, distance);
         List<Double> speeds = new ArrayList<>();
         for (double speed = Problem.minSpeed; speed < averageMaxSpeed; speed += 1) speeds.add(speed);
         speeds.add(averageMaxSpeed);
@@ -96,8 +97,9 @@ public class ArcGeneration {
 
     public static boolean isReturnPossible(double distance, int endTime) {
         if (endTime > Problem.getFinalTimePoint()) return false;
-        List<Double> adjustedMaxSpeeds = getAdjustedMaxSpeeds(endTime, Problem.planningPeriodDisc);
-        Double averageMaxSpeed = getAverageDoubleList(adjustedMaxSpeeds);
+        // List<Double> adjustedMaxSpeeds = getAdjustedMaxSpeeds(endTime, Problem.planningPeriodDisc);
+        // Double averageMaxSpeed = getAverageDoubleList(adjustedMaxSpeeds);
+        double averageMaxSpeed = calculateAverageMaxSpeed(endTime, distance);
         int earliestArrTime = endTime + (int) Math.ceil(hourToDisc(distance / averageMaxSpeed));
         return earliestArrTime <= Problem.getGeneralReturnTime();
     }
@@ -139,6 +141,7 @@ public class ArcGeneration {
         return speedsToEndTimes;
     }
 
+    // TODO: Remove when ready
     public static List<Double> getAdjustedMaxSpeeds(int startSailingTime, int endSailingTime) {
         List<Integer> weather = Problem.weatherForecastDisc.subList(startSailingTime, endSailingTime);
         List<Double> adjustedMaxSpeeds = new ArrayList<>();
@@ -147,7 +150,21 @@ public class ArcGeneration {
     }
 
     public static double calculateAverageMaxSpeed(int startSailingTime, double distance) {
-        return 0.0;
+        double sailedDistance = 0.0;
+        int currentTime = startSailingTime;
+        while (sailedDistance < distance) {
+            int ws = Problem.weatherForecastDisc.get(currentTime);
+            double adjustedMaxSpeed = Problem.maxSpeed - Problem.getSpeedImpact(ws);
+            sailedDistance += adjustedMaxSpeed * Problem.timeUnit;
+            currentTime++;
+        }
+        double overshootTime = calculateOvershootTime(sailedDistance - distance, currentTime);
+        return distance / (discToHour(currentTime - startSailingTime) - overshootTime);
+    }
+
+    private static double calculateOvershootTime(double overshootDistance, int sailingEndTime) {
+        int ws = Problem.weatherForecastDisc.get(sailingEndTime - 1);
+        return overshootDistance / (Problem.maxSpeed - Problem.getSpeedImpact(ws));
     }
 
     public static List<Integer> createTimePoints(int arrTime, int serviceStartTime, int serviceEndTime) {
@@ -260,6 +277,7 @@ public class ArcGeneration {
         return timeSpentInWS;
     }
 
+    // TODO: Remove when ready
     public static double getAverageDoubleList(List<Double> list) {
         return list.stream().mapToDouble(a -> a).average().getAsDouble();
     }

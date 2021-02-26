@@ -9,7 +9,9 @@ public class Main {
         Problem.setUpProblem("example.json");
         Solution solution = new Solution(5);
         System.out.println(solution);
+    }
 
+    private static void runSubProblem(Solution solution) {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             try {
                 SubProblem subproblem = new SubProblem(solution.getOrderSequence(vesselNumber), vesselNumber);
