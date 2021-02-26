@@ -8,8 +8,7 @@ import subproblem.ArcGeneration;
 import utils.DistanceCalculator;
 import utils.Helpers;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Evaluator {
 
@@ -64,6 +63,16 @@ public class Evaluator {
         return true;
     }
 
+    private static int findTimeAtFirstOrder(int currentTime, List<Order> orderSequence) {
+        Order firstOrder = orderSequence.get(0);
+        Installation depot = Problem.getDepot();
+        Installation firstInstallation = Problem.getInstallation(firstOrder);
+        int firstSailingDuration = findSailingDuration(currentTime, depot, firstInstallation);
+        currentTime += firstSailingDuration;
+        int firstServiceDuration = findServiceDuration(currentTime,firstInstallation,firstOrder);
+        return (currentTime + firstServiceDuration);
+    }
+
     private static int findTimeAtLastOrder(int currentTime, List<Order> orderSequence) {
         for (Order fromOrder : orderSequence.subList(0, orderSequence.size() - 1)) {
             Order toOrder = Helpers.getNextElement((LinkedList<Order>) orderSequence, fromOrder);
@@ -75,16 +84,6 @@ public class Evaluator {
             currentTime += serviceDuration;
         }
         return currentTime;
-    }
-
-    private static int findTimeAtFirstOrder(int currentTime, List<Order> orderSequence) {
-        Order firstOrder = orderSequence.get(0);
-        Installation depot = Problem.getDepot();
-        Installation firstInstallation = Problem.getInstallation(firstOrder);
-        int firstSailingDuration = findSailingDuration(currentTime, depot, firstInstallation);
-        currentTime += firstSailingDuration;
-        int firstServiceDuration = findServiceDuration(currentTime,firstInstallation,firstOrder);
-        return (currentTime + firstServiceDuration);
     }
 
     private static int findEndTime(int currentTime, List<Order> orderSequence) {
@@ -117,11 +116,85 @@ public class Evaluator {
         return serviceDuration;
     }
 
+    public static boolean evaluateVisitOrder(Solution solution) {
+        List<List<Order>> orderSequences = solution.getOrderSequences();
+        List<List<Integer>> installationSequences = getInstallationSequences(orderSequences);
+
+        if (installationInMultipleSequences(installationSequences)) {
+            return false;
+        }
+        
+        List<List<Order>> copyOfOrderSequences = Helpers.deepCopyList(orderSequences);
+        if (wrongVisitOrder(copyOfOrderSequences)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static List<List<Integer>> getInstallationSequences(List<List<Order>> orderSequences) {
+        List<List<Integer>> installationSequences = new ArrayList<>();
+
+        for (int vesselNumber = 0; vesselNumber < orderSequences.size(); vesselNumber++) {
+            List<Order> orderSequence = orderSequences.get(vesselNumber);
+            List<Integer> installationSequence = new ArrayList<>();
+            for (Order order : orderSequence) {
+                int installationID = order.getInstallationId();
+                installationSequence.add(installationID);
+            }
+
+            installationSequences.add(installationSequence);
+        }
+
+        return installationSequences;
+    }
+
+    private static boolean installationInMultipleSequences(List<List<Integer>> installationSequences) {
+        while (installationSequences.size() > 1) {
+            for (int i = 1; i < installationSequences.size(); i++) {
+                List<Integer> firstSequence = installationSequences.get(0);
+                List<Integer> secondSequence = installationSequences.get(i);
+                boolean differentInstallation = Collections.disjoint(firstSequence,secondSequence);
+                if(!differentInstallation) {
+                    return true;
+                }
+            }
+
+            installationSequences.remove(0);
+        }
+
+        return false;
+    }
+
+    private static boolean wrongVisitOrder(List<List<Order>> orderSequences) {
+        for (List<Order> orderSequence : orderSequences) {
+            while (orderSequence.size() > 1) {
+                for (int j = 1; j < orderSequence.size(); j++) {
+                    Order firstOrder = orderSequence.get(0);
+                    Order secondOrder = orderSequence.get(j);
+                    if (firstOrder.getInstallationId() == secondOrder.getInstallationId()) {
+                        if (!firstOrder.isDelivery()) {
+                            return true;
+                        }
+                        if (!firstOrder.isMandatory()) {
+                            return true;
+                        }
+                    }
+                }
+
+                orderSequence.remove(0);
+            }
+        }
+
+        return false;
+    }
+
     public static void main(String[] args) {
         Problem.setUpProblem("example.json");
-        int randomSeed = 5;
+        int randomSeed = 17;
         Solution solution = new Solution(randomSeed);
         evaluateLoad(solution);
         evaluateTime(solution);
+        evaluateVisitOrder(solution);
     }
 }
