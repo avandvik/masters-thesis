@@ -233,11 +233,13 @@ public class Tree {
                 this.addNode(newNode);
             } else {
                 existingNode.addParent(fromNode);
-                double bestCost = cost;
-                if (fromNode.hasChild(existingNode) && fromNode.getCostOfChild(existingNode) < cost) {
-                    bestCost = fromNode.getCostOfChild(existingNode);
+                if (fromNode.hasChild(existingNode)) {
+                    double bestCost = Math.min(fromNode.getCostOfChild(existingNode), cost);
+                    fromNode.setChildToCost(existingNode, bestCost);
+                } else {
+                    fromNode.addChild(existingNode);
+                    fromNode.setChildToCost(existingNode, cost);
                 }
-                fromNode.setChildToCost(existingNode, bestCost);
             }
         }
     }
