@@ -99,6 +99,10 @@ public class Problem {
         return Problem.wsToSpeedImpact.get(weatherState);
     }
 
+    public static int getWorstWeatherState(int startTime, int endTime) {
+        return Collections.max(Problem.weatherForecastDisc.subList(startTime, endTime + 1));
+    }
+
     public static void setUpProblem(String fileName) {
         Problem.fileName = fileName;
         Problem.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;
@@ -218,7 +222,7 @@ public class Problem {
 
     private static void createDiscWeatherForecast() {
         Problem.weatherForecastDisc = new ArrayList<>();
-        for (int i = 0; i < Problem.planningPeriodDisc; i++) {
+        for (int i = 0; i < Problem.weatherForecast.size() * Problem.discretizationParam; i++) {
             int idx = i / Problem.discretizationParam;
             Problem.weatherForecastDisc.add(Problem.weatherForecast.get(idx));
         }
