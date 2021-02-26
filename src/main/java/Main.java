@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
 
         Problem.setUpProblem("example.json");
-        Solution solution = new Solution();
+        Solution solution = new Solution(5);
         System.out.println(solution);
 
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
