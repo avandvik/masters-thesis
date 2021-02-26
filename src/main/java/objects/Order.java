@@ -5,10 +5,10 @@ public class Order {
     private int orderId;
     private boolean isMandatory;
     private boolean isDelivery;
-    private double size;
+    private int size;
     private int installationId;
 
-    public Order(int orderId, boolean isMandatory, boolean isDelivery, double size, int installationId) {
+    public Order(int orderId, boolean isMandatory, boolean isDelivery, int size, int installationId) {
         this.orderId = orderId;
         this.isMandatory = isMandatory;
         this.isDelivery = isDelivery;
@@ -28,7 +28,7 @@ public class Order {
         return isDelivery;
     }
 
-    public double getSize() {
+    public int getSize() {
         return size;
     }
 
@@ -39,5 +39,13 @@ public class Order {
     @Override
     public String toString() {
         return "Order " + orderId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return orderId == order.orderId;
     }
 }

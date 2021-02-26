@@ -29,6 +29,7 @@ public class Problem {
     public static String weatherScenario;
     public static String installationOrdering;
     public static int preparationEndTime;
+    public static double sqmInCargoUnit;
 
     // Vessel info
     public static double minSpeed;
@@ -81,15 +82,27 @@ public class Problem {
         return 24 * Problem.discretizationParam - 1;
     }
 
+    public static int getNumberOfVessels() {
+        return Problem.vessels.size();
+    }
+
+    public static boolean isSpotVessel(Vessel vessel) {
+        return Problem.vessels.indexOf(vessel) == Problem.getNumberOfVessels() - 1;
+    }
+
+    public static Vessel getVessel(int vesselNumber) {
+        return Problem.vessels.get(vesselNumber);
+    }
+
     public static void setUpProblem(String fileName) {
         Problem.fileName = fileName;
         Problem.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;
-        setUpInstallations();
-        setUpOrders();
         setUpInstanceInfo();
-        setUpVessels();
+        setUpInstallations();
         setUpVesselInfo();
+        setUpVessels();
         setUpWeather();
+        setUpOrders();
     }
 
     private static void setUpInstallations() {
@@ -117,11 +130,12 @@ public class Problem {
         int orderId = 0;
         for (Object key : jsonOrders.keySet()) {
             JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
-            double orderSize = (double) jsonOrder.get(Constants.ORDER_SIZE_KEY);
+            double orderSizeSqm = (double) jsonOrder.get(Constants.ORDER_SIZE_KEY);
+            int orderSizeUnits = (int) Math.ceil(orderSizeSqm / Problem.sqmInCargoUnit);
             int installationId = Math.toIntExact((long) jsonOrder.get(Constants.INSTALLATION_KEY));
             boolean isDelivery = ((jsonOrder.get(Constants.TRANSPORTATION_TYPE_KEY)).equals(Constants.DELIVERY_KEY));
             boolean isMandatory = ((jsonOrder.get(Constants.MANDATORY_KEY)).equals(Constants.TRUE_KEY));
-            Order order = new Order(orderId, isMandatory, isDelivery, orderSize, installationId);
+            Order order = new Order(orderId, isMandatory, isDelivery, orderSizeUnits, installationId);
             Problem.orders.add(order);
             orderId++;
         }
@@ -170,6 +184,7 @@ public class Problem {
         Problem.discServiceTimeUnit = realServiceTimeUnit * Problem.discretizationParam;
         int preparationEndHour = Math.toIntExact((long) jsonVesselInfo.get(Constants.PREP_END_KEY));
         Problem.preparationEndTime = preparationEndHour * Problem.discretizationParam - 1;
+        Problem.sqmInCargoUnit = (double) jsonVesselInfo.get(Constants.SQM_KEY);
     }
 
     private static void setUpWeather() {
@@ -223,9 +238,6 @@ public class Problem {
 
     public static void main(String[] args) {
         Problem.setUpProblem("example.json");
-        System.out.println(Problem.planningPeriodDisc);
-        System.out.println(Problem.weatherForecastDisc.size());
-        System.out.println(Problem.worstWeatherState);
     }
 }
 

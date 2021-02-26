@@ -6,6 +6,10 @@ import objects.Order;
 
 import java.util.*;
 
+// TODO: Move to utils or arcgeneration package
+// TODO: Fix adjustedMaxSpeeds problems
+// TODO: Check all times (especially sublisting)
+
 public class ArcGeneration {
 
     public static List<Double> getSpeeds(double distance, int startTime) {
@@ -31,14 +35,11 @@ public class ArcGeneration {
     public static Map<Double, List<Integer>> mapSpeedsToTimePoints(Map<Double, Integer> speedsToArrTimes,
                                                                    double distance, int serviceDuration,
                                                                    Installation toInst) {
-        // Return to depot
         if (toInst.equals(Problem.getDepot())) return mapSpeedsToTimePointsDepot(speedsToArrTimes);
 
-        // No idling
         Map<Double, List<Integer>> speedsToTimePoints = mapSpeedsToTimePointsNoIdling(speedsToArrTimes, distance,
                 serviceDuration, toInst);
 
-        // Idling
         if (speedsToTimePoints.isEmpty())
             return mapSpeedsToTimePointsIdling(speedsToArrTimes, distance, serviceDuration, toInst);
 
@@ -110,7 +111,8 @@ public class ArcGeneration {
         if (openTime != Problem.getFirstTimePoint() && closeTime != Problem.getEndOfDayTimePoint()) {
             instOpen = startDayTime >= openTime && endDayTime <= closeTime;
         }
-        int worstWeatherState = Collections.max(Problem.weatherForecastDisc.subList(serviceStartTime, serviceEndTime));
+        int worstWeatherState = Collections.max(Problem.weatherForecastDisc.subList(serviceStartTime,
+                serviceEndTime + 1));
         return instOpen && worstWeatherState < Problem.worstWeatherState;
     }
 
@@ -152,8 +154,11 @@ public class ArcGeneration {
         return timePoints;
     }
 
-    // TODO: This is a bit different from the project-thesis
+    // TODO: The pickup duration must be addressed as an assumption if this is how we want to do this
     public static int calculateServiceDuration(Order order) {
+        if (!order.isMandatory() && !order.isDelivery()) {
+            return 1;
+        }
         return (int) Math.ceil(order.getSize() * Problem.discServiceTimeUnit);
     }
 
