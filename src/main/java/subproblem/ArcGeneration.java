@@ -146,6 +146,10 @@ public class ArcGeneration {
         return adjustedMaxSpeeds;
     }
 
+    public static double calculateAverageMaxSpeed(int startSailingTime, double distance) {
+        return 0.0;
+    }
+
     public static List<Integer> createTimePoints(int arrTime, int serviceStartTime, int serviceEndTime) {
         List<Integer> timePoints = new ArrayList<>();
         timePoints.add(arrTime);
