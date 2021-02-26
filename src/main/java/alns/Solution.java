@@ -9,13 +9,14 @@ import java.util.*;
 public class Solution {
 
     private List<List<Order>> orderSequences = new ArrayList<>();
-    private Random random = new Random();
+    private Random random;
 
-    public Solution() {
+    public Solution(int randomSeed) {
+        this.random = new Random(randomSeed);
 
         List<Vessel> vesselList = new ArrayList<>();
         List<Order> orderList = new ArrayList<>(Problem.orders);
-        Collections.shuffle(orderList);
+        Collections.shuffle(orderList, this.random);
 
         for(int vesselId = 0; vesselId < Problem.vessels.size(); vesselId++) orderSequences.add(new LinkedList<>());
 
@@ -44,6 +45,6 @@ public class Solution {
 
     public static void main(String[] args) {
         Problem.setUpProblem("example.json");
-        Solution solution = new Solution();
+        Solution solution = new Solution(5);
     }
 }
