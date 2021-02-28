@@ -12,9 +12,6 @@ public class Main {
         Problem.setUpProblem("example.json");
         Solution solution = new Solution(5);
 
-        List<Order> orderSequence = solution.getOrderSequence(1);
-        System.out.println(orderSequence);
-
         runSubProblem(solution);
     }
 
