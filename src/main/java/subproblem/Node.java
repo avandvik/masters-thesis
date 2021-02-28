@@ -47,6 +47,10 @@ public class Node implements Comparable<Node> {
         return children;
     }
 
+    public boolean hasChild(Node child) {
+        return children.contains(child);
+    }
+
     public boolean isVisited() {
         return isVisited;
     }
