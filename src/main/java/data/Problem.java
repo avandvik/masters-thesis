@@ -103,9 +103,41 @@ public class Problem {
         return Collections.max(Problem.weatherForecastDisc.subList(startTime, endTime + 1));
     }
 
+    public static double hourToDiscDecimal(double timeHour) {
+        return timeHour * Problem.discretizationParam;
+    }
+
+    public static double discTimeToHour(double timeDisc) {
+        return timeDisc / Problem.discretizationParam;
+    }
+
+    public static int hourToDiscTimePoint(double timeHour) {
+        return (int) Math.floor(hourToDiscDecimal(timeHour));
+    }
+
+    public static int discToDiscDayTime(int timeDisc) {
+        return timeDisc % (24 * Problem.discretizationParam);
+    }
+
+    // TODO: Refactor at next big merge
+    public static void setUpProblem(String fileName, boolean isTest) {
+        Problem.fileName = fileName;
+        Problem.pathToInstanceFile = (isTest ? Constants.PATH_TO_TEST : Constants.PATH_TO_INSTANCE) + fileName;
+        setUpProblem();
+    }
+
     public static void setUpProblem(String fileName) {
         Problem.fileName = fileName;
         Problem.pathToInstanceFile = Constants.PATH_TO_INSTANCE + fileName;
+        setUpInstanceInfo();
+        setUpInstallations();
+        setUpVesselInfo();
+        setUpVessels();
+        setUpWeather();
+        setUpOrders();
+    }
+
+    private static void setUpProblem() {
         setUpInstanceInfo();
         setUpInstallations();
         setUpVesselInfo();
