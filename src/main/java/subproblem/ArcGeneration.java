@@ -22,7 +22,7 @@ public class ArcGeneration {
     public static Map<Double, Integer> mapSpeedsToArrTimes(double distance, int startTime, List<Double> speeds) {
         Map<Double, Integer> speedsToArrTimes = new HashMap<>();
         for (Double speed : speeds) {
-            int arrTime = startTime + hourToDiscTimePoint(distance / speed);
+            int arrTime = startTime + Problem.hourToDiscTimePoint(distance / speed);
             if (!speedsToArrTimes.containsValue(arrTime)) speedsToArrTimes.put(speed, arrTime);
         }
         return speedsToArrTimes;
@@ -97,13 +97,13 @@ public class ArcGeneration {
     public static boolean isReturnPossible(double distance, int endTime) {
         if (endTime >= Problem.getFinalTimePoint() || distance < 0) return false;
         double averageMaxSpeed = calculateAverageMaxSpeed(endTime, distance);
-        int earliestArrTime = endTime + (int) Math.ceil(hourToDiscDecimal(distance / averageMaxSpeed));
+        int earliestArrTime = endTime + (int) Math.ceil(Problem.hourToDiscDecimal(distance / averageMaxSpeed));
         return earliestArrTime <= Problem.getGeneralReturnTime();
     }
 
     public static boolean isServicingPossible(int serviceStartTime, int serviceEndTime, Installation toInst) {
-        int startDayTime = discToDiscDayTime(serviceStartTime);
-        int endDayTime = discToDiscDayTime(serviceEndTime);
+        int startDayTime = Problem.discToDiscDayTime(serviceStartTime);
+        int endDayTime = Problem.discToDiscDayTime(serviceEndTime);
         int openTime = toInst.getOpeningHour() * Problem.discretizationParam - 1;
         int closeTime = toInst.getClosingHour() * Problem.discretizationParam - 1;
         boolean instOpen = true;
@@ -147,7 +147,7 @@ public class ArcGeneration {
             currentTime++;
         }
         double overshootTime = calculateOvershootTime(sailedDistance - distance, currentTime);
-        return distance / (discTimePointToHour(currentTime - startSailingTime) - overshootTime);
+        return distance / (Problem.discTimeToHour(currentTime - startSailingTime) - overshootTime);
     }
 
     private static double calculateOvershootTime(double overshootDistance, int sailingEndTime) {
@@ -219,23 +219,7 @@ public class ArcGeneration {
     }
 
     public static double calculateCharterCost(int startTime, int endTime, boolean isSpotVessel) {
-        return isSpotVessel ? Problem.spotHourRate * discTimePointToHour(endTime - startTime) : 0.0;
-    }
-
-    public static double hourToDiscDecimal(double timeHour) {
-        return timeHour * Problem.discretizationParam;
-    }
-
-    public static double discTimePointToHour(int timeDisc) {
-        return (double) timeDisc / Problem.discretizationParam;
-    }
-
-    public static int hourToDiscTimePoint(double timeHour) {
-        return (int) Math.floor(hourToDiscDecimal(timeHour));
-    }
-
-    public static int discToDiscDayTime(int timeDisc) {
-        return timeDisc % (24 * Problem.discretizationParam);
+        return isSpotVessel ? Problem.spotHourRate * Problem.discTimeToHour(endTime - startTime) : 0.0;
     }
 
     public static Map<Integer, Double> mapWSToDistanceTravelled(Map<Integer, Integer> wsToTimeSpent, double speed) {
