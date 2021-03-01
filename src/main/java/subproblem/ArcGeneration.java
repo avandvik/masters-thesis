@@ -61,7 +61,7 @@ public class ArcGeneration {
         for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
             double speed = entry.getKey();
             int arrTime = entry.getValue();
-            int serviceEndTime = arrTime + serviceDuration - 1;
+            int serviceEndTime = arrTime + serviceDuration;
             if (!isReturnPossible(distance, serviceEndTime)) continue;
             if (isServicingPossible(arrTime, serviceEndTime, toInst)) {
                 speedsToTimePoints.put(speed, createTimePoints(arrTime, arrTime, serviceEndTime));
