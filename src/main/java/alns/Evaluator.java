@@ -15,18 +15,22 @@ public class Evaluator {
     public static boolean isFeasibleLoad(Solution solution) {
         List<List<Order>> orderSequences = solution.getOrderSequences();
         for (int vesselNumber = 0; vesselNumber < orderSequences.size(); vesselNumber++) {
-            Vessel vessel = Problem.vessels.get(vesselNumber);
-            double currentLoad = findTotalStartLoad(orderSequences.get(vesselNumber));
-            if (currentLoad > vessel.getCapacity()) return false;
-            for (Order order : orderSequences.get(vesselNumber)) {
-                if (order.isDelivery()) {
-                    currentLoad -= order.getSize();
-                } else {
-                    currentLoad += order.getSize();
-                }
-                if (currentLoad > vessel.getCapacity()) {
-                    return false;
-                }
+            if (!isFeasibleLoad(orderSequences.get(vesselNumber), Problem.getVessel(vesselNumber))) return false;
+        }
+        return true;
+    }
+
+    public static boolean isFeasibleLoad(List<Order> orderSequence, Vessel vessel) {
+        double currentLoad = findTotalStartLoad(orderSequence);
+        if (currentLoad > vessel.getCapacity()) return false;
+        for (Order order : orderSequence) {
+            if (order.isDelivery()) {
+                currentLoad -= order.getSize();
+            } else {
+                currentLoad += order.getSize();
+            }
+            if (currentLoad > vessel.getCapacity()) {
+                return false;
             }
         }
         return true;
@@ -42,15 +46,19 @@ public class Evaluator {
 
     public static boolean isFeasibleDuration(Solution solution) {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            int currentTime = Problem.preparationEndTime;
             List<Order> orderSequence = solution.getOrderSequences().get(vesselNumber);
-            if (orderSequence.size() == 0) continue;
-            currentTime = findTimeAtFirstOrder(currentTime, orderSequence);
-            if (orderSequence.size() > 1) currentTime = findTimeAtLastOrder(currentTime, orderSequence);
-            currentTime = findEndTime(currentTime, orderSequence);
-            if (currentTime > Problem.planningPeriodDisc) return false;
+            if (!isFeasibleDuration(orderSequence)) return false;
         }
         return true;
+    }
+
+    public static boolean isFeasibleDuration(List<Order> orderSequence) {
+        if (orderSequence.size() == 0) return true;
+        int currentTime = Problem.preparationEndTime;
+        currentTime = findTimeAtFirstOrder(currentTime, orderSequence);
+        if (orderSequence.size() > 1) currentTime = findTimeAtLastOrder(currentTime, orderSequence);
+        currentTime = findEndTime(currentTime, orderSequence);
+        return currentTime <= Problem.planningPeriodDisc;
     }
 
     private static int findTimeAtFirstOrder(int startTime, List<Order> orderSequence) {
@@ -99,7 +107,7 @@ public class Evaluator {
         return !instInMoreThanOneSequence(instSequences) && !isIllegalPattern(orderSequences, instSequences);
     }
 
-    private static boolean instInMoreThanOneSequence(List<List<Integer>> instSequences) {
+    public static boolean instInMoreThanOneSequence(List<List<Integer>> instSequences) {
         for (int i = 0; i < instSequences.size(); i++) {
             int j = i + 1;
             while (j < instSequences.size()) {
@@ -113,7 +121,7 @@ public class Evaluator {
         return false;
     }
 
-    private static boolean isIllegalPattern(List<List<Order>> orderSequences, List<List<Integer>> instSequences) {
+    public static boolean isIllegalPattern(List<List<Order>> orderSequences, List<List<Integer>> instSequences) {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             List<Integer> instSequence = instSequences.get(vesselNumber);
             if (isSpread(instSequence)) return true;
@@ -123,11 +131,11 @@ public class Evaluator {
         return false;
     }
 
-    private static boolean isSpread(List<Integer> list) {
+    private static boolean isSpread(List<Integer> instSequence) {
         List<Integer> seen = new ArrayList<>();
-        seen.add(list.get(0));
-        for (int i = 1; i < list.size(); i++) {
-            int elem = list.get(i);
+        seen.add(instSequence.get(0));
+        for (int i = 1; i < instSequence.size(); i++) {
+            int elem = instSequence.get(i);
             if (seen.contains(elem) && seen.get(seen.size() - 1) != elem) return true;
             seen.add(elem);
         }
