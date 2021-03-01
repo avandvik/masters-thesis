@@ -39,9 +39,9 @@ public class Constants {
     public static final String ORDER_SIZE_KEY = "size";
     public static final String INSTALLATION_KEY = "installation";
     public static final String TRANSPORTATION_TYPE_KEY = "transport";
-    public static final String DELIVERY_KEY = "delivery";
-    public static final String MANDATORY_KEY = "mandatory";
-    public static final String TRUE_KEY = "True";
+    public static final String DELIVERY_VALUE = "delivery";
+    public static final String MANDATORY_VALUE = "mandatory";
+    public static final String TRUE_VALUE = "True";
     public static final String WORST_WEATHER_KEY = "worst_weather_state";
     public static final String SCENARIOS_KEY = "scenarios";
     public static final String SPEED_IMPACT_KEY = "speed_impact";

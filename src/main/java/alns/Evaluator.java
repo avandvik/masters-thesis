@@ -8,7 +8,11 @@ import subproblem.ArcGeneration;
 import utils.DistanceCalculator;
 import utils.Helpers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Evaluator {
 
@@ -118,49 +122,38 @@ public class Evaluator {
 
     public static boolean evaluateVisitOrder(Solution solution) {
         List<List<Order>> orderSequences = solution.getOrderSequences();
-        List<List<Integer>> installationSequences = getInstallationSequences(orderSequences);
+        List<List<Integer>> instSequences = getInstSequences(orderSequences);
 
-        if (installationInMultipleSequences(installationSequences)) {
-            return false;
-        }
+        if (instInMultipleSequences(instSequences)) return false;
         
         List<List<Order>> copyOfOrderSequences = Helpers.deepCopyList(orderSequences);
-        if (wrongVisitOrder(copyOfOrderSequences)) {
-            return false;
-        }
+        if (wrongVisitOrder(copyOfOrderSequences)) return false;
 
         return true;
     }
 
-    private static List<List<Integer>> getInstallationSequences(List<List<Order>> orderSequences) {
-        List<List<Integer>> installationSequences = new ArrayList<>();
+    private static List<List<Integer>> getInstSequences(List<List<Order>> orderSequences) {
+        List<List<Integer>> instSequences = new ArrayList<>();
 
-        for (int vesselNumber = 0; vesselNumber < orderSequences.size(); vesselNumber++) {
-            List<Order> orderSequence = orderSequences.get(vesselNumber);
-            List<Integer> installationSequence = new ArrayList<>();
-            for (Order order : orderSequence) {
-                int installationID = order.getInstallationId();
-                installationSequence.add(installationID);
-            }
-
-            installationSequences.add(installationSequence);
+        for (List<Order> orderSequence : orderSequences) {
+            List<Integer> instSequence = orderSequence.stream().map(Order::getInstallationId).collect(Collectors.toList());
+            instSequences.add(instSequence);
         }
 
-        return installationSequences;
+        return instSequences;
     }
 
-    private static boolean installationInMultipleSequences(List<List<Integer>> installationSequences) {
-        while (installationSequences.size() > 1) {
-            for (int i = 1; i < installationSequences.size(); i++) {
-                List<Integer> firstSequence = installationSequences.get(0);
-                List<Integer> secondSequence = installationSequences.get(i);
-                boolean differentInstallation = Collections.disjoint(firstSequence,secondSequence);
-                if(!differentInstallation) {
-                    return true;
-                }
-            }
+    private static boolean instInMultipleSequences(List<List<Integer>> instSequences) {
 
-            installationSequences.remove(0);
+        for (int i = 0; i < instSequences.size(); i++) {
+            int j = i + 1;
+            while (j < instSequences.size()) {
+                List<Integer> firstSequence = instSequences.get(i);
+                List<Integer> secondSequence = instSequences.get(j);
+                boolean differentInst = Collections.disjoint(firstSequence,secondSequence);
+                if(!differentInst) return true;
+                j++;
+            }
         }
 
         return false;
@@ -168,21 +161,38 @@ public class Evaluator {
 
     private static boolean wrongVisitOrder(List<List<Order>> orderSequences) {
         for (List<Order> orderSequence : orderSequences) {
-            while (orderSequence.size() > 1) {
-                for (int j = 1; j < orderSequence.size(); j++) {
-                    Order firstOrder = orderSequence.get(0);
-                    Order secondOrder = orderSequence.get(j);
-                    if (firstOrder.getInstallationId() == secondOrder.getInstallationId()) {
-                        if (!firstOrder.isDelivery()) {
-                            return true;
-                        }
-                        if (!firstOrder.isMandatory()) {
-                            return true;
-                        }
+            for (int i = 0; i < orderSequence.size(); i++) {
+                Order currentOrder = orderSequence.get(i);
+                Installation currentInst = Problem.getInstallation(currentOrder);
+                int j = i + 1;
+                Order neighborOrder = orderSequence.get(j);
+                Installation neighborInst = Problem.getInstallation(neighborOrder);
+
+                if (currentInst.equals(neighborInst)) {
+                    if (!currentOrder.isDelivery()) {
+                        return true;
+                    }
+                    if (!neighborOrder.isMandatory()) {
+                        return true;
                     }
                 }
 
-                orderSequence.remove(0);
+                j++;
+
+                while (j < orderSequence.size()) {
+                    Installation inst = Problem.getInstallation(orderSequence.get(j));
+                    Installation midInst = Problem.getInstallation(orderSequence.get(j-1));
+                    Order midOrder = orderSequence.get(j-1);
+                    // If there is at least to orders between first and last order from same inst, return true
+                    if (currentInst.equals(inst) && (j > i+2)) return true;
+                    // If the installation between the two orders from the same installation is not from the same
+                    // installation, return true
+                    if (currentInst.equals(inst) && !midInst.equals(currentInst)) return true;
+                    // If the installation between the two orders is either mandatory or not delivery then the ordering is
+                    // wrong, return true
+                    if (currentInst.equals(inst) && (midOrder.isMandatory() || !midOrder.isDelivery())) return true;
+                    j++;
+                }
             }
         }
 
