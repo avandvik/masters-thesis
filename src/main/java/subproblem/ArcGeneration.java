@@ -7,16 +7,12 @@ import objects.Order;
 import java.util.*;
 
 // TODO: Move to utils or arcgeneration package
-// TODO: Fix adjustedMaxSpeeds problems
-// TODO: Check all times (especially sublisting)
 
 public class ArcGeneration {
 
     public static List<Double> getSpeeds(double distance, int startTime) {
         if (distance == 0) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
-        int maxDuration = (int) Math.ceil(hourToDisc(distance / Problem.minSpeed));
-        List<Double> adjustedMaxSpeeds = getAdjustedMaxSpeeds(startTime, startTime + maxDuration);
-        double averageMaxSpeed = getAverageDoubleList(adjustedMaxSpeeds);
+        double averageMaxSpeed = calculateAverageMaxSpeed(startTime, distance);
         List<Double> speeds = new ArrayList<>();
         for (double speed = Problem.minSpeed; speed < averageMaxSpeed; speed += 1) speeds.add(speed);
         speeds.add(averageMaxSpeed);
@@ -26,7 +22,7 @@ public class ArcGeneration {
     public static Map<Double, Integer> mapSpeedsToArrTimes(double distance, int startTime, List<Double> speeds) {
         Map<Double, Integer> speedsToArrTimes = new HashMap<>();
         for (Double speed : speeds) {
-            int arrTime = startTime + decimalDiscToDisc(distance / speed);
+            int arrTime = startTime + hourToDiscTimePoint(distance / speed);
             if (!speedsToArrTimes.containsValue(arrTime)) speedsToArrTimes.put(speed, arrTime);
         }
         return speedsToArrTimes;
@@ -81,24 +77,27 @@ public class ArcGeneration {
         for (Map.Entry<Double, Integer> entry : speedsToArrTimes.entrySet()) {
             double speed = entry.getKey();
             int arrTime = entry.getValue();
-            int serviceStartTime = arrTime;
-            int serviceEndTime = serviceStartTime + serviceDuration - 1;
-            while (serviceEndTime < Problem.getGeneralReturnTime() - serviceDuration &&
-                    !isServicingPossible(serviceStartTime, serviceEndTime, toInst)) {
-                serviceStartTime++;
-                serviceEndTime++;
-            }
+            int serviceStartTime = getServiceStartTimeAfterIdling(arrTime, serviceDuration, toInst);
+            int serviceEndTime = serviceStartTime + serviceDuration;
             if (!isReturnPossible(distance, serviceEndTime)) continue;
             speedsToTimePoints.put(speed, createTimePoints(arrTime, serviceStartTime, serviceEndTime));
         }
         return speedsToTimePoints;
     }
 
+    public static int getServiceStartTimeAfterIdling(int arrTime, int serviceDuration, Installation toInst) {
+        int serviceStartTime = arrTime;
+        while (serviceStartTime < Problem.getGeneralReturnTime() - serviceDuration &&
+                !isServicingPossible(serviceStartTime, serviceStartTime + serviceDuration, toInst)) {
+            serviceStartTime++;
+        }
+        return serviceStartTime;
+    }
+
     public static boolean isReturnPossible(double distance, int endTime) {
-        if (endTime > Problem.getFinalTimePoint()) return false;
-        List<Double> adjustedMaxSpeeds = getAdjustedMaxSpeeds(endTime, Problem.planningPeriodDisc);
-        Double averageMaxSpeed = getAverageDoubleList(adjustedMaxSpeeds);
-        int earliestArrTime = endTime + (int) Math.ceil(hourToDisc(distance / averageMaxSpeed));
+        if (endTime >= Problem.getFinalTimePoint()) return false;
+        double averageMaxSpeed = calculateAverageMaxSpeed(endTime, distance);
+        int earliestArrTime = endTime + (int) Math.ceil(hourToDiscDecimal(distance / averageMaxSpeed));
         return earliestArrTime <= Problem.getGeneralReturnTime();
     }
 
@@ -111,8 +110,7 @@ public class ArcGeneration {
         if (openTime != Problem.getFirstTimePoint() && closeTime != Problem.getEndOfDayTimePoint()) {
             instOpen = startDayTime >= openTime && endDayTime <= closeTime;
         }
-        int worstWeatherState = Collections.max(Problem.weatherForecastDisc.subList(serviceStartTime,
-                serviceEndTime + 1));
+        int worstWeatherState = Problem.getWorstWeatherState(serviceStartTime, serviceEndTime);
         return instOpen && worstWeatherState < Problem.worstWeatherState;
     }
 
@@ -139,11 +137,22 @@ public class ArcGeneration {
         return speedsToEndTimes;
     }
 
-    public static List<Double> getAdjustedMaxSpeeds(int startSailingTime, int endSailingTime) {
-        List<Integer> weather = Problem.weatherForecastDisc.subList(startSailingTime, endSailingTime);
-        List<Double> adjustedMaxSpeeds = new ArrayList<>();
-        for (Integer ws : weather) adjustedMaxSpeeds.add(Problem.maxSpeed - Problem.wsToSpeedImpact.get(ws));
-        return adjustedMaxSpeeds;
+    public static double calculateAverageMaxSpeed(int startSailingTime, double distance) {
+        double sailedDistance = 0.0;
+        int currentTime = startSailingTime;
+        while (sailedDistance < distance) {
+            int ws = Problem.weatherForecastDisc.get(currentTime);
+            double adjustedMaxSpeed = Problem.maxSpeed - Problem.getSpeedImpact(ws);
+            sailedDistance += adjustedMaxSpeed * Problem.timeUnit;
+            currentTime++;
+        }
+        double overshootTime = calculateOvershootTime(sailedDistance - distance, currentTime);
+        return distance / (discTimePointToHour(currentTime - startSailingTime) - overshootTime);
+    }
+
+    private static double calculateOvershootTime(double overshootDistance, int sailingEndTime) {
+        int ws = Problem.weatherForecastDisc.get(sailingEndTime - 1);
+        return overshootDistance / (Problem.maxSpeed - Problem.getSpeedImpact(ws));
     }
 
     public static List<Integer> createTimePoints(int arrTime, int serviceStartTime, int serviceEndTime) {
@@ -210,19 +219,19 @@ public class ArcGeneration {
     }
 
     public static double calculateCharterCost(int startTime, int endTime, boolean isSpotVessel) {
-        return isSpotVessel ? Problem.spotHourRate * discToHour(endTime - startTime) : 0.0;
+        return isSpotVessel ? Problem.spotHourRate * discTimePointToHour(endTime - startTime) : 0.0;
     }
 
-    public static double hourToDisc(double timeHour) {
+    public static double hourToDiscDecimal(double timeHour) {
         return timeHour * Problem.discretizationParam;
     }
 
-    public static double discToHour(int timeDisc) {
+    public static double discTimePointToHour(int timeDisc) {
         return (double) timeDisc / Problem.discretizationParam;
     }
 
-    public static int decimalDiscToDisc(double decimalDiscTime) {
-        return (int) Math.floor(hourToDisc(decimalDiscTime));
+    public static int hourToDiscTimePoint(double timeHour) {
+        return (int) Math.floor(hourToDiscDecimal(timeHour));
     }
 
     public static int discToDiscDayTime(int timeDisc) {
@@ -254,9 +263,5 @@ public class ArcGeneration {
             currentTime++;
         }
         return timeSpentInWS;
-    }
-
-    public static double getAverageDoubleList(List<Double> list) {
-        return list.stream().mapToDouble(a -> a).average().getAsDouble();
     }
 }

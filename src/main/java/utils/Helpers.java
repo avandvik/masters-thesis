@@ -37,4 +37,14 @@ public class Helpers {
         }
         return null;
     }
+
+    public static int getStartTimeOfRoughWeather() {
+        for (int timePoint = 0; timePoint < Problem.weatherForecastDisc.size(); timePoint++) {
+            int ws = Problem.weatherForecastDisc.get(timePoint);
+            if (ws == Problem.worstWeatherState) {
+                return timePoint;
+            }
+        }
+        return -1;
+    }
 }

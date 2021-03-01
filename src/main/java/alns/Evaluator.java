@@ -42,78 +42,55 @@ public class Evaluator {
 
     public static boolean evaluateTime(Solution solution) {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            List<Order> orderSequence = solution.getOrderSequences().get(vesselNumber);
             int currentTime = Problem.preparationEndTime;
-
-            if(orderSequence.size() == 0) {
-                continue;
-            }
-
+            List<Order> orderSequence = solution.getOrderSequences().get(vesselNumber);
+            if (orderSequence.size() == 0) continue;
             currentTime = findTimeAtFirstOrder(currentTime, orderSequence);
-            if(orderSequence.size() > 1) {
-                currentTime = findTimeAtLastOrder(currentTime,orderSequence);
-            }
-            currentTime = findEndTime(currentTime,orderSequence);
-
-            if (currentTime > Problem.planningPeriodDisc) {
-                return false;
-            }
+            if (orderSequence.size() > 1) currentTime = findTimeAtLastOrder(currentTime, orderSequence);
+            currentTime = findEndTime(currentTime, orderSequence);
+            if (currentTime > Problem.planningPeriodDisc) return false;
         }
-
         return true;
     }
 
-    private static int findTimeAtFirstOrder(int currentTime, List<Order> orderSequence) {
+    private static int findTimeAtFirstOrder(int startTime, List<Order> orderSequence) {
         Order firstOrder = orderSequence.get(0);
         Installation depot = Problem.getDepot();
-        Installation firstInstallation = Problem.getInstallation(firstOrder);
-        int firstSailingDuration = findSailingDuration(currentTime, depot, firstInstallation);
-        currentTime += firstSailingDuration;
-        int firstServiceDuration = findServiceDuration(currentTime,firstInstallation,firstOrder);
-        return (currentTime + firstServiceDuration);
+        Installation firstInst = Problem.getInstallation(firstOrder);
+        int sailingDuration = findSailingDuration(startTime, depot, firstInst);
+        int arrTime = startTime + sailingDuration;
+        int serviceDuration = ArcGeneration.calculateServiceDuration(firstOrder);
+        int serviceStartTime = ArcGeneration.getServiceStartTimeAfterIdling(arrTime, serviceDuration, firstInst);
+        return serviceStartTime + serviceDuration;
     }
 
-    private static int findTimeAtLastOrder(int currentTime, List<Order> orderSequence) {
+    private static int findTimeAtLastOrder(int endTimeFirstOrder, List<Order> orderSequence) {
+        int startTimeFromOrder = endTimeFirstOrder;
         for (Order fromOrder : orderSequence.subList(0, orderSequence.size() - 1)) {
             Order toOrder = Helpers.getNextElement((LinkedList<Order>) orderSequence, fromOrder);
-            Installation fromInstallation = Problem.getInstallation(fromOrder);
-            Installation toInstallation = Problem.getInstallation(toOrder);
-            int sailingDuration = findSailingDuration(currentTime, fromInstallation, toInstallation);
-            currentTime += sailingDuration;
-            int serviceDuration = findServiceDuration(currentTime,toInstallation,toOrder);
-            currentTime += serviceDuration;
+            Installation fromInst = Problem.getInstallation(fromOrder);
+            Installation toInst = Problem.getInstallation(toOrder);
+            int sailingDuration = findSailingDuration(startTimeFromOrder, fromInst, toInst);
+            int arrTime = startTimeFromOrder + sailingDuration;
+            int serviceDuration = ArcGeneration.calculateServiceDuration(toOrder);
+            int serviceStartTime = ArcGeneration.getServiceStartTimeAfterIdling(arrTime, serviceDuration, toInst);
+            startTimeFromOrder = serviceStartTime + serviceDuration;
         }
-        return currentTime;
+        return startTimeFromOrder;
     }
 
-    private static int findEndTime(int currentTime, List<Order> orderSequence) {
+    private static int findEndTime(int endTimeLastOrder, List<Order> orderSequence) {
         Order lastOrder = ((LinkedList<Order>) orderSequence).getLast();
-        Installation lastInstallation = Problem.getInstallation(lastOrder);
+        Installation lastInst = Problem.getInstallation(lastOrder);
         Installation depot = Problem.getDepot();
-        int lastSailingDuration = findSailingDuration(currentTime, lastInstallation, depot);
-        return (currentTime + lastSailingDuration);
+        int sailingDuration = findSailingDuration(endTimeLastOrder, lastInst, depot);
+        return endTimeLastOrder + sailingDuration;
     }
 
     private static int findSailingDuration(int startTime, Installation fromInstallation, Installation toInstallation) {
-        int sailingDuration = 0;
-        double sailedDistance = 0.0;
-        int time = startTime;
         double distance = DistanceCalculator.distance(fromInstallation, toInstallation, "N");
-        while (sailedDistance < distance) {
-            int ws = Problem.weatherForecastDisc.get(time);
-            sailedDistance += (Problem.maxSpeed - Problem.wsToSpeedImpact.get(ws)) * ((double) 1 / Problem.discretizationParam);
-            time++;
-            sailingDuration++;
-        }
-        return sailingDuration;
-    }
-
-    private static int findServiceDuration(int currentTime, Installation toInstallation, Order toOrder) {
-        int serviceDuration = ArcGeneration.calculateServiceDuration(toOrder);
-        while(!ArcGeneration.isServicingPossible(currentTime,(currentTime + serviceDuration),toInstallation)) {
-            currentTime++;
-        }
-        return serviceDuration;
+        double averageMaxSpeed = ArcGeneration.calculateAverageMaxSpeed(startTime, distance);
+        return ArcGeneration.hourToDiscTimePoint(distance / averageMaxSpeed);
     }
 
     public static boolean evaluateVisitOrder(Solution solution) {
@@ -193,7 +170,7 @@ public class Evaluator {
         Problem.setUpProblem("example.json");
         int randomSeed = 17;
         Solution solution = new Solution(randomSeed);
-        evaluateLoad(solution);
+        System.out.println(solution);
         evaluateTime(solution);
         evaluateVisitOrder(solution);
     }
