@@ -40,6 +40,10 @@ public class Tree {
         return null;
     }
 
+    public List<Node> getNodes() {
+        return this.nodes;
+    }
+
     private List<Node> getNodesExclDepot()  {
         return this.nodes.subList(1, this.nodes.size());
     }
@@ -58,7 +62,9 @@ public class Tree {
             Node currentNode = ((LinkedList<Node>) queue).removeFirst();
             Set<Node> setOfChildren = currentNode.getChildren();
             if (currentNode != this.root) updateCurrentBest(currentNode);
-            if (setOfChildren.isEmpty()) updateGlobalBest(currentNode);
+            if (setOfChildren.isEmpty()) {
+                updateGlobalBest(currentNode);
+            }
             for (Node child : setOfChildren) {
                 if (!child.isVisited()) {
                     child.setVisited(true);
@@ -130,7 +136,9 @@ public class Tree {
     private List<Node> getLastLayer(Order lastOrder, List<Node> nodes) {
         List<Node> lastLayer = new ArrayList<>();
         for (Node node : nodes) {
-            if (node.getOrder().equals(lastOrder)) lastLayer.add(node);
+            if (node.getOrder().equals(lastOrder)) {
+                lastLayer.add(node);
+            }
         }
         return lastLayer;
     }
@@ -194,10 +202,19 @@ public class Tree {
         for (double speed : speedsToCosts.keySet()) {
             double cost = speedsToCosts.get(speed);
             int endTime = speedsToEndTimes.get(speed);
-            Node newNode = new Node(toOrder, endTime, depotNode);
-            depotNode.addChild(newNode);
-            depotNode.setChildToCost(newNode, cost);
-            this.addNode(newNode);
+
+            // Get existing node
+            Node existingNode = getExistingNode(endTime, toOrder);
+            if (existingNode == null) {
+                Node newNode = new Node(toOrder, endTime, depotNode);
+                depotNode.addChild(newNode);
+                depotNode.setChildToCost(newNode, cost);
+                this.addNode(newNode);
+            } else {
+                if (cost < depotNode.getCostOfChild(existingNode)) {
+                    depotNode.setChildToCost(existingNode, cost);
+                }
+            }
         }
     }
 
@@ -206,15 +223,24 @@ public class Tree {
         for (double speed : speedsToCosts.keySet()) {
             double cost = speedsToCosts.get(speed);
             int endTime = speedsToEndTimes.get(speed);
-            Node node = getExistingNode(endTime, toOrder);
-            if (node != null) {
-                node.addParent(fromNode);
+
+            Node existingNode = getExistingNode(endTime, toOrder);
+
+            if (existingNode == null) {
+                Node newNode = new Node(toOrder, endTime, fromNode);
+                fromNode.addChild(newNode);
+                fromNode.setChildToCost(newNode, cost);
+                this.addNode(newNode);
             } else {
-                node = new Node(toOrder, endTime, fromNode);
+                existingNode.addParent(fromNode);
+                if (fromNode.hasChild(existingNode)) {
+                    double bestCost = Math.min(fromNode.getCostOfChild(existingNode), cost);
+                    fromNode.setChildToCost(existingNode, bestCost);
+                } else {
+                    fromNode.addChild(existingNode);
+                    fromNode.setChildToCost(existingNode, cost);
+                }
             }
-            fromNode.addChild(node);
-            fromNode.setChildToCost(node, cost);
-            this.addNode(node);
         }
     }
 
@@ -229,8 +255,8 @@ public class Tree {
         this.addNode(depotNode);
     }
 
-    protected void printTree(Tree tree) {
-        for (Node node : tree.nodes) {
+    protected void printTree() {
+        for (Node node : this.nodes) {
             System.out.println(node);
             System.out.println("\tChildren");
             for (Node child : node.getChildren()) {

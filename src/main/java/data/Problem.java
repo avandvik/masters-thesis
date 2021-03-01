@@ -26,6 +26,7 @@ public class Problem {
     public static int planningPeriodHours;  // Should be int
     public static int planningPeriodDisc;
     public static int discretizationParam;
+    public static double timeUnit;
     public static String weatherScenario;
     public static String installationOrdering;
     public static int preparationEndTime;
@@ -92,6 +93,14 @@ public class Problem {
 
     public static Vessel getVessel(int vesselNumber) {
         return Problem.vessels.get(vesselNumber);
+    }
+
+    public static double getSpeedImpact(int weatherState) {
+        return Problem.wsToSpeedImpact.get(weatherState);
+    }
+
+    public static int getWorstWeatherState(int startTime, int endTime) {
+        return Collections.max(Problem.weatherForecastDisc.subList(startTime, endTime + 1));
     }
 
     public static void setUpProblem(String fileName) {
@@ -163,6 +172,7 @@ public class Problem {
         JSONObject jsonInstanceInfo = getJSONObject(Problem.pathToInstanceFile);
         Problem.planningPeriodHours = ((int) ((double) jsonInstanceInfo.get(Constants.PLANNING_PERIOD_KEY)));
         Problem.discretizationParam = ((int) ((double) jsonInstanceInfo.get(Constants.DISCRETIZATION_KEY)));
+        Problem.timeUnit = (double) 1 / Problem.discretizationParam;
         Problem.weatherScenario = (String) jsonInstanceInfo.get(Constants.WEATHER_SCENARIO_KEY);
         Problem.installationOrdering = (String) jsonInstanceInfo.get(Constants.INSTALLATION_ORDERING_KEY);
 
@@ -212,7 +222,7 @@ public class Problem {
 
     private static void createDiscWeatherForecast() {
         Problem.weatherForecastDisc = new ArrayList<>();
-        for (int i = 0; i < Problem.planningPeriodDisc; i++) {
+        for (int i = 0; i < Problem.weatherForecast.size() * Problem.discretizationParam; i++) {
             int idx = i / Problem.discretizationParam;
             Problem.weatherForecastDisc.add(Problem.weatherForecast.get(idx));
         }
