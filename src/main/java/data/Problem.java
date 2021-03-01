@@ -142,8 +142,8 @@ public class Problem {
             double orderSizeSqm = (double) jsonOrder.get(Constants.ORDER_SIZE_KEY);
             int orderSizeUnits = (int) Math.ceil(orderSizeSqm / Problem.sqmInCargoUnit);
             int installationId = Math.toIntExact((long) jsonOrder.get(Constants.INSTALLATION_KEY));
-            boolean isDelivery = ((jsonOrder.get(Constants.TRANSPORTATION_TYPE_KEY)).equals(Constants.DELIVERY_KEY));
-            boolean isMandatory = ((jsonOrder.get(Constants.MANDATORY_KEY)).equals(Constants.TRUE_KEY));
+            boolean isDelivery = ((jsonOrder.get(Constants.TRANSPORTATION_TYPE_KEY)).equals(Constants.DELIVERY_VALUE));
+            boolean isMandatory = ((jsonOrder.get(Constants.MANDATORY_VALUE)).equals(Constants.TRUE_VALUE));
             Order order = new Order(orderId, isMandatory, isDelivery, orderSizeUnits, installationId);
             Problem.orders.add(order);
             orderId++;

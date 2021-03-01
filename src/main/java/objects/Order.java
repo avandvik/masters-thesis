@@ -38,7 +38,8 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order " + orderId;
+        return "(O" + orderId + "-" + (this.isMandatory ? "M" : "O") + (this.isDelivery ? "D" : "P") +
+                "-I" + this.installationId + ")";
     }
 
     @Override

@@ -8,26 +8,29 @@ import subproblem.ArcGeneration;
 import utils.DistanceCalculator;
 import utils.Helpers;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Evaluator {
 
-    public static boolean evaluateLoad(Solution solution) {
+    public static boolean isFeasibleLoad(Solution solution) {
         List<List<Order>> orderSequences = solution.getOrderSequences();
         for (int vesselNumber = 0; vesselNumber < orderSequences.size(); vesselNumber++) {
-            Vessel vessel = Problem.vessels.get(vesselNumber);
-            double currentLoad = findTotalStartLoad(orderSequences.get(vesselNumber));
-            if (currentLoad > vessel.getCapacity()) return false;
-            for (Order order : orderSequences.get(vesselNumber)) {
-                if (order.isDelivery()) {
-                    currentLoad -= order.getSize();
-                } else {
-                    currentLoad += order.getSize();
-                }
-                if (currentLoad > vessel.getCapacity()) {
-                    return false;
-                }
+            if (!isFeasibleLoad(orderSequences.get(vesselNumber), Problem.getVessel(vesselNumber))) return false;
+        }
+        return true;
+    }
+
+    public static boolean isFeasibleLoad(List<Order> orderSequence, Vessel vessel) {
+        double currentLoad = findTotalStartLoad(orderSequence);
+        if (currentLoad > vessel.getCapacity()) return false;
+        for (Order order : orderSequence) {
+            if (order.isDelivery()) {
+                currentLoad -= order.getSize();
+            } else {
+                currentLoad += order.getSize();
+            }
+            if (currentLoad > vessel.getCapacity()) {
+                return false;
             }
         }
         return true;
@@ -41,17 +44,21 @@ public class Evaluator {
         return totalStartLoad;
     }
 
-    public static boolean evaluateTime(Solution solution) {
+    public static boolean isFeasibleDuration(Solution solution) {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            int currentTime = Problem.preparationEndTime;
             List<Order> orderSequence = solution.getOrderSequences().get(vesselNumber);
-            if (orderSequence.size() == 0) continue;
-            currentTime = findTimeAtFirstOrder(currentTime, orderSequence);
-            if (orderSequence.size() > 1) currentTime = findTimeAtLastOrder(currentTime, orderSequence);
-            currentTime = findEndTime(currentTime, orderSequence);
-            if (currentTime > Problem.planningPeriodDisc) return false;
+            if (!isFeasibleDuration(orderSequence)) return false;
         }
         return true;
+    }
+
+    public static boolean isFeasibleDuration(List<Order> orderSequence) {
+        if (orderSequence.size() == 0) return true;
+        int currentTime = Problem.preparationEndTime;
+        currentTime = findTimeAtFirstOrder(currentTime, orderSequence);
+        if (orderSequence.size() > 1) currentTime = findTimeAtLastOrder(currentTime, orderSequence);
+        currentTime = findEndTime(currentTime, orderSequence);
+        return currentTime <= Problem.planningPeriodDisc;
     }
 
     private static int findTimeAtFirstOrder(int startTime, List<Order> orderSequence) {
@@ -94,12 +101,66 @@ public class Evaluator {
         return ArcGeneration.hourToDiscTimePoint(distance / averageMaxSpeed);
     }
 
+    public static boolean isFeasibleVisitOrder(Solution solution) {
+        List<List<Order>> orderSequences = solution.getOrderSequences();
+        List<List<Integer>> instSequences = solution.getInstSequences();
+        return !instInMoreThanOneSequence(instSequences) && !isIllegalPattern(orderSequences, instSequences);
+    }
+
+    public static boolean instInMoreThanOneSequence(List<List<Integer>> instSequences) {
+        for (int i = 0; i < instSequences.size(); i++) {
+            int j = i + 1;
+            while (j < instSequences.size()) {
+                List<Integer> firstSequence = instSequences.get(i);
+                List<Integer> secondSequence = instSequences.get(j);
+                boolean differentInst = Collections.disjoint(firstSequence, secondSequence);
+                if (!differentInst) return true;
+                j++;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isIllegalPattern(List<List<Order>> orderSequences, List<List<Integer>> instSequences) {
+        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
+            List<Integer> instSequence = instSequences.get(vesselNumber);
+            if (isSpread(instSequence)) return true;
+            List<Order> orderSequence = orderSequences.get(vesselNumber);
+            if (isIllegalVisitOrder(orderSequence)) return true;
+        }
+        return false;
+    }
+
+    private static boolean isSpread(List<Integer> instSequence) {
+        List<Integer> seen = new ArrayList<>();
+        seen.add(instSequence.get(0));
+        for (int i = 1; i < instSequence.size(); i++) {
+            int elem = instSequence.get(i);
+            if (seen.contains(elem) && seen.get(seen.size() - 1) != elem) return true;
+            seen.add(elem);
+        }
+        return false;
+    }
+
+    private static boolean isIllegalVisitOrder(List<Order> orderSequence) {
+        for (Order currentOrder : orderSequence) {
+            Order nextOrder = Helpers.getNextElement((LinkedList<Order>) orderSequence, currentOrder);
+            if (nextOrder == null) break;
+            if (Problem.getInstallation(currentOrder).equals(Problem.getInstallation(nextOrder))) {
+                if (!currentOrder.isDelivery()) return true;
+                if (nextOrder.isMandatory()) return true;
+            }
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         Problem.setUpProblem("example.json");
-        int randomSeed = 5;
+        int randomSeed = 17;
         Solution solution = new Solution(randomSeed);
         System.out.println(solution);
-        evaluateTime(solution);
-
+        System.out.println(isFeasibleLoad(solution));
+        System.out.println(isFeasibleDuration(solution));
+        System.out.println(isFeasibleVisitOrder(solution));
     }
 }
