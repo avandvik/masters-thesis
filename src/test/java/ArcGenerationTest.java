@@ -5,13 +5,91 @@ import org.junit.jupiter.api.DisplayName;
 import subproblem.ArcGeneration;
 import utils.Helpers;
 
-import java.util.Map;
+import java.util.*;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class ArcGenerationTest {
+
+    @Test
+    @DisplayName("Test mapSpeedsToArrTimes")
+    public void testMapSpeedsToArrTimes() {
+        Problem.setUpProblem("basicTestData.json", true);
+        double distance = 30.0;
+        int startTime = 100;
+        List<Double> speeds = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0));
+        Map<Double, Integer> speedsToExpectedArrTime = new HashMap<>();
+        speedsToExpectedArrTime.put(7.0, 117);
+        speedsToExpectedArrTime.put(8.0, 115);
+        speedsToExpectedArrTime.put(9.0, 113);
+        speedsToExpectedArrTime.put(10.0, 112);
+        speedsToExpectedArrTime.put(11.0, 110);
+        speedsToExpectedArrTime.put(13.0, 109);
+        speedsToExpectedArrTime.put(14.0, 108);
+        Map<Double, Integer> speedsToArrTimes = ArcGeneration.mapSpeedsToArrTimes(distance, startTime, speeds);
+        assertNull(speedsToArrTimes.get(12.0));
+        for (double speed : speedsToArrTimes.keySet()) {
+            assertEquals(speedsToExpectedArrTime.get(speed), speedsToArrTimes.get(speed));
+        }
+    }
+
+    @Test
+    @DisplayName("Test mapSpeedsToTimePoints")
+    public void testMapSpeedsToTimePoints() {
+        Problem.setUpProblem("basicTestData.json", true);
+        double distance = 30.0;
+        int serviceDuration = 10;
+        Installation depot = Problem.getDepot();
+        Installation instAlwaysOpen = Problem.getInstallation(Problem.orders.get(2));
+        Installation instSometimesClosed = Problem.getInstallation(Problem.orders.get(0));
+        Map<Double, Integer> speedsToArrTimes = new HashMap<>();
+        speedsToArrTimes.put(9.0, 113);
+        speedsToArrTimes.put(11.0, 110);
+
+        Map<Double, Integer> speedsToExpectedServiceEndTimes = new HashMap<>();
+        speedsToExpectedServiceEndTimes.put(9.0, 123);
+        speedsToExpectedServiceEndTimes.put(11.0, 120);
+
+        Map<Double, Integer> speedsToExpectedIdlingEndTimes = new HashMap<>();
+        speedsToExpectedIdlingEndTimes.put(9.0, 123);
+        speedsToExpectedIdlingEndTimes.put(11.0, 123);
+
+        // To depot
+        Map<Double, List<Integer>> speedsToTPDepot = ArcGeneration.mapSpeedsToTimePoints(speedsToArrTimes, distance,
+                serviceDuration, depot);
+        for (double speed : speedsToTPDepot.keySet()) {
+            List<Integer> timePoints = speedsToTPDepot.get(speed);
+            for (int timePoint : timePoints) assertEquals((int) speedsToArrTimes.get(speed), timePoint);
+        }
+
+        // No idling
+        Map<Double, List<Integer>> speedsToTPNI = ArcGeneration.mapSpeedsToTimePoints(speedsToArrTimes, distance,
+                serviceDuration, instAlwaysOpen);
+        for (Map.Entry<Double, List<Integer>> entry : speedsToTPNI.entrySet()) {
+            double speed = entry.getKey();
+            List<Integer> timePoints = entry.getValue();
+            int arrTime = timePoints.get(0);
+            int serviceStartTime = timePoints.get(1);
+            int serviceEndTime = timePoints.get(2);
+            assertEquals((int) speedsToArrTimes.get(speed), arrTime);
+            assertEquals(arrTime, serviceStartTime);
+            assertEquals((int) speedsToExpectedServiceEndTimes.get(speed), serviceEndTime);
+        }
+
+        // Idling
+        Map<Double, List<Integer>> speedsToTPI = ArcGeneration.mapSpeedsToTimePoints(speedsToArrTimes, distance,
+                serviceDuration, instSometimesClosed);
+        for (Map.Entry<Double, List<Integer>> entry : speedsToTPI.entrySet()) {
+            double speed = entry.getKey();
+            List<Integer> timePoints = entry.getValue();
+            int arrTime = timePoints.get(0);
+            int serviceStartTime = timePoints.get(1);
+            int serviceEndTime = timePoints.get(2);
+            assertEquals((int) speedsToArrTimes.get(speed), arrTime);
+            assertEquals((int) speedsToExpectedIdlingEndTimes.get(speed), serviceStartTime);
+            assertEquals(speedsToExpectedIdlingEndTimes.get(speed) + serviceDuration, serviceEndTime);
+        }
+    }
 
     @Test
     @DisplayName("Test isReturnPossible")
@@ -36,11 +114,12 @@ public class ArcGenerationTest {
         int serviceStartTimeOne = 100;
         int serviceEndTimeOne = 120;
         int serviceStartTimeTwo = 130;
-        Installation toInstOne = Problem.getInstallation(0);
-        assertTrue(ArcGeneration.isServicingPossible(serviceStartTimeOne, serviceEndTimeOne, toInstOne));
-        assertTrue(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3 - 1, toInstOne));
-        assertFalse(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3, toInstOne));
-        assertFalse(ArcGeneration.isServicingPossible(startTimeWS3, startTimeWS3 + 10, toInstOne));
+        Installation instAlwaysOpen = Problem.getInstallation(Problem.orders.get(2));
+        assertTrue(ArcGeneration.isServicingPossible(serviceStartTimeOne, serviceEndTimeOne, instAlwaysOpen));
+        assertTrue(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3 - 1, instAlwaysOpen));
+        assertFalse(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3, instAlwaysOpen));
+        assertFalse(ArcGeneration.isServicingPossible(startTimeWS3, startTimeWS3 + 10, instAlwaysOpen));
+        // TODO: Add checks for installation with opening hours
     }
 
     @Test
