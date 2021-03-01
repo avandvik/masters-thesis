@@ -4,6 +4,7 @@ import data.Problem;
 import objects.Order;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Solution {
 
@@ -38,6 +39,14 @@ public class Solution {
 
     public List<Order> getOrderSequence(int vesselNumber) {
         return this.orderSequences.get(vesselNumber);
+    }
+
+    public List<List<Integer>> getInstSequences() {
+        List<List<Integer>> instSequences = new ArrayList<>();
+        for (List<Order> orderSequence : this.orderSequences) {
+            instSequences.add(orderSequence.stream().map(Order::getInstallationId).collect(Collectors.toList()));
+        }
+        return instSequences;
     }
 
     @Override

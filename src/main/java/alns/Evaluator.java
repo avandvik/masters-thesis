@@ -8,15 +8,11 @@ import subproblem.ArcGeneration;
 import utils.DistanceCalculator;
 import utils.Helpers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class Evaluator {
 
-    public static boolean evaluateLoad(Solution solution) {
+    public static boolean isFeasibleLoad(Solution solution) {
         List<List<Order>> orderSequences = solution.getOrderSequences();
         for (int vesselNumber = 0; vesselNumber < orderSequences.size(); vesselNumber++) {
             Vessel vessel = Problem.vessels.get(vesselNumber);
@@ -44,7 +40,7 @@ public class Evaluator {
         return totalStartLoad;
     }
 
-    public static boolean evaluateTime(Solution solution) {
+    public static boolean isFeasibleDuration(Solution solution) {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             int currentTime = Problem.preparationEndTime;
             List<Order> orderSequence = solution.getOrderSequences().get(vesselNumber);
@@ -97,82 +93,56 @@ public class Evaluator {
         return ArcGeneration.hourToDiscTimePoint(distance / averageMaxSpeed);
     }
 
-    public static boolean evaluateVisitOrder(Solution solution) {
+    public static boolean isFeasibleVisitOrder(Solution solution) {
         List<List<Order>> orderSequences = solution.getOrderSequences();
-        List<List<Integer>> instSequences = getInstSequences(orderSequences);
-
-        if (instInMultipleSequences(instSequences)) return false;
-        
-        List<List<Order>> copyOfOrderSequences = Helpers.deepCopyList(orderSequences);
-        if (wrongVisitOrder(copyOfOrderSequences)) return false;
-
-        return true;
+        List<List<Integer>> instSequences = solution.getInstSequences();
+        return !instInMoreThanOneSequence(instSequences) && !isIllegalPattern(orderSequences, instSequences);
     }
 
-    private static List<List<Integer>> getInstSequences(List<List<Order>> orderSequences) {
-        List<List<Integer>> instSequences = new ArrayList<>();
-
-        for (List<Order> orderSequence : orderSequences) {
-            List<Integer> instSequence = orderSequence.stream().map(Order::getInstallationId).collect(Collectors.toList());
-            instSequences.add(instSequence);
-        }
-
-        return instSequences;
-    }
-
-    private static boolean instInMultipleSequences(List<List<Integer>> instSequences) {
-
+    private static boolean instInMoreThanOneSequence(List<List<Integer>> instSequences) {
         for (int i = 0; i < instSequences.size(); i++) {
             int j = i + 1;
             while (j < instSequences.size()) {
                 List<Integer> firstSequence = instSequences.get(i);
                 List<Integer> secondSequence = instSequences.get(j);
-                boolean differentInst = Collections.disjoint(firstSequence,secondSequence);
-                if(!differentInst) return true;
+                boolean differentInst = Collections.disjoint(firstSequence, secondSequence);
+                if (!differentInst) return true;
                 j++;
             }
         }
-
         return false;
     }
 
-    private static boolean wrongVisitOrder(List<List<Order>> orderSequences) {
-        for (List<Order> orderSequence : orderSequences) {
-            for (int i = 0; i < orderSequence.size(); i++) {
-                Order currentOrder = orderSequence.get(i);
-                Installation currentInst = Problem.getInstallation(currentOrder);
-                int j = i + 1;
-                Order neighborOrder = orderSequence.get(j);
-                Installation neighborInst = Problem.getInstallation(neighborOrder);
+    private static boolean isIllegalPattern(List<List<Order>> orderSequences, List<List<Integer>> instSequences) {
+        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
+            List<Integer> instSequence = instSequences.get(vesselNumber);
+            if (isSpread(instSequence)) return true;
+            List<Order> orderSequence = orderSequences.get(vesselNumber);
+            if (isIllegalVisitOrder(orderSequence)) return true;
+        }
+        return false;
+    }
 
-                if (currentInst.equals(neighborInst)) {
-                    if (!currentOrder.isDelivery()) {
-                        return true;
-                    }
-                    if (!neighborOrder.isMandatory()) {
-                        return true;
-                    }
-                }
+    private static boolean isSpread(List<Integer> list) {
+        List<Integer> seen = new ArrayList<>();
+        seen.add(list.get(0));
+        for (int i = 1; i < list.size(); i++) {
+            int elem = list.get(i);
+            if (seen.contains(elem) && seen.get(seen.size() - 1) != elem) return true;
+            seen.add(elem);
+        }
+        return false;
+    }
 
-                j++;
-
-                while (j < orderSequence.size()) {
-                    Installation inst = Problem.getInstallation(orderSequence.get(j));
-                    Installation midInst = Problem.getInstallation(orderSequence.get(j-1));
-                    Order midOrder = orderSequence.get(j-1);
-                    // If there is at least to orders between first and last order from same inst, return true
-                    if (currentInst.equals(inst) && (j > i+2)) return true;
-                    // If the installation between the two orders from the same installation is not from the same
-                    // installation, return true
-                    if (currentInst.equals(inst) && !midInst.equals(currentInst)) return true;
-                    // If the installation between the two orders is either mandatory or not delivery then the ordering is
-                    // wrong, return true
-                    if (currentInst.equals(inst) && (midOrder.isMandatory() || !midOrder.isDelivery())) return true;
-                    j++;
-                }
+    private static boolean isIllegalVisitOrder(List<Order> orderSequence) {
+        for (Order currentOrder : orderSequence) {
+            Order nextOrder = Helpers.getNextElement((LinkedList<Order>) orderSequence, currentOrder);
+            if (nextOrder == null) break;
+            if (Problem.getInstallation(currentOrder).equals(Problem.getInstallation(nextOrder))) {
+                if (!currentOrder.isDelivery()) return true;
+                if (nextOrder.isMandatory()) return true;
             }
         }
-
         return false;
     }
 
@@ -181,7 +151,8 @@ public class Evaluator {
         int randomSeed = 17;
         Solution solution = new Solution(randomSeed);
         System.out.println(solution);
-        evaluateTime(solution);
-        evaluateVisitOrder(solution);
+        System.out.println(isFeasibleLoad(solution));
+        System.out.println(isFeasibleDuration(solution));
+        System.out.println(isFeasibleVisitOrder(solution));
     }
 }
