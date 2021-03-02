@@ -1,13 +1,8 @@
 import alns.Evaluator;
-<<<<<<< HEAD
-=======
-import alns.Solution;
->>>>>>> e5240d6db585c5ba027f05c699ca090ac30438f2
 import data.Problem;
 import objects.Order;
 import objects.Vessel;
 import org.junit.Test;
-<<<<<<< HEAD
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,17 +11,10 @@ import java.util.List;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-=======
-import static org.junit.Assert.*;
-
-import java.util.List;
-
->>>>>>> e5240d6db585c5ba027f05c699ca090ac30438f2
 public class EvaluatorTest {
 
     @Test
     public void testIsFeasibleLoad() {
-<<<<<<< HEAD
         Problem.setUpProblem("load/load.json", true);
 
         List<Order> orders = Problem.orders;
@@ -103,26 +91,10 @@ public class EvaluatorTest {
     public void testIsIllegalPattern() {
         Problem.setUpProblem("visitOrder/illegalPattern.json", true);
         List<Order> orders = Problem.orders;
-        List<Order> orderSequenceThree = new LinkedList<>();
-        for (int j = 0; j < orderSequenceThree.size(); j++) orderSequenceThree.add(orders.get(j));
+        List<Order> orderSequenceThree = new LinkedList<>(orders);
         List<Integer> instSequenceThree = new LinkedList<>();
         for (int i = 0; i < orders.size(); i++) instSequenceThree.add(orders.get(i).getInstallationId());
 
-        assertFalse(Evaluator.isIllegalPattern(orderSequenceThree,instSequenceThree));
+        assertFalse(Evaluator.isIllegalPattern(orderSequenceThree, instSequenceThree));
     }
 }
-=======
-        Problem.setUpProblem("evaluatorTest.json");
-
-        List<Order> orderSequenceOne = Problem.orders;
-        List<Order> orderSequenceTwo = Problem.orders.subList(0, 3);
-        Vessel vessel = Problem.getVessel(0);
-
-        assertFalse(Evaluator.isFeasibleLoad(orderSequenceOne, vessel));
-        assertFalse(Evaluator.isFeasibleLoad(orderSequenceTwo, vessel));
-
-        Problem.
-
-    }
-}
->>>>>>> e5240d6db585c5ba027f05c699ca090ac30438f2
