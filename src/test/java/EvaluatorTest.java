@@ -18,7 +18,10 @@ public class EvaluatorTest {
         List<Order> orderSequenceTwo = Problem.orders.subList(0, 3);
         Vessel vessel = Problem.getVessel(0);
 
-        assertTrue(Evaluator.isFeasibleLoad(orderSequenceOne, vessel));
-        assertTrue(Evaluator.isFeasibleLoad(orderSequenceTwo, vessel));
+        assertFalse(Evaluator.isFeasibleLoad(orderSequenceOne, vessel));
+        assertFalse(Evaluator.isFeasibleLoad(orderSequenceTwo, vessel));
+
+        Problem.
+
     }
 }
