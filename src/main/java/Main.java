@@ -13,6 +13,8 @@ public class Main {
         Solution solution = new Solution(5);
 
         runSubProblem(solution);
+
+        // Testing for GitHub Actions
     }
 
     private static void runSubProblem(Solution solution) {
