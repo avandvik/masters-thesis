@@ -6,8 +6,6 @@ import objects.Order;
 
 import java.util.*;
 
-// TODO: Move to utils or arcgeneration package
-
 public class ArcGeneration {
 
     public static List<Double> getSpeeds(double distance, int startTime) {
