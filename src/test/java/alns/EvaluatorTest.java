@@ -1,3 +1,5 @@
+package alns;
+
 import alns.Evaluator;
 import data.Problem;
 import objects.Installation;
