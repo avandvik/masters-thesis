@@ -182,7 +182,7 @@ public class ArcGeneration {
 
     public static double calculateFuelCostSailing(int startTime, int arrTime, double speed, double distance) {
         if (distance == 0 || startTime == arrTime) return 0;
-        Map<Integer, Integer> wsToTimeSpent = mapWSToTimeSpent(startTime, arrTime);
+        Map<Integer, Double> wsToTimeSpent = mapWSToTimeSpent(startTime, arrTime);
         Map<Integer, Double> wsToDistanceTravelled = mapWSToDistanceTravelled(wsToTimeSpent, speed);
         double distanceInWSOneTwo = wsToDistanceTravelled.get(0) + wsToDistanceTravelled.get(1);
 
@@ -200,7 +200,7 @@ public class ArcGeneration {
     }
 
     public static double calculateFuelCostIdling(int arrTime, int serviceStartTime) {
-        Map<Integer, Integer> wsToTimeSpent = mapWSToTimeSpent(arrTime, serviceStartTime);
+        Map<Integer, Double> wsToTimeSpent = mapWSToTimeSpent(arrTime, serviceStartTime);
         double cost = 0.0;
         for (int ws = 0; ws <= Problem.worstWeatherState; ws++) {
             cost += wsToTimeSpent.get(ws) * Problem.wsToServiceImpact.get(ws) * Problem.fcIdling * Problem.fuelPrice;
@@ -209,11 +209,11 @@ public class ArcGeneration {
     }
 
     public static double calculateFuelCostServicing(int serviceStartTime, int serviceEndTime) {
-        Map<Integer, Integer> wsToTimeSpent = mapWSToTimeSpent(serviceStartTime, serviceEndTime);
+        Map<Integer, Double> wsToTimeSpent = mapWSToTimeSpent(serviceStartTime, serviceEndTime);
         double cost = 0.0;
         for (int ws = 0; ws <= Problem.worstWeatherState; ws++) {
             cost += wsToTimeSpent.get(ws) * Problem.wsToServiceImpact.get(ws)
-                    * Problem.wsToServiceImpact.get(ws) * Problem.fcIdling * Problem.fuelPrice;
+                    * Problem.wsToServiceImpact.get(ws) * Problem.fcServicing * Problem.fuelPrice;
         }
         return cost;
     }
@@ -222,7 +222,7 @@ public class ArcGeneration {
         return isSpotVessel ? Problem.spotHourRate * Problem.discTimeToHour(endTime - startTime) : 0.0;
     }
 
-    public static Map<Integer, Double> mapWSToDistanceTravelled(Map<Integer, Integer> wsToTimeSpent, double speed) {
+    public static Map<Integer, Double> mapWSToDistanceTravelled(Map<Integer, Double> wsToTimeSpent, double speed) {
         Map<Integer, Double> wsToDistanceTravelled = new HashMap<>();
         for (int ws = 0; ws <= Problem.worstWeatherState; ws++) {
             wsToDistanceTravelled.put(ws, wsToTimeSpent.get(ws) * speed);
@@ -230,10 +230,11 @@ public class ArcGeneration {
         return wsToDistanceTravelled;
     }
 
-    public static Map<Integer, Integer> mapWSToTimeSpent(int startTime, int arrTime) {
-        Map<Integer, Integer> wsStateToTimeSpent = new HashMap<>();
+    public static Map<Integer, Double> mapWSToTimeSpent(int startTime, int arrTime) {
+        /* Maps each weather state to the time in hours (decimal, exact) spent in this weather state */
+        Map<Integer, Double> wsStateToTimeSpent = new HashMap<>();
         for (int ws = 0; ws <= Problem.worstWeatherState; ws++) {
-            wsStateToTimeSpent.put(ws, getTimeInWS(startTime, arrTime, ws));
+            wsStateToTimeSpent.put(ws, Problem.discTimeToHour(getTimeInWS(startTime, arrTime, ws)));
         }
         return wsStateToTimeSpent;
     }

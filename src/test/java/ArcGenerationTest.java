@@ -1,5 +1,6 @@
 import data.Problem;
 import objects.Installation;
+import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import subproblem.ArcGeneration;
@@ -10,6 +11,20 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class ArcGenerationTest {
+
+    @Test
+    @DisplayName("Test getSpeeds")
+    public void testGetSpeeds() {
+        Problem.setUpProblem("basicTestData.json", true);
+        List<Double> expectedSpeeds = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0));
+        double distance = 30.0;
+        int startTime = 145;
+        assertEquals(expectedSpeeds, ArcGeneration.getSpeeds(distance, startTime));
+        Problem.setUpProblem("weather/criticalWeather.json", true);
+        double avgMaxSpeed = ArcGeneration.calculateAverageMaxSpeed(startTime, distance);
+        List<Double> expectedSpeedsTwo = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, avgMaxSpeed));
+        assertEquals(expectedSpeedsTwo, ArcGeneration.getSpeeds(distance, startTime));
+    }
 
     @Test
     @DisplayName("Test mapSpeedsToArrTimes")
@@ -119,7 +134,9 @@ public class ArcGenerationTest {
         assertTrue(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3 - 1, instAlwaysOpen));
         assertFalse(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3, instAlwaysOpen));
         assertFalse(ArcGeneration.isServicingPossible(startTimeWS3, startTimeWS3 + 10, instAlwaysOpen));
+
         // TODO: Add checks for installation with opening hours
+
     }
 
     @Test
@@ -137,6 +154,44 @@ public class ArcGenerationTest {
     }
 
     @Test
+    @DisplayName("Test calculateServiceDuration")
+    public void testCalculateServiceDuration() {
+        Problem.setUpProblem("basicTestData.json", true);
+        Order MDOrder = Problem.orders.get(0);
+        Order OPOrder = Problem.orders.get(1);
+        Order ODOrder = Problem.orders.get(2);
+        assertEquals(10, ArcGeneration.calculateServiceDuration(MDOrder));
+        assertEquals(1, ArcGeneration.calculateServiceDuration(OPOrder));
+        assertEquals(13, ArcGeneration.calculateServiceDuration(ODOrder));
+    }
+
+    @Test
+    @DisplayName("Test calculateArcCost")
+    public void testCalculateArcCost() {
+        Problem.setUpProblem("basicTestData.json", true);
+        int startTime = 100;
+        int arrTime = 120;
+        int serviceStartTime = 130;
+        int serviceEndTime = 140;
+        double speed = 10.0;
+        double distance = speed * Problem.discTimeToHour(arrTime - startTime);
+        double delta = 0.5;
+        assertEquals(479.0, ArcGeneration.calculateFuelCostSailing(startTime, arrTime, speed, distance), delta);
+        assertEquals(0.0, ArcGeneration.calculateFuelCostSailing(startTime, startTime, speed, 0.0), delta);
+        assertEquals(83.0, ArcGeneration.calculateFuelCostIdling(arrTime, serviceStartTime), delta);
+        assertEquals(117.0, ArcGeneration.calculateFuelCostServicing(serviceStartTime, serviceEndTime), delta);
+        assertEquals(6080.0, ArcGeneration.calculateCharterCost(startTime, serviceEndTime, true), delta);
+        assertEquals(0.0, ArcGeneration.calculateCharterCost(startTime, serviceEndTime, false), delta);
+        assertEquals(679.0, ArcGeneration.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
+                speed, distance, false), delta);
+        assertEquals(6759.0, ArcGeneration.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
+                speed, distance, true), delta);
+
+        // TODO: Add test for calculateArcCost with weather impact
+
+    }
+
+    @Test
     @DisplayName("Test mapWSToTimeSpent and getTimeInWS")
     public void testWSFunctions() {
         Problem.setUpProblem("weather/criticalWeather.json", true);
@@ -147,9 +202,9 @@ public class ArcGenerationTest {
         assertEquals(76, ArcGeneration.getTimeInWS(startTime, endTime, 2));
         assertEquals(8, ArcGeneration.getTimeInWS(startTime, endTime, 3));
 
-        Map<Integer, Integer> wsToTimeSpent = ArcGeneration.mapWSToTimeSpent(startTime, endTime);
-        int sumTimeSpent = wsToTimeSpent.values().stream().mapToInt(Integer::intValue).sum();
-        assertEquals(endTime - startTime, sumTimeSpent);
+        Map<Integer, Double> wsToTimeSpent = ArcGeneration.mapWSToTimeSpent(startTime, endTime);
+        double sumTimeSpent = wsToTimeSpent.values().stream().mapToDouble(Double::doubleValue).sum();
+        assertEquals(Problem.discTimeToHour(endTime - startTime), sumTimeSpent, 0.0);
     }
 }
 
