@@ -131,7 +131,9 @@ public class ArcGenerationTest {
         int serviceEndTimeOne = 120;
         int serviceStartTimeTwo = 130;
         Installation instAlwaysOpen = Problem.getInstallation(Problem.orders.get(2));
-        assertTrue(ArcGeneration.isServicingPossible(serviceStartTimeOne, serviceEndTimeOne, instAlwaysOpen));
+        // TESTING
+        assertFalse(ArcGeneration.isServicingPossible(serviceStartTimeOne, serviceEndTimeOne, instAlwaysOpen));
+        // END TESTING
         assertTrue(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3 - 1, instAlwaysOpen));
         assertFalse(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3, instAlwaysOpen));
         assertFalse(ArcGeneration.isServicingPossible(startTimeWS3, startTimeWS3 + 10, instAlwaysOpen));
