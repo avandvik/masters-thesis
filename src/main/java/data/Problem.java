@@ -191,10 +191,11 @@ public class Problem {
             String name = (String) key;
             JSONObject jsonVessel = (JSONObject) jsonVessels.get(key);
             int id = Math.toIntExact((long) jsonVessel.get(Constants.ID_KEY));
-            double capacity = (double) jsonVessel.get(Constants.CAPACITY_KEY);
+            double capacitySqm = (double) jsonVessel.get(Constants.CAPACITY_KEY);
+            int capacityUnits = (int) Math.ceil(capacitySqm / Problem.sqmInCargoUnit);
             int returnTime =
                     Math.toIntExact((long) ((JSONObject) jsonAvailableVessels.get(key)).get(Constants.RETURN_TIME_KEY));
-            Vessel vessel = new Vessel(id, name, capacity, returnTime);
+            Vessel vessel = new Vessel(id, name, capacityUnits, returnTime);
             Problem.vessels.add(vessel);
         }
         Collections.sort(Problem.vessels);

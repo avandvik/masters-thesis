@@ -101,10 +101,16 @@ public class Evaluator {
         return Problem.hourToDiscTimePoint(distance / averageMaxSpeed);
     }
 
-    public static boolean isFeasibleVisitOrder(Solution solution) {
+    public static boolean isFeasibleVisits(Solution solution) {
         List<List<Order>> orderSequences = solution.getOrderSequences();
         List<List<Integer>> instSequences = solution.getInstSequences();
-        return !instInMoreThanOneSequence(instSequences) && !isIllegalPattern(orderSequences, instSequences);
+        if (instInMoreThanOneSequence(instSequences)) return false;
+        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
+            List<Integer> instSequence = instSequences.get(vesselNumber);
+            List<Order> orderSequence = orderSequences.get(vesselNumber);
+            if (isIllegalPattern(orderSequence, instSequence)) return false;
+        }
+        return true;
     }
 
     public static boolean instInMoreThanOneSequence(List<List<Integer>> instSequences) {
@@ -121,14 +127,8 @@ public class Evaluator {
         return false;
     }
 
-    public static boolean isIllegalPattern(List<List<Order>> orderSequences, List<List<Integer>> instSequences) {
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            List<Integer> instSequence = instSequences.get(vesselNumber);
-            if (isSpread(instSequence)) return true;
-            List<Order> orderSequence = orderSequences.get(vesselNumber);
-            if (isIllegalVisitOrder(orderSequence)) return true;
-        }
-        return false;
+    public static boolean isIllegalPattern(List<Order> orderSequence, List<Integer> instSequence) {
+        return isSpread(instSequence) || isIllegalVisitOrder(orderSequence);
     }
 
     private static boolean isSpread(List<Integer> instSequence) {
@@ -161,6 +161,6 @@ public class Evaluator {
         System.out.println(solution);
         System.out.println(isFeasibleLoad(solution));
         System.out.println(isFeasibleDuration(solution));
-        System.out.println(isFeasibleVisitOrder(solution));
+        System.out.println(isFeasibleVisits(solution));
     }
 }

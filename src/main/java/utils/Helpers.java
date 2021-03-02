@@ -48,4 +48,10 @@ public class Helpers {
         }
         return -1;
     }
+
+    public static List<Integer> getInstSequence(List<Order> orderSequence) {
+        List<Integer> instSequence = new ArrayList<>();
+        for (int i = 0; i < orderSequence.size(); i++) instSequence.add(orderSequence.get(i).getInstallationId());
+        return instSequence;
+    }
 }
