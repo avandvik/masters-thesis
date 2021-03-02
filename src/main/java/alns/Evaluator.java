@@ -101,7 +101,7 @@ public class Evaluator {
         return Problem.hourToDiscTimePoint(distance / averageMaxSpeed);
     }
 
-    public static boolean isFeasibleVisitOrder(Solution solution) {
+    public static boolean isFeasibleVisits(Solution solution) {
         List<List<Order>> orderSequences = solution.getOrderSequences();
         List<List<Integer>> instSequences = solution.getInstSequences();
         if (instInMoreThanOneSequence(instSequences)) return false;
@@ -161,6 +161,6 @@ public class Evaluator {
         System.out.println(solution);
         System.out.println(isFeasibleLoad(solution));
         System.out.println(isFeasibleDuration(solution));
-        System.out.println(isFeasibleVisitOrder(solution));
+        System.out.println(isFeasibleVisits(solution));
     }
 }

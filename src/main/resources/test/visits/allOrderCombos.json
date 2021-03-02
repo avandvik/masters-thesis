@@ -23,33 +23,51 @@
     },
     "1": {
       "mandatory": "False",
-      "transport": "pickup",
+      "transport": "delivery",
       "size": 100.0,
       "installation": 21
     },
     "2": {
       "mandatory": "False",
-      "transport": "delivery",
+      "transport": "pickup",
       "size": 250.0,
-      "installation": 13
+      "installation": 21
     },
     "3": {
-      "mandatory": "False",
-      "transport": "pickup",
+      "mandatory": "True",
+      "transport": "delivery",
       "size": 150.0,
-      "installation": 13
+      "installation": 5
     },
     "4": {
-      "mandatory": "True",
+      "mandatory": "False",
       "transport": "delivery",
       "size": 100.0,
       "installation": 5
     },
     "5": {
-      "mandatory": "False",
+      "mandatory": "True",
       "transport": "delivery",
       "size": 220.0,
-      "installation": 5
+      "installation": 11
+    },
+    "6": {
+      "mandatory": "False",
+      "transport": "pickup",
+      "size": 80.0,
+      "installation": 11
+    },
+    "7": {
+      "mandatory": "False",
+      "transport": "delivery",
+      "size": 120.0,
+      "installation": 17
+    },
+    "8": {
+      "mandatory": "False",
+      "transport": "pickup",
+      "size": 120.0,
+      "installation": 17
     }
   }
 }

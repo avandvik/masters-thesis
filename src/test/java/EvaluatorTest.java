@@ -1,10 +1,13 @@
 import alns.Evaluator;
 import data.Problem;
+import objects.Installation;
 import objects.Order;
 import objects.Vessel;
 import org.junit.Test;
+import utils.Helpers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,15 +40,18 @@ public class EvaluatorTest {
         // Testing for two delivery orders of 1010 sqm = 127 cu: total delivery load > vessel capacity
         assertFalse(Evaluator.isFeasibleLoad(orderSequenceThree, vessel));
 
-        // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, followed by one pickup order of 10 sqm = 2 cu
+        // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, followed by one pickup order of 10 sqm =
+        // 2 cu
         assertTrue(Evaluator.isFeasibleLoad(orderSequenceFour, vessel));
         // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, followed by two pickup order of total
         // 10 + 990 sqm = 126 cu: total load at last order > vessel capacity
         assertFalse(Evaluator.isFeasibleLoad(orderSequenceFive, vessel));
 
-        // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, with pickup order of 490 sqm = 62 cu in between
+        // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, with pickup order of 490 sqm = 62 cu in
+        // between
         assertTrue(Evaluator.isFeasibleLoad(orderSequenceSix, vessel));
-        // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, with pickup order of 490 sqm = 62 cu in between,
+        // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, with pickup order of 490 sqm = 62 cu in
+        // between,
         // and one pickup order of 500 sqm = 63 cu at the end: total load at last order > vessel capacity
         assertFalse(Evaluator.isFeasibleLoad(orderSequenceSeven, vessel));
     }
@@ -67,34 +73,81 @@ public class EvaluatorTest {
 
     @Test
     public void testIsInstInMoreThanOneSequence() {
-        Problem.setUpProblem("visitOrder/instInMoreThanOneSequence.json", true);
+        Problem.setUpProblem("visits/allOrderCombos.json", true);
 
-        List<Order> ordersOne = Problem.orders;
-        List<Integer> installationsOne = new LinkedList<>();
-        for (int i = 0; i < ordersOne.size(); i++) installationsOne.add(ordersOne.get(i).getInstallationId());
+        // Check valid
+        List<List<Integer>> validSequences = new ArrayList<>();
+        List<Integer> sequenceOne = new LinkedList<>();
+        for (int i = 0; i < 3; i++) sequenceOne.add(Problem.orders.get(i).getInstallationId());
+        List<Integer> sequenceTwo = new LinkedList<>();
+        for (int i = 3; i < 7; i++) sequenceTwo.add(Problem.orders.get(i).getInstallationId());
+        List<Integer> sequenceThree = new LinkedList<>();
+        for (int i = 7; i < 9; i++) sequenceThree.add(Problem.orders.get(i).getInstallationId());
 
-        List<List<Integer>> instSequencesOne = new ArrayList<List<Integer>>();
-        List<Integer> instSequenceOne = new LinkedList<>();
-        List<Integer> instSequenceTwo = new LinkedList<>();
-        for (int j = 0; j < installationsOne.size() - 1; j += 2) {
-            instSequenceOne.add(installationsOne.get(j));
-            instSequenceTwo.add(installationsOne.get(j + 1));
-        }
-        instSequencesOne.add(instSequenceOne);
-        instSequencesOne.add(instSequenceTwo);
+        validSequences.add(sequenceOne);
+        validSequences.add(sequenceTwo);
+        validSequences.add(sequenceThree);
 
-        assertTrue(Evaluator.instInMoreThanOneSequence(instSequencesOne));
+        assertFalse(Evaluator.instInMoreThanOneSequence(validSequences));
 
+        // Check invalid (one installation in different sequences)
+        List<List<Integer>> invalidSequences = new ArrayList<>();
+        List<Integer> sequenceFour = new LinkedList<>();
+        for (int i = 0; i < 2; i++) sequenceFour.add(Problem.orders.get(i).getInstallationId());
+        List<Integer> sequenceFive = new LinkedList<>();
+        for (int i = 3; i < 7; i++) sequenceFive.add(Problem.orders.get(i).getInstallationId());
+        List<Integer> sequenceSix = new LinkedList<>();
+        for (int i = 7; i < 9; i++) sequenceSix.add(Problem.orders.get(i).getInstallationId());
+        sequenceSix.add(Problem.orders.get(2).getInstallationId());
+
+        invalidSequences.add(sequenceFour);
+        invalidSequences.add(sequenceFive);
+        invalidSequences.add(sequenceSix);
+
+        assertTrue(Evaluator.instInMoreThanOneSequence(invalidSequences));
+
+        // Check invalid (two installations in different sequences)
+        invalidSequences.get(0).add(invalidSequences.get(1).remove(1));
+        assertTrue(Evaluator.instInMoreThanOneSequence(invalidSequences));
     }
 
     @Test
     public void testIsIllegalPattern() {
-        Problem.setUpProblem("visitOrder/illegalPattern.json", true);
-        List<Order> orders = Problem.orders;
-        List<Order> orderSequenceThree = new LinkedList<>(orders);
-        List<Integer> instSequenceThree = new LinkedList<>();
-        for (int i = 0; i < orders.size(); i++) instSequenceThree.add(orders.get(i).getInstallationId());
+        Problem.setUpProblem("visits/allOrderCombos.json", true);
+        List<Order> orderSequence = new LinkedList<>(Problem.orders);
 
-        assertFalse(Evaluator.isIllegalPattern(orderSequenceThree, instSequenceThree));
+        // Check valid (All combos present MD-OD-OP, MD-OD, MD-OP, OD-OP)
+        assertFalse(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+
+        // Check illegal visit order: OD-MD
+        Collections.swap(orderSequence, 3, 4);
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+
+        // Check illegal visit order: OP-MD
+        Collections.swap(orderSequence, 3, 4);
+        Collections.swap(orderSequence, 5, 6);
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+
+
+        // Check illegal visit order: OP-OD
+        Collections.swap(orderSequence, 5, 6);
+        Collections.swap(orderSequence, 7, orderSequence.size() - 1);
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+
+        // Check spread
+        Collections.swap(orderSequence, 7, orderSequence.size() - 1);
+        orderSequence.add(orderSequence.remove(1));
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+
+        // Check that it was actually spread that was the reason in previous test
+        List<Order> partialSequence = new LinkedList<>(orderSequence.subList(0, orderSequence.size() - 1));
+        assertFalse(Evaluator.isIllegalPattern(partialSequence, Helpers.getInstSequence(partialSequence)));
+
+        // Check multiple
+        orderSequence.add(1, orderSequence.remove(orderSequence.size() - 1));
+        Collections.swap(orderSequence, 0, 2);
+        orderSequence.add(0, orderSequence.remove(3));
+        Collections.swap(orderSequence, 6, 7);
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
     }
 }
