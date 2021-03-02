@@ -98,7 +98,7 @@ public class Evaluator {
     private static int findSailingDuration(int startTime, Installation fromInstallation, Installation toInstallation) {
         double distance = DistanceCalculator.distance(fromInstallation, toInstallation, "N");
         double averageMaxSpeed = ArcGeneration.calculateAverageMaxSpeed(startTime, distance);
-        return ArcGeneration.hourToDiscTimePoint(distance / averageMaxSpeed);
+        return Problem.hourToDiscTimePoint(distance / averageMaxSpeed);
     }
 
     public static boolean isFeasibleVisitOrder(Solution solution) {

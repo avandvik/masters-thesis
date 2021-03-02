@@ -203,7 +203,6 @@ public class Tree {
             double cost = speedsToCosts.get(speed);
             int endTime = speedsToEndTimes.get(speed);
 
-            // Get existing node
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
                 Node newNode = new Node(toOrder, endTime, depotNode);
@@ -225,7 +224,6 @@ public class Tree {
             int endTime = speedsToEndTimes.get(speed);
 
             Node existingNode = getExistingNode(endTime, toOrder);
-
             if (existingNode == null) {
                 Node newNode = new Node(toOrder, endTime, fromNode);
                 fromNode.addChild(newNode);
@@ -260,12 +258,13 @@ public class Tree {
             System.out.println(node);
             System.out.println("\tChildren");
             for (Node child : node.getChildren()) {
-                System.out.println("\t" + child + " at cost " + node.getCostOfChild(child));
+                System.out.println("\t\t" + child + " at cost " + node.getCostOfChild(child));
             }
             System.out.println("\tParents");
             for (Node parent : node.getParents()) {
-                System.out.println("\t" + parent);
+                System.out.println("\t\t" + parent);
             }
+            System.out.println();
         }
     }
 }

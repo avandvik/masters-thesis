@@ -38,10 +38,11 @@ public class Helpers {
         return null;
     }
 
-    public static int getStartTimeOfRoughWeather() {
+    public static int getStartTimeOfWeatherState(int weatherState) {
+        /* Only to be used when weather is continuously rising or falling with periods of same weather */
         for (int timePoint = 0; timePoint < Problem.weatherForecastDisc.size(); timePoint++) {
             int ws = Problem.weatherForecastDisc.get(timePoint);
-            if (ws == Problem.worstWeatherState) {
+            if (ws == weatherState) {
                 return timePoint;
             }
         }
