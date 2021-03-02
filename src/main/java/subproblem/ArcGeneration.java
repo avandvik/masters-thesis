@@ -108,7 +108,8 @@ public class ArcGeneration {
         int closeTime = toInst.getClosingHour() * Problem.discretizationParam - 1;
         boolean instOpen = true;
         if (openTime != Problem.getFirstTimePoint() && closeTime != Problem.getEndOfDayTimePoint()) {
-            instOpen = startDayTime >= openTime && endDayTime <= closeTime;
+            instOpen = startDayTime >= openTime && endDayTime <= closeTime
+                    && endDayTime >= openTime && startDayTime <= closeTime;
         }
         int worstWeatherState = Problem.getWorstWeatherState(serviceStartTime, serviceEndTime);
         return instOpen && worstWeatherState < Problem.worstWeatherState;

@@ -1,9 +1,10 @@
+package subproblem;
+
 import data.Problem;
 import objects.Installation;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import subproblem.ArcGeneration;
 import utils.Helpers;
 
 import java.util.*;
@@ -134,9 +135,10 @@ public class ArcGenerationTest {
         assertTrue(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3 - 1, instAlwaysOpen));
         assertFalse(ArcGeneration.isServicingPossible(serviceStartTimeTwo, startTimeWS3, instAlwaysOpen));
         assertFalse(ArcGeneration.isServicingPossible(startTimeWS3, startTimeWS3 + 10, instAlwaysOpen));
-
-        // TODO: Add checks for installation with opening hours
-
+        Installation instSometimesClosed = Problem.getInstallation(Problem.orders.get(0));
+        assertFalse(ArcGeneration.isServicingPossible(80, 100, instSometimesClosed));
+        assertFalse(ArcGeneration.isServicingPossible(122, 130, instSometimesClosed));
+        assertTrue(ArcGeneration.isServicingPossible(123, 131, instSometimesClosed));
     }
 
     @Test

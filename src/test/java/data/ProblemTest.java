@@ -1,3 +1,5 @@
+package data;
+
 import data.Problem;
 import org.junit.Test;
 
