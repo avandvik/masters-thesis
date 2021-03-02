@@ -4,7 +4,7 @@ import data.Problem;
 import objects.Installation;
 import objects.Order;
 import objects.Vessel;
-import subproblem.ArcGeneration;
+import arcs.ArcGenerator;
 import utils.DistanceCalculator;
 import utils.Helpers;
 
@@ -67,8 +67,8 @@ public class Evaluator {
         Installation firstInst = Problem.getInstallation(firstOrder);
         int sailingDuration = findSailingDuration(startTime, depot, firstInst);
         int arrTime = startTime + sailingDuration;
-        int serviceDuration = ArcGeneration.calculateServiceDuration(firstOrder);
-        int serviceStartTime = ArcGeneration.getServiceStartTimeAfterIdling(arrTime, serviceDuration, firstInst);
+        int serviceDuration = ArcGenerator.calculateServiceDuration(firstOrder);
+        int serviceStartTime = ArcGenerator.getServiceStartTimeAfterIdling(arrTime, serviceDuration, firstInst);
         return serviceStartTime + serviceDuration;
     }
 
@@ -80,8 +80,8 @@ public class Evaluator {
             Installation toInst = Problem.getInstallation(toOrder);
             int sailingDuration = findSailingDuration(startTimeFromOrder, fromInst, toInst);
             int arrTime = startTimeFromOrder + sailingDuration;
-            int serviceDuration = ArcGeneration.calculateServiceDuration(toOrder);
-            int serviceStartTime = ArcGeneration.getServiceStartTimeAfterIdling(arrTime, serviceDuration, toInst);
+            int serviceDuration = ArcGenerator.calculateServiceDuration(toOrder);
+            int serviceStartTime = ArcGenerator.getServiceStartTimeAfterIdling(arrTime, serviceDuration, toInst);
             startTimeFromOrder = serviceStartTime + serviceDuration;
         }
         return startTimeFromOrder;
@@ -97,7 +97,7 @@ public class Evaluator {
 
     private static int findSailingDuration(int startTime, Installation fromInstallation, Installation toInstallation) {
         double distance = DistanceCalculator.distance(fromInstallation, toInstallation, "N");
-        double averageMaxSpeed = ArcGeneration.calculateAverageMaxSpeed(startTime, distance);
+        double averageMaxSpeed = ArcGenerator.calculateAverageMaxSpeed(startTime, distance);
         return Problem.hourToDiscTimePoint(distance / averageMaxSpeed);
     }
 
@@ -152,15 +152,5 @@ public class Evaluator {
             }
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-        Problem.setUpProblem("example.json");
-        int randomSeed = 17;
-        Solution solution = new Solution(randomSeed);
-        System.out.println(solution);
-        System.out.println(isFeasibleLoad(solution));
-        System.out.println(isFeasibleDuration(solution));
-        System.out.println(isFeasibleVisits(solution));
     }
 }

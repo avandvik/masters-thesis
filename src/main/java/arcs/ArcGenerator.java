@@ -1,4 +1,4 @@
-package subproblem;
+package arcs;
 
 import data.Problem;
 import objects.Installation;
@@ -6,7 +6,7 @@ import objects.Order;
 
 import java.util.*;
 
-public class ArcGeneration {
+public class ArcGenerator {
 
     public static List<Double> getSpeeds(double distance, int startTime) {
         if (distance == 0) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
