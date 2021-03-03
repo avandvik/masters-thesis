@@ -4,6 +4,7 @@ import data.Problem;
 import objects.Order;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +36,28 @@ public class ConstructionHeuristic {
         return solutions;
     }
 
+    public static List<List<Integer>> getAllFeasibleInsertions(List<List<Order>> orderSequences, Order order) {
+        // Copy orderSequences of original solution
+        List<List<Order>> orderSequencesCopy = new ArrayList<>();
+        for (List<Order> orderSequence : orderSequences) orderSequencesCopy.add(new LinkedList<>(orderSequence));
+
+        List<List<Integer>> insertionIndices = new ArrayList<>();
+        for (List<Order> orderSequence : orderSequencesCopy) {
+            List<Integer> vesselIndices = new ArrayList<>();
+            orderSequence.add(0, order);
+            if (Evaluator.isFeasible(new Solution(orderSequences))) vesselIndices.add(0);
+            orderSequence.remove(0);
+            for (int i = 1; i <= orderSequence.size(); i++) {
+                orderSequence.add(i, order);
+                if (Evaluator.isFeasible(new Solution(orderSequences))) vesselIndices.add(i);
+                orderSequence.remove(i);
+            }
+            insertionIndices.add(vesselIndices);
+        }
+
+        return insertionIndices;
+    }
+
     public static void main(String[] args) {
         Problem.setUpProblem("example.json", false);
         List<Order> orders = Problem.orders;
@@ -58,5 +81,7 @@ public class ConstructionHeuristic {
         Order orderToBePlaced = Problem.orders.get(Problem.orders.size() - 1);
         List<Solution> insertions = getAllFeasibleInsertions(solution, orderToBePlaced);
         System.out.println(insertions);
+        List<List<Integer>> indices = getAllFeasibleInsertions(orderSequences, orderToBePlaced);
+        System.out.println(indices);
     }
 }
