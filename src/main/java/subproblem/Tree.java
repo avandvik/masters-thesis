@@ -45,7 +45,7 @@ public class Tree {
         return this.nodes;
     }
 
-    private List<Node> getNodesExclDepot()  {
+    private List<Node> getNodesExclDepot() {
         return this.nodes.subList(1, this.nodes.size());
     }
 
@@ -173,40 +173,42 @@ public class Tree {
                 serviceDuration, toOrder != null ? Problem.getInstallation(toOrder) : Problem.getDepot());
         Map<Double, Double> speedsToCosts = ArcGenerator.mapSpeedsToCosts(speedsToTimePoints, distance, startTime,
                 isSpot);
-        Map<Double, Integer> speedsToEndTimes = ArcGenerator.mapSpeedsToEndTimes(speedsToTimePoints);
-        addNodesToTree(speedsToCosts, speedsToEndTimes, fromNode, toOrder, c);
+        addNodesToTree(speedsToCosts, speedsToTimePoints, fromNode, toOrder, c);
 
     }
 
-    private void addNodesToTree(Map<Double, Double> speedsToCosts, Map<Double, Integer> speedsToEndTimes,
+    private void addNodesToTree(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,
                                 Node fromNode, Order toOrder, int c) {
         switch (c) {
             case 1:
-                addNodesDepotOrder(speedsToCosts, speedsToEndTimes, toOrder);
+                addNodesDepotOrder(speedsToCosts, speedsToTimePoints, toOrder);
                 break;
             case 2:
-                addNodesOrderOrder(speedsToCosts, speedsToEndTimes, fromNode, toOrder);
+                addNodesOrderOrder(speedsToCosts, speedsToTimePoints, fromNode, toOrder);
                 break;
             case 3:
-                addNodesOrderDepot(speedsToCosts, speedsToEndTimes, fromNode);
+                addNodesOrderDepot(speedsToCosts, speedsToTimePoints, fromNode);
                 break;
             default:
                 System.out.println("Case not recognized.");
         }
     }
 
-    private void addNodesDepotOrder(Map<Double, Double> speedsToCosts, Map<Double, Integer> speedsToEndTimes,
+    private void addNodesDepotOrder(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,
                                     Order toOrder) {
-        Node depotNode = new Node(null, Problem.preparationEndTime, null);
+        List<Integer> timePointsDepot = new ArrayList<>(Arrays.asList(Problem.preparationEndTime,
+                Problem.preparationEndTime, Problem.preparationEndTime));
+        Node depotNode = new Node(null, null, timePointsDepot);
         this.addNode(depotNode);
         this.setRoot(depotNode);
         for (double speed : speedsToCosts.keySet()) {
             double cost = speedsToCosts.get(speed);
-            int endTime = speedsToEndTimes.get(speed);
+            List<Integer> timePoints = speedsToTimePoints.get(speed);
+            int endTime = timePoints.get(2);
 
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
-                Node newNode = new Node(toOrder, endTime, depotNode);
+                Node newNode = new Node(toOrder, depotNode, timePoints);
                 depotNode.addChild(newNode);
                 depotNode.setChildToCost(newNode, cost);
                 this.addNode(newNode);
@@ -218,15 +220,16 @@ public class Tree {
         }
     }
 
-    private void addNodesOrderOrder(Map<Double, Double> speedsToCosts, Map<Double, Integer> speedsToEndTimes,
+    private void addNodesOrderOrder(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,
                                     Node fromNode, Order toOrder) {
         for (double speed : speedsToCosts.keySet()) {
             double cost = speedsToCosts.get(speed);
-            int endTime = speedsToEndTimes.get(speed);
+            List<Integer> timePoints = speedsToTimePoints.get(speed);
+            int endTime = timePoints.get(2);
 
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
-                Node newNode = new Node(toOrder, endTime, fromNode);
+                Node newNode = new Node(toOrder, fromNode, timePoints);
                 fromNode.addChild(newNode);
                 fromNode.setChildToCost(newNode, cost);
                 this.addNode(newNode);
@@ -243,12 +246,12 @@ public class Tree {
         }
     }
 
-    private void addNodesOrderDepot(Map<Double, Double> speedsToCosts, Map<Double, Integer> speedsToEndTimes,
+    private void addNodesOrderDepot(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,
                                     Node fromNode) {
         double minCostSpeed = Helpers.getKeyWithMinValue(speedsToCosts);
         double cost = speedsToCosts.get(minCostSpeed);
-        int endTime = speedsToEndTimes.get(minCostSpeed);
-        Node depotNode = new Node(null, endTime, fromNode);
+        List<Integer> timePoints = speedsToTimePoints.get(minCostSpeed);
+        Node depotNode = new Node(null, fromNode, timePoints);
         fromNode.addChild(depotNode);
         fromNode.setChildToCost(depotNode, cost);
         this.addNode(depotNode);

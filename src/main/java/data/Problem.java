@@ -67,6 +67,16 @@ public class Problem {
         return installations.get(order.getInstallationId());
     }
 
+    /* =========== ORDERS =========== */
+
+    public static Order getOrder(int orderIndex) {
+        return Problem.orders.get(orderIndex);
+    }
+
+    public static int getNumberOfOrders() {
+        return Problem.orders.size();
+    }
+
 
     /* =========== VESSEL =========== */
 
