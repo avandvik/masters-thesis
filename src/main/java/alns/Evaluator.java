@@ -12,6 +12,10 @@ import java.util.*;
 
 public class Evaluator {
 
+    public static boolean isFeasible(Solution solution) {
+        return isFeasibleLoad(solution) && isFeasibleDuration(solution) && isFeasibleVisits(solution);
+    }
+
     public static boolean isFeasibleLoad(Solution solution) {
         List<List<Order>> orderSequences = solution.getOrderSequences();
         for (int vesselNumber = 0; vesselNumber < orderSequences.size(); vesselNumber++) {
