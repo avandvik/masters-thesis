@@ -11,6 +11,21 @@ import java.util.List;
 
 public class Main {
 
+    public static void runALNS() {
+        // Create initial solution by calling construction heuristic
+
+        // Run iterations
+        //   Run time segment
+        //     1. Choose destroy and repair neighborhood (roulette wheel based on scores)
+        //     2. Generate new solution by applying one destroy and one repair operator
+        //     3. Check acceptance criterion (simulated annealing), update current solution if accepted
+        //     4. Update scores (dependent on acceptance)
+        //     5. Update global best if the fitness is better than global best
+        //     6. Update scores (dependent on new global best) [MERGE 4 and 6?]
+
+
+    }
+
     public static void main(String[] args) {
         Problem.setUpProblem("example.json", false);
         List<List<Order>> orderSequences = new ArrayList<>();
