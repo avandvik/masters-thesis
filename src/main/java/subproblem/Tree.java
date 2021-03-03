@@ -1,5 +1,6 @@
 package subproblem;
 
+import arcs.ArcGenerator;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
@@ -165,14 +166,14 @@ public class Tree {
     }
 
     private void createNodes(Node fromNode, Order toOrder, boolean isSpot, double distance, int startTime, int c) {
-        List<Double> speeds = ArcGeneration.getSpeeds(distance, startTime);
-        Map<Double, Integer> speedsToArrTimes = ArcGeneration.mapSpeedsToArrTimes(distance, startTime, speeds);
-        int serviceDuration = toOrder != null ? ArcGeneration.calculateServiceDuration(toOrder) : 0;
-        Map<Double, List<Integer>> speedsToTimePoints = ArcGeneration.mapSpeedsToTimePoints(speedsToArrTimes, distance,
+        List<Double> speeds = ArcGenerator.getSpeeds(distance, startTime);
+        Map<Double, Integer> speedsToArrTimes = ArcGenerator.mapSpeedsToArrTimes(distance, startTime, speeds);
+        int serviceDuration = toOrder != null ? ArcGenerator.calculateServiceDuration(toOrder) : 0;
+        Map<Double, List<Integer>> speedsToTimePoints = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, distance,
                 serviceDuration, toOrder != null ? Problem.getInstallation(toOrder) : Problem.getDepot());
-        Map<Double, Double> speedsToCosts = ArcGeneration.mapSpeedsToCosts(speedsToTimePoints, distance, startTime,
+        Map<Double, Double> speedsToCosts = ArcGenerator.mapSpeedsToCosts(speedsToTimePoints, distance, startTime,
                 isSpot);
-        Map<Double, Integer> speedsToEndTimes = ArcGeneration.mapSpeedsToEndTimes(speedsToTimePoints);
+        Map<Double, Integer> speedsToEndTimes = ArcGenerator.mapSpeedsToEndTimes(speedsToTimePoints);
         addNodesToTree(speedsToCosts, speedsToEndTimes, fromNode, toOrder, c);
 
     }
