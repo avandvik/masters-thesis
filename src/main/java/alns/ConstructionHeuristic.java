@@ -104,6 +104,19 @@ public class ConstructionHeuristic {
         }
 
         return new Solution(orderSequences);
+
+        for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
+
+        int randomNum = ThreadLocalRandom.current().nextInt(0, Problem.getNumberOfVessels() + 1);
+
+        while (!copyOfOrders.isEmpty()) {
+            List<List<Integer>> feasibleInsertions = getAllFeasibleInsertions(orderSequences, copyOfOrders.get(0));
+            orderSequences.get(0).add(copyOfOrders.get(0));
+            copyOfOrders.remove(0);
+        }
+
+        Solution solution = new Solution(orderSequences);
+        return solution;
     }
 
     public static void main(String[] args) {
@@ -131,6 +144,9 @@ public class ConstructionHeuristic {
         // System.out.println(indices);
 
         Solution initialRandomSolution = constructRandomInitialSolution();
-        //System.out.println(initialRandomSolution);
+        // System.out.println(initialRandomSolution);
+        // System.out.println(orderSequences);
+
+        constructRandomInitialSolution();
     }
 }
