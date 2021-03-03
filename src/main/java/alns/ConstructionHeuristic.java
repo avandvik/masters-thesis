@@ -62,23 +62,48 @@ public class ConstructionHeuristic {
         return insertionIndices;
     }
 
-    public static Solution constructInitialSolution() {
+    public static Solution constructRandomInitialSolution() {
 
         List<Order> copyOfOrders = Helpers.deepCopyList(Problem.orders);
         List<List<Order>> orderSequences = new ArrayList<>();
 
+        // Creating order sequences
         for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
-
-        int randomNum = ThreadLocalRandom.current().nextInt(0, Problem.getNumberOfVessels() + 1);
 
         while (!copyOfOrders.isEmpty()) {
             List<List<Integer>> feasibleInsertions = getAllFeasibleInsertions(orderSequences, copyOfOrders.get(0));
-            orderSequences.get(0).add(copyOfOrders.get(0));
+            List<Integer> insertionsForVessel;
+            List<Integer> feasibleFleetVessels = new ArrayList<>();
+            List<Integer> feasibleSpotVessels = new ArrayList<>();
+
+            // Categorizing feasible fleet and spot vessels given feasible insertions
+            for (int i = 0; i < feasibleInsertions.size(); i++) {
+                if (!feasibleInsertions.get(i).isEmpty() && !Problem.isSpotVessel(Problem.getVessel(i))) {
+                    feasibleFleetVessels.add(i);
+                } else if (!feasibleInsertions.get(i).isEmpty()) {
+                    feasibleSpotVessels.add(i);
+                }
+            }
+
+            // Checking for insertions if spot vessels are needed
+            if (feasibleFleetVessels.isEmpty() && !feasibleSpotVessels.isEmpty()) {
+                insertionsForVessel = feasibleInsertions.get(feasibleSpotVessels.get(0));
+                orderSequences.get(0).add(insertionsForVessel.get(0),copyOfOrders.get(0));
+                continue;
+            }
+
+            // Generating random number for choosing feasible fleet vessel
+            int vesselNum = ThreadLocalRandom.current().nextInt(0, feasibleFleetVessels.size());
+
+            // Inserting order in chosen fleet vessel
+            insertionsForVessel = feasibleInsertions.get(feasibleFleetVessels.get(vesselNum));
+            orderSequences.get(feasibleFleetVessels.get(vesselNum)).add(insertionsForVessel.get(0),copyOfOrders.get(0));
+
+            // Removing order from remaining order list
             copyOfOrders.remove(0);
         }
 
-        Solution solution = new Solution(orderSequences);
-        return solution;
+        return new Solution(orderSequences);
     }
 
     public static void main(String[] args) {
@@ -100,12 +125,12 @@ public class ConstructionHeuristic {
         Solution solution = new Solution(orderSequences);
         Order orderToBePlaced = Problem.orders.get(Problem.orders.size() - 1);
         List<Solution> insertions = getAllFeasibleInsertions(solution, orderToBePlaced);
-
         // insertions.stream().forEach(System.out::println);
 
         List<List<Integer>> indices = getAllFeasibleInsertions(orderSequences, orderToBePlaced);
         // System.out.println(indices);
 
-        constructInitialSolution();
+        Solution initialRandomSolution = constructRandomInitialSolution();
+        //System.out.println(initialRandomSolution);
     }
 }
