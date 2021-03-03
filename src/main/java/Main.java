@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Problem.setUpProblem("example.json");
+        Problem.setUpProblem("example.json", false);
         Solution solution = new Solution(5);
 
         runSubProblem(solution);
@@ -19,17 +19,11 @@ public class Main {
 
     private static void runSubProblem(Solution solution) {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            try {
-                SubProblem subproblem = new SubProblem(solution.getOrderSequence(vesselNumber), vesselNumber);
-                subproblem.solve();
-                System.out.println(subproblem.getShortestPath() + ": " + subproblem.getShortestPathCost());
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
+            runSingleSubProblem(solution.getOrderSequence(vesselNumber), vesselNumber);
         }
     }
 
-    private static void runSubProblem(List<Order> orderSequence, int vesselNumber) {
+    private static void runSingleSubProblem(List<Order> orderSequence, int vesselNumber) {
         try {
             SubProblem subproblem = new SubProblem(orderSequence, vesselNumber);
             subproblem.solve();

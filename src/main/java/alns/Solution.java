@@ -53,9 +53,4 @@ public class Solution {
     public String toString() {
         return this.orderSequences.toString();
     }
-
-    public static void main(String[] args) {
-        Problem.setUpProblem("example.json");
-        Solution solution = new Solution(5);
-    }
 }
