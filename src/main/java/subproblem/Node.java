@@ -9,7 +9,9 @@ public class Node implements Comparable<Node> {
     private Order order;
     private Set<Node> parents = new HashSet<>();
     private Set<Node> children = new HashSet<>();
-    private final int discreteTime;
+    private final int arrTime;
+    private final int serviceStartTime;
+    private final int discreteTime;  // The end time of incoming arc, start time of outgoing arc
 
     private Map<Node, Double> childToCost = new HashMap<>();
 
@@ -17,10 +19,12 @@ public class Node implements Comparable<Node> {
     private double bestCost = Double.POSITIVE_INFINITY;
     private boolean isVisited = false;
 
-    public Node(Order order, int discreteTime, Node parent) {
+    public Node(Order order, Node parent, List<Integer> timePoints) {
         this.order = order;
-        this.discreteTime = discreteTime;
         if (parent != null) this.parents.add(parent);
+        this.arrTime = timePoints.get(0);
+        this.serviceStartTime = timePoints.get(1);
+        this.discreteTime = timePoints.get(2);
     }
 
     public List<Node> getBestPath() {
@@ -33,6 +37,14 @@ public class Node implements Comparable<Node> {
 
     public double getBestCost() {
         return bestCost;
+    }
+
+    public int getArrTime() {
+        return arrTime;
+    }
+
+    public int getServiceStartTime() {
+        return serviceStartTime;
     }
 
     public int getDiscreteTime() {
