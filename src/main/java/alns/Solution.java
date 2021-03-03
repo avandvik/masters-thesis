@@ -2,35 +2,25 @@ package alns;
 
 import data.Problem;
 import objects.Order;
+import subproblem.Node;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Solution {
 
-    private List<List<Order>> orderSequences = new ArrayList<>();
-    private Random random;
+    private final List<List<Order>> orderSequences;
+    private List<List<Node>> shortestPaths;
+    private double objectiveValue = Double.POSITIVE_INFINITY;
 
-    public Solution(int randomSeed) {
-        this.random = new Random(randomSeed);
-
-        List<Order> orderList = new ArrayList<>(Problem.orders);
-        Collections.shuffle(orderList, this.random);
-
-        for(int vesselId = 0; vesselId < Problem.vessels.size(); vesselId++) orderSequences.add(new LinkedList<>());
-
-        while(!orderList.isEmpty()) {
-            Order order = orderList.remove(this.getRandomIndex(orderList.size()));
-            orderSequences.get(this.getRandomVessel(Problem.vessels.size())).add(order);
-        }
+    public Solution(List<List<Order>> orderSequences) {
+        this.orderSequences = orderSequences;
     }
 
-    public int getRandomIndex(int listLength) {
-        return random.nextInt(listLength);
-    }
-
-    public int getRandomVessel(int numberOfVessels) {
-        return random.nextInt(numberOfVessels);
+    public Solution(List<List<Order>> orderSequences, List<List<Node>> shortestPaths, double objectiveValue) {
+        this.orderSequences = orderSequences;
+        this.shortestPaths = shortestPaths;
+        this.objectiveValue = objectiveValue;
     }
 
     public List<List<Order>> getOrderSequences() {
@@ -41,12 +31,49 @@ public class Solution {
         return this.orderSequences.get(vesselNumber);
     }
 
+    public List<List<Node>> getShortestPaths() {
+        return shortestPaths;
+    }
+
+    public void setShortestPaths(List<List<Node>> shortestPaths) {
+        this.shortestPaths = shortestPaths;
+    }
+
+    public double getObjectiveValue() {
+        return objectiveValue;
+    }
+
+    public void setObjectiveValue(double objectiveValue) {
+        this.objectiveValue = objectiveValue;
+    }
+
     public List<List<Integer>> getInstSequences() {
         List<List<Integer>> instSequences = new ArrayList<>();
         for (List<Order> orderSequence : this.orderSequences) {
             instSequences.add(orderSequence.stream().map(Order::getInstallationId).collect(Collectors.toList()));
         }
         return instSequences;
+    }
+
+    public void printSchedules() {
+        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
+            System.out.println("Schedule for " + Problem.getVessel(vesselNumber));
+            for (Node node : this.shortestPaths.get(vesselNumber)) {
+                String orderName = "";
+                String schedule = "";
+                if (node.getOrder() != null) {
+                    orderName = node.getOrder().toString();
+                    schedule = "\t\tArrives at: " + node.getArrTime()
+                            + "\n\t\tServices at: " + node.getServiceStartTime()
+                            + "\n\t\tFinished at: " + node.getDiscreteTime();
+                } else {
+                    orderName = "Depot";
+                    schedule = "\t\t" + (node.getChildren().size() > 0 ? "Leaves at: " : "Arrives at ")
+                            + node.getDiscreteTime();
+                }
+                System.out.println("\t" + orderName + "\n" + schedule);
+            }
+        }
     }
 
     @Override

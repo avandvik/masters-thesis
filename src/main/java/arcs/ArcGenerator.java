@@ -126,16 +126,6 @@ public class ArcGenerator {
         return speedsToCosts;
     }
 
-    public static Map<Double, Integer> mapSpeedsToEndTimes(Map<Double, List<Integer>> speedsToTimePoints) {
-        Map<Double, Integer> speedsToEndTimes = new HashMap<>();
-        for (Map.Entry<Double, List<Integer>> entry : speedsToTimePoints.entrySet()) {
-            double speed = entry.getKey();
-            List<Integer> timePoints = entry.getValue();
-            speedsToEndTimes.put(speed, timePoints.get(timePoints.size() - 1));
-        }
-        return speedsToEndTimes;
-    }
-
     public static double calculateAverageMaxSpeed(int startSailingTime, double distance) {
         double sailedDistance = 0.0;
         int currentTime = startSailingTime;

@@ -37,13 +37,14 @@ public class SubProblem {
     }
 
     private void isOrderSequenceValid(List<Order> orderSequence) throws IllegalArgumentException {
-        if (orderSequence.isEmpty()) throw new IllegalArgumentException("Empty order sequence passed to Subproblem");
+        if (orderSequence.isEmpty()) throw new IllegalArgumentException("Empty order sequence passed to SubProblem, " +
+                "skipping.");
 
         // Can be expanded
     }
 
     private void isVesselNumberValid(int vesselNumber) throws IllegalArgumentException {
         if (vesselNumber < 0 || vesselNumber >= Problem.getNumberOfVessels()) throw new IllegalArgumentException(
-                "Invalid vesselNumber passed to Subproblem");
+                "Invalid vesselNumber passed to SubProblem.");
     }
 }

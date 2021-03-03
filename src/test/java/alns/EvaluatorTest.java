@@ -1,8 +1,6 @@
 package alns;
 
-import alns.Evaluator;
 import data.Problem;
-import objects.Installation;
 import objects.Order;
 import objects.Vessel;
 import org.junit.Test;
