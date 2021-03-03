@@ -80,4 +80,13 @@ public class Solution {
     public String toString() {
         return this.orderSequences.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Solution solution = (Solution) o;
+        return Double.compare(solution.objectiveValue, objectiveValue) == 0 && Objects.equals(orderSequences,
+                solution.orderSequences) && Objects.equals(shortestPaths, solution.shortestPaths);
+    }
 }
