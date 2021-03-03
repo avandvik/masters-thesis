@@ -2,11 +2,12 @@ package alns;
 
 import data.Problem;
 import objects.Order;
+import utils.Helpers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ConstructionHeuristic {
 
@@ -58,6 +59,25 @@ public class ConstructionHeuristic {
         return insertionIndices;
     }
 
+    public static Solution constructInitialSolution() {
+
+        List<Order> copyOfOrders = Helpers.deepCopyList(Problem.orders);
+        List<List<Order>> orderSequences = new ArrayList<>();
+
+        for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
+
+        int randomNum = ThreadLocalRandom.current().nextInt(0, Problem.getNumberOfVessels() + 1);
+
+        while (!copyOfOrders.isEmpty()) {
+            List<List<Integer>> feasibleInsertions = getAllFeasibleInsertions(orderSequences, copyOfOrders.get(0));
+            orderSequences.get(0).add(copyOfOrders.get(0));
+            copyOfOrders.remove(0);
+        }
+
+        Solution solution = new Solution(orderSequences);
+        return solution;
+    }
+
     public static void main(String[] args) {
         Problem.setUpProblem("example.json", false);
         List<Order> orders = Problem.orders;
@@ -74,14 +94,15 @@ public class ConstructionHeuristic {
             orderSequences.get(2).add(orders.get(k));
         }
 
-        System.out.println(orderSequences);
-        System.out.println();
+        //System.out.println(orderSequences);
 
         Solution solution = new Solution(orderSequences);
         Order orderToBePlaced = Problem.orders.get(Problem.orders.size() - 1);
         List<Solution> insertions = getAllFeasibleInsertions(solution, orderToBePlaced);
-        System.out.println(insertions);
+        //System.out.println(insertions);
         List<List<Integer>> indices = getAllFeasibleInsertions(orderSequences, orderToBePlaced);
-        System.out.println(indices);
+        //System.out.println(indices);
+
+        constructInitialSolution();
     }
 }
