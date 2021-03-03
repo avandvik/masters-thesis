@@ -1,6 +1,5 @@
 package alns;
 
-import data.Problem;
 import objects.Order;
 
 import java.util.*;
@@ -8,29 +7,16 @@ import java.util.stream.Collectors;
 
 public class Solution {
 
-    private List<List<Order>> orderSequences = new ArrayList<>();
-    private Random random;
+    private final List<List<Order>> orderSequences;
+    private double objectiveValue = Double.POSITIVE_INFINITY;
 
-    public Solution(int randomSeed) {
-        this.random = new Random(randomSeed);
-
-        List<Order> orderList = new ArrayList<>(Problem.orders);
-        Collections.shuffle(orderList, this.random);
-
-        for(int vesselId = 0; vesselId < Problem.vessels.size(); vesselId++) orderSequences.add(new LinkedList<>());
-
-        while(!orderList.isEmpty()) {
-            Order order = orderList.remove(this.getRandomIndex(orderList.size()));
-            orderSequences.get(this.getRandomVessel(Problem.vessels.size())).add(order);
-        }
+    public Solution(List<List<Order>> orderSequences) {
+        this.orderSequences = orderSequences;
     }
 
-    public int getRandomIndex(int listLength) {
-        return random.nextInt(listLength);
-    }
-
-    public int getRandomVessel(int numberOfVessels) {
-        return random.nextInt(numberOfVessels);
+    public Solution(List<List<Order>> orderSequences, double objectiveValue) {
+        this.orderSequences = orderSequences;
+        this.objectiveValue = objectiveValue;
     }
 
     public List<List<Order>> getOrderSequences() {
@@ -39,6 +25,14 @@ public class Solution {
 
     public List<Order> getOrderSequence(int vesselNumber) {
         return this.orderSequences.get(vesselNumber);
+    }
+
+    public double getObjectiveValue() {
+        return objectiveValue;
+    }
+
+    public void setObjectiveValue(double objectiveValue) {
+        this.objectiveValue = objectiveValue;
     }
 
     public List<List<Integer>> getInstSequences() {

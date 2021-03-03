@@ -2,6 +2,7 @@ import alns.Solution;
 import data.Problem;
 import objects.Order;
 import subproblem.SubProblem;
+import utils.Helpers;
 
 import java.util.List;
 
@@ -10,11 +11,6 @@ public class Main {
     public static void main(String[] args) {
 
         Problem.setUpProblem("example.json", false);
-        Solution solution = new Solution(5);
-
-        runSubProblem(solution);
-
-        // Testing for GitHub Actions
     }
 
     private static void runSubProblem(Solution solution) {

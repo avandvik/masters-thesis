@@ -1,4 +1,4 @@
 package alns;
 
-public class ConstructionHeursiticTest {
+public class ConstructionHeuristicTest {
 }
