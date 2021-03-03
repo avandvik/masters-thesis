@@ -22,7 +22,7 @@ public class Main {
         runSubProblem(solution);
     }
 
-    private static void runSubProblem(Solution solution) {
+    public static void runSubProblem(Solution solution) {
         List<List<Node>> shortestPaths = new ArrayList<>();
         double objectiveValue = 0.0;
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {

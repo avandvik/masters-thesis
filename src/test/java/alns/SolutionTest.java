@@ -23,13 +23,6 @@ public class SolutionTest {
         Solution solutionOne = new Solution(orderSequences);
         assertNotNull(solutionOne);
         assertEquals(orderSequences, solutionOne.getOrderSequences());
-
-        /*
-        double objectiveValue = 1000.0;
-        Solution solutionTwo = new Solution(orderSequences, objectiveValue);
-        assertNotNull(solutionTwo);
-        assertEquals(objectiveValue, solutionTwo.getObjectiveValue(), 0.0);
-         */
     }
 
     @Test
