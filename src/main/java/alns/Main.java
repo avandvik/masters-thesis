@@ -2,7 +2,6 @@ package alns;
 
 import data.Problem;
 import objects.Order;
-import subproblem.SubProblem;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,14 +13,14 @@ public class Main {
     private static Solution currentSolution;
     private static Solution bestSolution;
     private static int iterationsCurrentSolution;
+    private static List<Integer> visitedSolutions;
 
     public static void runALNS() {
 
-        // TODO: Create initial solution by calling construction heuristic
-        
+        currentSolution = Construction.constructRandomInitialSolution();
+        visitedSolutions.add(currentSolution.hashCode());
 
         int segmentIterations = 0;
-
         for (int iteration = 0; iteration < 100; iteration++) {
             segmentIterations++;
 
@@ -29,22 +28,24 @@ public class Main {
 
             // TODO: Apply heuristics to generate new candidate solution
 
-            Solution candidateSolution = createFeasibleSolution();
+            Solution candidateSolution = Construction.constructRandomInitialSolution();
 
             List<Double> rewards = acceptSolution(candidateSolution);
 
-            if (segmentIterations == 10) {
-                segmentIterations = 0;
-                resetScores();
-            } else {
-                updateScores(rewards, heuristics);
-            }
+            updateScores(rewards, heuristics);
+
+            if (segmentIterations < 10) continue;
+
+            segmentIterations = 0;
+            resetScores();
         }
     }
 
     private static List<Heuristic> chooseHeuristics() {
         Heuristic chosenDestroy = rouletteWheelSelection(destroyHeuristics);
         Heuristic chosenRepair = rouletteWheelSelection(repairHeuristics);
+        chosenDestroy.incrementSelections();
+        chosenRepair.incrementSelections();
         return new ArrayList<>(Arrays.asList(chosenDestroy, chosenRepair));
     }
 
@@ -63,22 +64,29 @@ public class Main {
         return rouletteWheel.higherEntry(Math.random()).getValue();
     }
 
-    // TODO: Parameterize rewards and research whether we need to remember all previously accepted solutions
+    // TODO: Parameterize rewards and max number of iterations for a currentSolution
     private static List<Double> acceptSolution(Solution candidateSolution) {
         List<Double> rewards = new ArrayList<>(Arrays.asList(0.0, 0.0, 0.0));
+        boolean unacceptedSolution = !visitedSolutions.contains(candidateSolution.hashCode());
+        boolean acceptCandidate = simulatedAnnealing(currentSolution.getFitness(), candidateSolution.getFitness());
         if (candidateSolution.getFitness() < bestSolution.getFitness()) {
             bestSolution = candidateSolution;
             currentSolution = candidateSolution;
-            rewards.add(0, 1.0);  // Candidate is better than global best (global improvement)
-        } else if (candidateSolution.getFitness() < currentSolution.getFitness()) {
-            rewards.add(1, 1.0);  // Candidate is better than current (local improvement)
-            if (simulatedAnnealing(currentSolution.getFitness(), candidateSolution.getFitness())) {
-                currentSolution = candidateSolution;
-                if (candidateSolution.getFitness() > currentSolution.getFitness()) {
-                    rewards.add(2, 1.0);  // Candidate is accepted when worse than current
+            visitedSolutions.add(candidateSolution.hashCode());
+            iterationsCurrentSolution = 0;
+            rewards.add(0, 33.0);
+        } else if (acceptCandidate) {
+            currentSolution = candidateSolution;
+            visitedSolutions.add(candidateSolution.hashCode());
+            iterationsCurrentSolution = 0;
+            if (unacceptedSolution) {
+                if (candidateSolution.getFitness() < currentSolution.getFitness()) {
+                    rewards.add(1, 9.0);
+                } else {
+                    rewards.add(2, 9.0);
                 }
             }
-        } else if (iterationsCurrentSolution > 50) {  // TODO: Parameterize max number of iterations with current sol
+        } else if (iterationsCurrentSolution > 50) {
             currentSolution = candidateSolution;
         }
         return rewards;
@@ -114,7 +122,5 @@ public class Main {
 
     public static void main(String[] args) {
         Problem.setUpProblem("example.json", false);
-        Solution solution = createFeasibleSolution();
-        SubProblem.runSubProblem(solution);
     }
 }

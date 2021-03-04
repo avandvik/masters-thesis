@@ -89,4 +89,9 @@ public class Solution {
         return Double.compare(solution.fitness, fitness) == 0 && Objects.equals(orderSequences,
                 solution.orderSequences) && Objects.equals(shortestPaths, solution.shortestPaths);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderSequences);
+    }
 }
