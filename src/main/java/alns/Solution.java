@@ -11,16 +11,16 @@ public class Solution {
 
     private final List<List<Order>> orderSequences;
     private List<List<Node>> shortestPaths;
-    private double objectiveValue = Double.POSITIVE_INFINITY;
+    private double fitness = Double.POSITIVE_INFINITY;
 
     public Solution(List<List<Order>> orderSequences) {
         this.orderSequences = orderSequences;
     }
 
-    public Solution(List<List<Order>> orderSequences, List<List<Node>> shortestPaths, double objectiveValue) {
+    public Solution(List<List<Order>> orderSequences, List<List<Node>> shortestPaths, double fitness) {
         this.orderSequences = orderSequences;
         this.shortestPaths = shortestPaths;
-        this.objectiveValue = objectiveValue;
+        this.fitness = fitness;
     }
 
     public List<List<Order>> getOrderSequences() {
@@ -39,12 +39,12 @@ public class Solution {
         this.shortestPaths = shortestPaths;
     }
 
-    public double getObjectiveValue() {
-        return objectiveValue;
+    public double getFitness() {
+        return fitness;
     }
 
-    public void setObjectiveValue(double objectiveValue) {
-        this.objectiveValue = objectiveValue;
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
     }
 
     public List<List<Integer>> getInstSequences() {
@@ -86,7 +86,7 @@ public class Solution {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Solution solution = (Solution) o;
-        return Double.compare(solution.objectiveValue, objectiveValue) == 0 && Objects.equals(orderSequences,
+        return Double.compare(solution.fitness, fitness) == 0 && Objects.equals(orderSequences,
                 solution.orderSequences) && Objects.equals(shortestPaths, solution.shortestPaths);
     }
 }
