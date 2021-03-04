@@ -66,13 +66,9 @@ public class Construction {
 
         List<Order> copyOfOrders = Helpers.deepCopyList(Problem.orders);
         List<List<Order>> orderSequences = new ArrayList<>();
-        List<List<Order>> emptyOrderSequences = new ArrayList<>();
 
         // Creating order sequences
         for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
-
-        // Creating empty order sequences
-        for (int i = 0; i < Problem.getNumberOfVessels(); i++) emptyOrderSequences.add(new LinkedList<>());
 
         while (!copyOfOrders.isEmpty()) {
             List<List<Integer>> feasibleInsertions = getAllFeasibleInsertions(orderSequences, copyOfOrders.get(0));
@@ -80,10 +76,10 @@ public class Construction {
             List<Integer> feasibleFleetVessels = new ArrayList<>();
             List<Integer> feasibleSpotVessels = new ArrayList<>();
 
-            // Returning empty solution if there are still orders to be placed and there are no feasible insertions
+            // Returning null if there are still orders to be placed and there are no feasible insertions
             for (int i = 0; i < feasibleInsertions.size(); i++) {
                 if (!feasibleInsertions.get(i).isEmpty()) break;
-                if (i == feasibleInsertions.size()-1) return new Solution(emptyOrderSequences);
+                if (i == feasibleInsertions.size()-1) return null;
             }
 
             // Categorizing feasible fleet and spot vessels given feasible insertions

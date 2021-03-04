@@ -62,13 +62,8 @@ public class ConstructionTest {
 
         // Setting up problem with too many orders -> Not all orders are placed
         Problem.setUpProblem("construction/tooManyOrders.json",true);
-        // Creating empty order sequences
-        List<List<Order>> emptyOrderSequences = new ArrayList<>();
-        for (int i = 0; i < Problem.getNumberOfVessels(); i++) emptyOrderSequences.add(new LinkedList<>());
-        Solution emptySolution = new Solution(emptyOrderSequences);
-        // Too many orders -> Empty solution should be returned
-        Solution expectedEmptySolution = Construction.constructRandomInitialSolution();
-        assertEquals(expectedEmptySolution,emptySolution);
+        Solution expectedNullSolution = Construction.constructRandomInitialSolution();
+        assertNull(expectedNullSolution);
 
     }
 }
