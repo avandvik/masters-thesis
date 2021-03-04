@@ -18,6 +18,7 @@ public class Main {
     public static void runALNS() {
 
         // TODO: Create initial solution by calling construction heuristic
+        
 
         int segmentIterations = 0;
 
