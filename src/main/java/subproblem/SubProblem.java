@@ -59,7 +59,7 @@ public class SubProblem {
             objectiveValue += subProblem != null ? subProblem.getShortestPathCost() : 0.0;
         }
         solution.setShortestPaths(shortestPaths);
-        solution.setObjectiveValue(objectiveValue);
+        solution.setFitness(objectiveValue);
 
         solution.printSchedules();
     }

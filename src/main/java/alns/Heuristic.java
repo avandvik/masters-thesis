@@ -1,6 +1,6 @@
 package alns;
 
-public abstract class Operator {
+public abstract class Heuristic {
 
     private double weight;
     private double score;
@@ -18,12 +18,17 @@ public abstract class Operator {
         this.score += points;
     }
 
+    public void resetScoreAndUpdateWeight() {
+        this.smoothenWeights();
+        this.score = 0.0;
+    }
+
     public void incrementSelections() {
         this.selections++;
     }
 
     // TODO: Parameterize r (replace 0.8 with 1 - r and 0.2 with r)
-    public void smoothenWeights() {
+    private void smoothenWeights() {
         this.weight = 0.8 * this.weight + 0.2 * (this.score / this.selections);
     }
 }
