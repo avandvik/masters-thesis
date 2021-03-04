@@ -136,6 +136,7 @@ public class Evaluator {
     }
 
     private static boolean isSpread(List<Integer> instSequence) {
+        if (instSequence.isEmpty()) return false;
         List<Integer> seen = new ArrayList<>();
         seen.add(instSequence.get(0));
         for (int i = 1; i < instSequence.size(); i++) {
