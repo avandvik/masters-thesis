@@ -86,7 +86,7 @@ public class Solution {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Solution solution = (Solution) o;
-        return Double.compare(solution.objectiveValue, objectiveValue) == 0 && Objects.equals(orderSequences,
+        return Double.compare(solution.fitness, fitness) == 0 && Objects.equals(orderSequences,
                 solution.orderSequences) && Objects.equals(shortestPaths, solution.shortestPaths);
     }
 }
