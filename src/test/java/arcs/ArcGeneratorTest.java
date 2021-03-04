@@ -1,4 +1,4 @@
-package subproblem;
+package arcs;
 
 import arcs.ArcGenerator;
 import data.Problem;

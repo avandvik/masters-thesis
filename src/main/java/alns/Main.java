@@ -13,11 +13,12 @@ public class Main {
     private static Solution currentSolution;
     private static Solution bestSolution;
     private static int iterationsCurrentSolution;
-    private static List<Integer> visitedSolutions;
+    private final static List<Integer> visitedSolutions = new ArrayList<>();
 
     public static void runALNS() {
 
         currentSolution = Construction.constructRandomInitialSolution();
+        bestSolution = currentSolution;
         visitedSolutions.add(currentSolution.hashCode());
 
         int segmentIterations = 0;
@@ -65,7 +66,7 @@ public class Main {
     }
 
     // TODO: Parameterize rewards and max number of iterations for a currentSolution
-    private static List<Double> acceptSolution(Solution candidateSolution) {
+    public static List<Double> acceptSolution(Solution candidateSolution) {
         List<Double> rewards = new ArrayList<>(Arrays.asList(0.0, 0.0, 0.0));
         boolean unacceptedSolution = !visitedSolutions.contains(candidateSolution.hashCode());
         boolean acceptCandidate = simulatedAnnealing(currentSolution.getFitness(), candidateSolution.getFitness());
@@ -94,7 +95,7 @@ public class Main {
 
     // TODO: Parameterize temperature and implement cooling
     private static boolean simulatedAnnealing(double currentFitness, double candidateFitness) {
-        return Math.random() < Math.exp(-(currentFitness - candidateFitness) / 10);
+        return Math.random() < Math.exp(-(candidateFitness - currentFitness) / 100);
     }
 
     private static void updateScores(List<Double> rewards, List<Heuristic> heuristics) {
@@ -108,6 +109,22 @@ public class Main {
     private static void resetScores() {
         for (Heuristic heuristic : destroyHeuristics) heuristic.resetScoreAndUpdateWeight();
         for (Heuristic heuristic: repairHeuristics) heuristic.resetScoreAndUpdateWeight();
+    }
+
+    public static Solution getCurrentSolution() {
+        return currentSolution;
+    }
+
+    public static Solution getBestSolution() {
+        return bestSolution;
+    }
+
+    public static void setCurrentSolution(Solution solution) {
+        currentSolution = solution;
+    }
+
+    public static void setBestSolution(Solution solution) {
+        bestSolution = solution;
     }
 
     private static Solution createFeasibleSolution() {
