@@ -60,15 +60,13 @@ public class SubProblem {
         }
         solution.setShortestPaths(shortestPaths);
         solution.setFitness(objectiveValue);
-
-        solution.printSchedules();
     }
 
     public static SubProblem runSingleSubProblem(List<Order> orderSequence, int vesselNumber) {
         try {
             SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
             subProblem.solve();
-            System.out.println(subProblem.getShortestPath() + ": " + subProblem.getShortestPathCost());
+            // System.out.println(subProblem.getShortestPath() + ": " + subProblem.getShortestPathCost());
             return subProblem;
         } catch (IllegalArgumentException e) {
             // e.printStackTrace();
