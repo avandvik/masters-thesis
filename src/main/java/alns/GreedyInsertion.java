@@ -48,8 +48,6 @@ public class GreedyInsertion {
 
         Solution solution = new Solution(orderSequences);
         Order orderToBePlaced = Problem.orders.get(Problem.orders.size() - 1);
-
-        Solution basicGreedySolution = getGreedyInsertion(solution,orderToBePlaced);
-        // System.out.println(basicGreedySolution);
+        Solution basicGreedySolution = getGreedyInsertion(solution, orderToBePlaced);
     }
 }
