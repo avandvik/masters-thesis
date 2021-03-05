@@ -29,7 +29,7 @@ public class RandomRemovalTest {
         int ordersBefore = counter;
         counter = 0;
 
-        Solution newSolutionOne = RandomRemoval.removeRandomOrders(solution,2);
+        Solution newSolutionOne = RandomRemoval.removeRandomOrders(solution, numberOfOrders);
         List<List<Order>> newOrderSequencesOne = newSolutionOne.getOrderSequences();
         for (List<Order> orderSequence : newOrderSequencesOne) {
             for (Order order : orderSequence) counter++;
