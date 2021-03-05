@@ -8,14 +8,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class GreedyInsertion {
+public class GreedyInsertion extends Heuristic {
 
     public static Solution getGreedyInsertion(Solution partialSolution, Order order) {
         List<Solution> feasibleInsertions = Construction.getAllFeasibleInsertions(partialSolution,order);
         if (feasibleInsertions.isEmpty()) return null;
 
         double bestObjective = Double.POSITIVE_INFINITY;
-        partialSolution.setFitness(bestObjective);
         Solution bestSolution = partialSolution;
 
         for (Solution solution : feasibleInsertions) {
