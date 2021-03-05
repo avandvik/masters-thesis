@@ -2,7 +2,7 @@ package alns;
 
 import data.Problem;
 import objects.Order;
-import utils.Helpers;
+import subproblem.SubProblem;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -10,51 +10,46 @@ import java.util.List;
 
 public class GreedyInsertion {
 
-    public static Solution basicGreedyInsertion(Solution partialSolution, Order order) {
-
-        List<List<Order>> copyOfOrderSequences = Helpers.deepCopyList(partialSolution.getOrderSequences());
-        List<List<Order>> newOrderSequences = new ArrayList<>();
-        //for (int i = 0; i < Problem.getNumberOfVessels(); i++) newOrderSequences.add(new LinkedList<>(o));
-        for (List<Order> orderSequence : copyOfOrderSequences) newOrderSequences.add(orderSequence);
-        /* System.out.println(Problem.getNumberOfVessels());
-        System.out.println(newOrderSequences.size());
-        System.out.println(newOrderSequences); */
-        while (newOrderSequences.size() < Problem.getNumberOfVessels()) {
-            newOrderSequences.add(new LinkedList<>());
-            System.out.println(newOrderSequences);
-        }
-
-        List<List<Integer>> allFeasibleInsertions = Construction.getAllFeasibleInsertions(newOrderSequences,order);
+    public static Solution getGreedyInsertion(Solution partialSolution, Order order) {
+        List<Solution> feasibleInsertions = Construction.getAllFeasibleInsertions(partialSolution,order);
+        if (feasibleInsertions.isEmpty()) return null;
 
         double bestObjective = Double.POSITIVE_INFINITY;
-        List<Integer> bestObjetiveIndices = new ArrayList<>();
+        partialSolution.setFitness(bestObjective);
+        Solution bestSolution = partialSolution;
 
-        for (int i = 0; i < allFeasibleInsertions.size(); i++) {
-            if (!allFeasibleInsertions.get(i).isEmpty()) break;
-            if (i == allFeasibleInsertions.size()-1) return null;
-        }
-
-        for (int j = 0; j < allFeasibleInsertions.size(); j++) {
-            for (int k = 0; k < allFeasibleInsertions.get(j).size(); k++) {
-                newOrderSequences.get(j).add(k,order);
-                Solution tempSolution = new Solution(newOrderSequences);
-                double tempObjective = tempSolution.getObjectiveValue();
-                if (tempObjective < bestObjective) {
-                    bestObjective = tempObjective;
-                    bestObjetiveIndices.clear();
-                    bestObjetiveIndices.add(j);
-                    bestObjetiveIndices.add(k);
-                }
-                newOrderSequences.get(j).remove(order);
+        for (Solution solution : feasibleInsertions) {
+            SubProblem.runSubProblem(solution);
+            double tempObjective = solution.getFitness();
+            if (tempObjective < bestObjective) {
+                bestObjective = tempObjective;
+                bestSolution = solution;
             }
         }
 
-        newOrderSequences.get(bestObjetiveIndices.get(0)).add(bestObjetiveIndices.get(1),order);
-        return new Solution(newOrderSequences);
+        return bestSolution;
     }
 
     public static void main(String[] args) {
-        // Solution basicGreedySolution = basicGreedyInsertion(solution,orderToBePlaced);
+        Problem.setUpProblem("example.json", false);
+        List<Order> orders = Problem.orders;
+        List<List<Order>> orderSequences = new ArrayList<>();
+        for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
+
+        for (int i = 0; i < 2; i++) {
+            orderSequences.get(0).add(orders.get(i));
+        }
+        for (int j = 2; j < 5; j++) {
+            orderSequences.get(1).add(orders.get(j));
+        }
+        for (int k = 5; k < 7; k++) {
+            orderSequences.get(2).add(orders.get(k));
+        }
+
+        Solution solution = new Solution(orderSequences);
+        Order orderToBePlaced = Problem.orders.get(Problem.orders.size() - 1);
+
+        Solution basicGreedySolution = getGreedyInsertion(solution,orderToBePlaced);
         // System.out.println(basicGreedySolution);
     }
 }
