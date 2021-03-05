@@ -3,6 +3,7 @@ package data;
 import objects.Installation;
 import objects.Order;
 import objects.Vessel;
+import utils.DistanceCalculator;
 import utils.IO;
 
 import java.util.*;
@@ -65,6 +66,17 @@ public class Problem {
 
     public static Installation getInstallation(Order order) {
         return installations.get(order.getInstallationId());
+    }
+
+    public static double findMaxDistance() {
+        double maxDistance = Double.NEGATIVE_INFINITY;
+        for (Installation fromInst : installations) {
+            for (Installation toInst : installations) {
+                double distance = DistanceCalculator.distance(fromInst, toInst, "N");
+                if (distance > maxDistance) maxDistance = distance;
+            }
+        }
+        return maxDistance;
     }
 
     /* =========== ORDERS =========== */

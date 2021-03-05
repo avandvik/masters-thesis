@@ -56,15 +56,12 @@ public class GreedyInsertionTest {
         expectedOrderSequencesTwo.get(0).add(orders.get(2));
         for (int i = 0; i < 3; i++) {
             if (i != 2) expectedOrderSequencesTwo.get(0).add(orders.get(i));
-            System.out.println(expectedOrderSequencesTwo);
         }
         for (int j = 3; j < 5; j++) {
             expectedOrderSequencesTwo.get(1).add(orders.get(j));
-            System.out.println(expectedOrderSequencesTwo);
         }
         for (int k = 5; k < 8; k++) {
             expectedOrderSequencesTwo.get(2).add(orders.get(k));
-            System.out.println(expectedOrderSequencesTwo);
         }
 
         Solution expectedSolutionTwo = new Solution(expectedOrderSequencesTwo);
