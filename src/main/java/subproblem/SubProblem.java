@@ -50,7 +50,7 @@ public class SubProblem {
                 "Invalid vesselNumber passed to SubProblem.");
     }
 
-    public static void runSubProblem(Solution solution) {
+    public static double runSubProblem(Solution solution) {
         List<List<Node>> shortestPaths = new ArrayList<>();
         double objectiveValue = 0.0;
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
@@ -59,7 +59,7 @@ public class SubProblem {
             objectiveValue += subProblem != null ? subProblem.getShortestPathCost() : 0.0;
         }
         solution.setShortestPaths(shortestPaths);
-        solution.setFitness(objectiveValue);
+        return objectiveValue;
     }
 
     public static SubProblem runSingleSubProblem(List<Order> orderSequence, int vesselNumber) {

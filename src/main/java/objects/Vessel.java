@@ -1,5 +1,7 @@
 package objects;
 
+import java.util.Objects;
+
 public class Vessel implements Comparable<Vessel>{
 
     private int id;
@@ -43,5 +45,13 @@ public class Vessel implements Comparable<Vessel>{
             return 1;
         }
         return 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vessel vessel = (Vessel) o;
+        return id == vessel.id;
     }
 }

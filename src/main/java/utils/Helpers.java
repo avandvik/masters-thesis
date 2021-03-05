@@ -54,4 +54,8 @@ public class Helpers {
         for (int i = 0; i < orderSequence.size(); i++) instSequence.add(orderSequence.get(i).getInstallationId());
         return instSequence;
     }
+
+    public static double getRandomDouble(double min, double max) {
+        return Math.random() * (max - min) + min;
+    }
 }

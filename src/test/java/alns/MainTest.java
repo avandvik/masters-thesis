@@ -20,7 +20,7 @@ public class MainTest {
     public void testAcceptSolution() {
         Problem.setUpProblem("basicTestData.json", true);
 
-        Solution solutionOne = createFeasibleSolution(2, Problem.getNumberOfOrders());
+        Solution solutionOne = createFeasibleSolution(2, Problem.getNumberOfOrders() - 1);
         Solution solutionTwo = createFeasibleSolution(3, Problem.getNumberOfOrders());
         Solution solutionThree = createFeasibleSolution(5, Problem.getNumberOfOrders());
 
@@ -28,9 +28,9 @@ public class MainTest {
         assertNotNull(solutionTwo);
         assertNotNull(solutionThree);
 
-        SubProblem.runSubProblem(solutionOne);  // Fitness 2726
-        SubProblem.runSubProblem(solutionTwo);  // Fitness 2561
-        SubProblem.runSubProblem(solutionThree);  // Fitness 2594
+        solutionOne.setFitness();  // Fitness 2726
+        solutionTwo.setFitness();  // Fitness 2561
+        solutionThree.setFitness();  // Fitness 2594
 
         Main.setCurrentSolution(solutionOne);
         Main.setBestSolution(solutionOne);

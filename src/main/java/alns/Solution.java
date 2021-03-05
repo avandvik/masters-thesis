@@ -1,8 +1,11 @@
 package alns;
 
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import subproblem.Node;
+import subproblem.SubProblem;
+import utils.Helpers;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -59,12 +62,20 @@ public class Solution {
         this.shortestPaths = shortestPaths;
     }
 
-    public double getFitness() {
-        return fitness;
+    public double getFitness(boolean noise) {
+        return fitness + (noise ? Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise) : 0.0);
     }
 
-    public void setFitness(double fitness) {
-        this.fitness = fitness;
+    public void setFitness() {
+        double subProblemObjective = SubProblem.runSubProblem(this);
+
+        // TODO: Parameterize penalty - maybe each order can have a penalty field?
+        double postponementPenalty = this.postponedOrders.stream()
+                .map(o -> o.getSize() * 100.0)
+                .mapToDouble(Double::doubleValue)
+                .sum();
+
+        this.fitness = subProblemObjective + postponementPenalty;
     }
 
     public List<List<Integer>> getInstSequences() {
@@ -97,9 +108,11 @@ public class Solution {
     }
 
     private Set<Order> inferPostponedOrders(List<List<Order>> orderSequences) {
-        return orderSequences.stream()
-                .flatMap(Collection::stream)
-                .filter(order -> Problem.orders.contains(order))
+        return Problem.orders.stream()
+                .filter(o -> !orderSequences.stream()
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList())
+                        .contains(o))
                 .collect(Collectors.toSet());
     }
 

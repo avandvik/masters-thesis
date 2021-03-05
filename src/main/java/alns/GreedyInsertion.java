@@ -2,7 +2,6 @@ package alns;
 
 import data.Problem;
 import objects.Order;
-import subproblem.SubProblem;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,8 +17,8 @@ public class GreedyInsertion extends Heuristic {
         Solution bestSolution = partialSolution;
 
         for (Solution solution : feasibleInsertions) {
-            SubProblem.runSubProblem(solution);
-            double tempObjective = solution.getFitness();
+            solution.setFitness();
+            double tempObjective = solution.getFitness(false);
             if (tempObjective < bestObjective) {
                 bestObjective = tempObjective;
                 bestSolution = solution;

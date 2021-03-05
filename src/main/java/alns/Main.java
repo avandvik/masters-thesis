@@ -69,19 +69,18 @@ public class Main {
     public static List<Double> acceptSolution(Solution candidateSolution) {
         List<Double> rewards = new ArrayList<>(Arrays.asList(0.0, 0.0, 0.0));
         boolean unacceptedSolution = !visitedSolutions.contains(candidateSolution.hashCode());
-        boolean acceptCandidate = simulatedAnnealing(currentSolution.getFitness(), candidateSolution.getFitness());
-        if (candidateSolution.getFitness() < bestSolution.getFitness()) {
+        if (candidateSolution.getFitness(false) < bestSolution.getFitness(false)) {
             bestSolution = candidateSolution;
             currentSolution = candidateSolution;
             visitedSolutions.add(candidateSolution.hashCode());
             iterationsCurrentSolution = 0;
             rewards.add(0, 33.0);
-        } else if (acceptCandidate) {
+        } else if (simulatedAnnealing(currentSolution.getFitness(false), candidateSolution.getFitness(false))) {
             currentSolution = candidateSolution;
             visitedSolutions.add(candidateSolution.hashCode());
             iterationsCurrentSolution = 0;
             if (unacceptedSolution) {
-                if (candidateSolution.getFitness() < currentSolution.getFitness()) {
+                if (candidateSolution.getFitness(false) < currentSolution.getFitness(false)) {
                     rewards.add(1, 9.0);
                 } else {
                     rewards.add(2, 9.0);
@@ -108,7 +107,7 @@ public class Main {
 
     private static void resetScores() {
         for (Heuristic heuristic : destroyHeuristics) heuristic.resetScoreAndUpdateWeight();
-        for (Heuristic heuristic: repairHeuristics) heuristic.resetScoreAndUpdateWeight();
+        for (Heuristic heuristic : repairHeuristics) heuristic.resetScoreAndUpdateWeight();
     }
 
     public static Solution getCurrentSolution() {
