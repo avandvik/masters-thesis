@@ -16,7 +16,7 @@ public class RandomRemovalTest {
     @Test
     @DisplayName("test RandomRemoval")
     public void randomRemovalTest() {
-        Problem.setUpProblem("example.json", false);
+        Problem.setUpProblem("basicTestData.json", true);
         Solution solution = createSolution();
         int numberOfOrders = 2;
         int counter = 0;
