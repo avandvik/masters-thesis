@@ -19,7 +19,7 @@ public class Solution {
 
     public Solution(List<List<Order>> orderSequences) {
         this.orderSequences = orderSequences;
-        this.postponedOrders = inferPostponedOrders(orderSequences);
+        this.postponedOrders = new HashSet<>();
     }
 
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders) {
@@ -29,7 +29,7 @@ public class Solution {
 
     public Solution(List<List<Order>> orderSequences, List<List<Node>> shortestPaths, double fitness) {
         this.orderSequences = orderSequences;
-        this.postponedOrders = inferPostponedOrders(orderSequences);
+        this.postponedOrders = new HashSet<>();
         this.shortestPaths = shortestPaths;
         this.fitness = fitness;
     }
@@ -86,6 +86,20 @@ public class Solution {
         return instSequences;
     }
 
+    public boolean isPartial() {
+        Set<Order> unscheduledOrders = inferUnscheduledOrders(this.orderSequences);
+        return !this.postponedOrders.containsAll(unscheduledOrders);
+    }
+
+    private Set<Order> inferUnscheduledOrders(List<List<Order>> orderSequences) {
+        return Problem.orders.stream()
+                .filter(o -> !orderSequences.stream()
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList())
+                        .contains(o))
+                .collect(Collectors.toSet());
+    }
+
     public void printSchedules() {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             System.out.println("Schedule for " + Problem.getVessel(vesselNumber));
@@ -105,15 +119,6 @@ public class Solution {
                 System.out.println("\t" + orderName + "\n" + schedule);
             }
         }
-    }
-
-    private Set<Order> inferPostponedOrders(List<List<Order>> orderSequences) {
-        return Problem.orders.stream()
-                .filter(o -> !orderSequences.stream()
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toList())
-                        .contains(o))
-                .collect(Collectors.toSet());
     }
 
     @Override

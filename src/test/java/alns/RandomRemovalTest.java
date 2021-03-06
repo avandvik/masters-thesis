@@ -1,5 +1,6 @@
 package alns;
 
+import alns.heuristics.RandomRemoval;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,8 +31,11 @@ public class RandomRemovalTest {
         int ordersBefore = counter;
         counter = 0;
 
-        Solution newSolutionOne = RandomRemoval.removeRandomOrders(solution, numberOfOrders);
-        List<List<Order>> newOrderSequencesOne = newSolutionOne.getOrderSequences();
+        RandomRemoval randomRemoval = new RandomRemoval("random", true, false);
+
+        Set<Order> ordersToRemove = randomRemoval.findOrdersToRemove(solution, numberOfOrders);
+        Solution partialSolutionOne = randomRemoval.destroy(solution, ordersToRemove);
+        List<List<Order>> newOrderSequencesOne = partialSolutionOne.getOrderSequences();
         for (List<Order> orderSequence : newOrderSequencesOne) {
             for (Order order : orderSequence) counter++;
         }
@@ -39,9 +44,9 @@ public class RandomRemovalTest {
 
         assertEquals(ordersBefore,ordersAfter + numberOfOrders);
 
-        Solution newSolutionTwo = RandomRemoval.removeRandomOrders(newSolutionOne,0);
-        assertEquals(newSolutionOne, newSolutionTwo);
-
+        Set<Order> ordersToRemoveTwo = randomRemoval.findOrdersToRemove(partialSolutionOne, 0);
+        Solution partialSolutionTwo = randomRemoval.destroy(partialSolutionOne, ordersToRemoveTwo);
+        assertEquals(partialSolutionOne, partialSolutionTwo);
     }
 
     private Solution createSolution() {

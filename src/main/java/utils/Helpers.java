@@ -21,6 +21,15 @@ public class Helpers {
         return new ArrayList<>(original);
     }
 
+    public static <T> List<List<T>> deepCopy2DList(List<List<T>> original) {
+        List<List<T>> copy = new ArrayList<>();
+        for (List<T> row : original) {
+            List<T> rowCopy = new LinkedList<>(row);
+            copy.add(rowCopy);
+        }
+        return copy;
+    }
+
     public static Double getKeyWithMinValue(Map<Double, Double> doubleToDouble) {
         Map.Entry<Double, Double> min = null;
         for (Map.Entry<Double, Double> entry : doubleToDouble.entrySet()) {

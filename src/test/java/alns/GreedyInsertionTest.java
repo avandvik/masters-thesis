@@ -1,5 +1,6 @@
 package alns;
 
+import alns.heuristics.GreedyInsertion;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -46,10 +47,12 @@ public class GreedyInsertionTest {
             partialOrderSequencesTwo.get(2).add(orders.get(k));
         }
 
+        GreedyInsertion greedyInsertion = new GreedyInsertion("greedy", false, true);
+
         Solution expectedSolution = new Solution(expectedOrderSequencesOne);
         Solution partialSolution = new Solution(partialOrderSequencesOne);
         Order orderToBePlaced = Problem.orders.get(0);
-        Solution newSolution = GreedyInsertion.getGreedyInsertion(partialSolution,orderToBePlaced);
+        Solution newSolution = greedyInsertion.getGreedyInsertion(partialSolution,orderToBePlaced);
         assertEquals(expectedSolution,newSolution);
 
         // Order to be placed has eight possible insertions. Expected to be put first in first sequence/vessel.
@@ -67,7 +70,7 @@ public class GreedyInsertionTest {
         Solution expectedSolutionTwo = new Solution(expectedOrderSequencesTwo);
         Solution partialSolutionTwo = new Solution(partialOrderSequencesTwo);
         Order orderToBePlacedTwo = Problem.orders.get(2);
-        Solution newSolutionTwo = GreedyInsertion.getGreedyInsertion(partialSolutionTwo, orderToBePlacedTwo);
+        Solution newSolutionTwo = greedyInsertion.getGreedyInsertion(partialSolutionTwo, orderToBePlacedTwo);
         assertEquals(expectedSolutionTwo,newSolutionTwo);
     }
 }

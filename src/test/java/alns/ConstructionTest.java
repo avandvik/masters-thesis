@@ -5,10 +5,7 @@ import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -50,6 +47,11 @@ public class ConstructionTest {
                 expectedSolutions.add(newSolution);
             }
         }
+
+        Set<Order> postponedOrder = new HashSet<>(Arrays.asList(orderToBePlaced));
+        Solution postponedSolution = new Solution(orderSequences, postponedOrder);
+        expectedSolutions.add(postponedSolution);
+
         List<Solution> solutions = Construction.getAllFeasibleInsertions(originalSolution, orderToBePlaced);
         assertEquals(expectedSolutions, solutions);
     }

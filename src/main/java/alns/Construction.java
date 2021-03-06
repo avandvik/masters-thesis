@@ -4,29 +4,25 @@ import data.Problem;
 import objects.Order;
 import utils.Helpers;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Construction {
 
-    public static List<Solution> getAllFeasibleInsertions(Solution solution, Order order) {
+    public static List<Solution> getAllFeasibleInsertions(Solution partialSolution, Order order) {
+        /* Returns the solutions resulting from inserting the order in any order sequence or the postponement set */
         List<Solution> solutions = new ArrayList<>();
 
         // Copy orderSequences of original solution
         List<List<Order>> originalOrderSequences = new ArrayList<>();
-        for (List<Order> orderSequence : solution.getOrderSequences()) {
+        for (List<Order> orderSequence : partialSolution.getOrderSequences()) {
             originalOrderSequences.add(new LinkedList<>(orderSequence));
         }
 
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-
             for (int i = 0; i <= originalOrderSequences.get(vesselNumber).size(); i++) {
-
                 List<Order> orderSequence = new LinkedList<>(originalOrderSequences.get(vesselNumber));
                 orderSequence.add(i, order);
-
                 List<List<Order>> orderSequences = new ArrayList<>();
                 for (int j = 0; j < Problem.getNumberOfVessels(); j++) {
                     if (j == vesselNumber) {
@@ -35,11 +31,15 @@ public class Construction {
                     }
                     orderSequences.add(j, new LinkedList<>(originalOrderSequences.get(j)));
                 }
-
                 Solution newSolution = new Solution(orderSequences);
                 if (Evaluator.isFeasible(newSolution)) solutions.add(newSolution);
             }
         }
+
+        // Add the option of postponing the order
+        Set<Order> postponed = new HashSet<>(Collections.singletonList(order));
+        solutions.add(new Solution(partialSolution.getOrderSequences(), postponed));
+
         return solutions;
     }
 
@@ -109,34 +109,9 @@ public class Construction {
             copyOfOrders.remove(0);
         }
 
-        return new Solution(orderSequences);
-    }
-
-    public static void main(String[] args) {
-        Problem.setUpProblem("example.json", false);
-        List<Order> orders = Problem.orders;
-        List<List<Order>> orderSequences = new ArrayList<>();
-        for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
-
-        for (int i = 0; i < 2; i++) {
-            orderSequences.get(0).add(orders.get(i));
-        }
-        for (int j = 2; j < 5; j++) {
-            orderSequences.get(1).add(orders.get(j));
-        }
-        for (int k = 5; k < 7; k++) {
-            orderSequences.get(2).add(orders.get(k));
-        }
-
         Solution solution = new Solution(orderSequences);
-        Order orderToBePlaced = Problem.orders.get(Problem.orders.size() - 1);
-        List<Solution> insertions = getAllFeasibleInsertions(solution, orderToBePlaced);
-        // insertions.stream().forEach(System.out::println);
+        solution.setFitness();
 
-        List<List<Integer>> indices = getAllFeasibleInsertions(orderSequences, orderToBePlaced);
-        // System.out.println(indices);
-
-        Solution initialRandomSolution = constructRandomInitialSolution();
-        // System.out.println(initialRandomSolution);
+        return solution;
     }
 }
