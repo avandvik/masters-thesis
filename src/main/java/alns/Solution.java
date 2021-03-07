@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 public class Solution {
 
+    // TODO: Tidy up in Constructor game and isPartial
+
     private final List<List<Order>> orderSequences;
     private final Set<Order> postponedOrders;
     private List<List<Node>> shortestPaths;

@@ -8,8 +8,9 @@ import java.util.*;
 
 public class Construction {
 
-    private static Random random = new Random();
+    private final static Random random = new Random();
 
+    // TODO: Tidy up in this method - should it be used at all? Must be looked at together with the heuristics
     public static List<Solution> getAllFeasibleInsertions(Solution partialSolution, Order order) {
         /* Returns the solutions resulting from inserting the order in any order sequence or the postponement set */
         List<Solution> solutions = new ArrayList<>();

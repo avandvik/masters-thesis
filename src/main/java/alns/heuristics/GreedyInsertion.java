@@ -14,6 +14,7 @@ public class GreedyInsertion extends Heuristic implements Repairer {
         super(name, destroy, repair);
     }
 
+    // TODO: Solve smaller subproblems for each insertion, and implement cache (in SubProblem? In Main?)
     public Solution getGreedyInsertion(Solution partialSolution, Order order) {
         /* Inserts order in an available vessel, a spot vessel, or the set of postponed orders */
         List<Solution> feasibleInsertions = Construction.getAllFeasibleInsertions(partialSolution,order);
