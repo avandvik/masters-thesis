@@ -12,9 +12,14 @@ import java.util.*;
 
 public class Evaluator {
 
-    // DOES NOT CHECK FOR PARTIAL
-
     public static boolean isFeasible(Solution solution) {
+        return isFeasibleLoad(solution)
+                && isFeasibleDuration(solution)
+                && isFeasibleVisits(solution)
+                && !solution.isPartial();
+    }
+
+    public static boolean isPartiallyFeasible(Solution solution) {
         return isFeasibleLoad(solution)
                 && isFeasibleDuration(solution)
                 && isFeasibleVisits(solution);

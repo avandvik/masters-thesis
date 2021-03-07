@@ -17,17 +17,20 @@ public class Helpers {
         return orderSequence;
     }
 
-    public static <T> List<T> deepCopyList(List<T> original) {
-        return new ArrayList<>(original);
+    public static <T> List<T> deepCopyList(List<T> original, boolean linkedList) {
+        return linkedList ? new LinkedList<>(original) : new ArrayList<>(original);
     }
 
     public static <T> List<List<T>> deepCopy2DList(List<List<T>> original) {
         List<List<T>> copy = new ArrayList<>();
-        for (List<T> row : original) {
-            List<T> rowCopy = new LinkedList<>(row);
-            copy.add(rowCopy);
-        }
+        for (List<T> row : original) copy.add(new LinkedList<>(row));
         return copy;
+    }
+
+    public static List<List<Order>> createEmptyOrderSequences() {
+        List<List<Order>> orderSequences = new ArrayList<>();
+        for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
+        return orderSequences;
     }
 
     public static Double getKeyWithMinValue(Map<Double, Double> doubleToDouble) {

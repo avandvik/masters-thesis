@@ -21,13 +21,13 @@ public class ConstructionTest {
         for (int i = 2; i < 5; i++) orderSequences.get(1).add(Problem.getOrder(i));
         for (int i = 5; i < 7; i++) orderSequences.get(2).add(Problem.getOrder(i));
         Order orderToBePlaced = Problem.orders.get(Problem.orders.size() - 1);
-        List<List<Integer>> expectedIndices = new ArrayList<>();
+        Map<Integer, List<Integer>> expectedIndices = new HashMap<>();
         List<Integer> firstRowIndices = new ArrayList<>(Arrays.asList(0, 2));
         List<Integer> secondRowIndices = new ArrayList<>(Arrays.asList(0, 1, 3));
         List<Integer> thirdRowIndices = new ArrayList<>(Arrays.asList(0, 1, 2));
-        expectedIndices.add(firstRowIndices);
-        expectedIndices.add(secondRowIndices);
-        expectedIndices.add(thirdRowIndices);
+        expectedIndices.put(0, firstRowIndices);
+        expectedIndices.put(1, secondRowIndices);
+        expectedIndices.put(2, thirdRowIndices);
         assertEquals(expectedIndices, Construction.getAllFeasibleInsertions(orderSequences, orderToBePlaced));
         Solution originalSolution = new Solution(orderSequences);
         List<Solution> expectedSolutions = new ArrayList<>();
@@ -60,7 +60,7 @@ public class ConstructionTest {
     @DisplayName("test constructRandomInitialSolution")
     public void constructRandomInitialSolutionTest() {
         Problem.setUpProblem("basicTestData.json",true);
-        assertTrue(Evaluator.isFeasible(Construction.constructRandomInitialSolution()));
+        assertTrue(Evaluator.isPartiallyFeasible(Construction.constructRandomInitialSolution()));
 
         // Setting up problem with too many orders -> Not all orders are placed
         Problem.setUpProblem("construction/tooManyOrders.json",true);

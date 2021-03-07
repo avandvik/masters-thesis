@@ -12,6 +12,13 @@ import objects.Order;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/*
+TODO:
+    - One constructor in Solution with better control
+    - Consider whether Solution should hold feasibility info
+    - Cache solved sub problems
+ */
+
 public class Main {
 
     private static List<Heuristic> destroyHeuristics;

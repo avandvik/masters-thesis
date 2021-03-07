@@ -22,9 +22,16 @@ public class Solution {
         this.postponedOrders = new HashSet<>();
     }
 
+    // Consider only using this
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders) {
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
+    }
+
+    public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, boolean setFitness) {
+        this.orderSequences = orderSequences;
+        this.postponedOrders = postponedOrders;
+        if (setFitness) this.setFitness();
     }
 
     public Solution(List<List<Order>> orderSequences, List<List<Node>> shortestPaths, double fitness) {
@@ -86,6 +93,7 @@ public class Solution {
         return instSequences;
     }
 
+    // TODO: Consider moving to Evaluator
     public boolean isPartial() {
         Set<Order> unscheduledOrders = inferUnscheduledOrders(this.orderSequences);
         return !this.postponedOrders.containsAll(unscheduledOrders);
