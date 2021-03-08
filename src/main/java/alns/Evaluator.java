@@ -9,33 +9,31 @@ import utils.DistanceCalculator;
 import utils.Helpers;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Evaluator {
 
-    // TODO: isOrderSequencesFeasible og isSolutionFeasible
-
-    public static boolean isFeasible(Solution solution) {
-        return isFeasibleLoad(solution)
-                && isFeasibleDuration(solution)
-                && isFeasibleVisits(solution)
-                && !solution.isPartial();
+    public static boolean isSolutionFeasible(Solution solution) {
+        return isFeasibleLoad(solution.getOrderSequences())
+                && isFeasibleDuration(solution.getOrderSequences())
+                && isFeasibleVisits(solution.getOrderSequences())
+                && isSolutionComplete(solution);
     }
 
-    public static boolean isPartiallyFeasible(Solution solution) {
-        return isFeasibleLoad(solution)
-                && isFeasibleDuration(solution)
-                && isFeasibleVisits(solution);
+    public static boolean isOrderSequencesFeasible(List<List<Order>> orderSequences) {
+        return isFeasibleLoad(orderSequences)
+                && isFeasibleDuration(orderSequences)
+                && isFeasibleVisits(orderSequences);
     }
 
-    public static boolean isFeasibleLoad(Solution solution) {
-        List<List<Order>> orderSequences = solution.getOrderSequences();
-        for (int vesselNumber = 0; vesselNumber < orderSequences.size(); vesselNumber++) {
-            if (!isFeasibleLoad(orderSequences.get(vesselNumber), Problem.getVessel(vesselNumber))) return false;
+    public static boolean isFeasibleLoad(List<List<Order>> orderSequences) {
+        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
+            if (!isFeasibleLoadSequence(orderSequences.get(vesselNumber), Problem.getVessel(vesselNumber))) return false;
         }
         return true;
     }
 
-    public static boolean isFeasibleLoad(List<Order> orderSequence, Vessel vessel) {
+    public static boolean isFeasibleLoadSequence(List<Order> orderSequence, Vessel vessel) {
         double currentLoad = findTotalStartLoad(orderSequence);
         if (currentLoad > vessel.getCapacity()) return false;
         for (Order order : orderSequence) {
@@ -59,15 +57,15 @@ public class Evaluator {
         return totalStartLoad;
     }
 
-    public static boolean isFeasibleDuration(Solution solution) {
+    public static boolean isFeasibleDuration(List<List<Order>> orderSequences) {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            List<Order> orderSequence = solution.getOrderSequences().get(vesselNumber);
-            if (!isFeasibleDuration(orderSequence)) return false;
+            List<Order> orderSequence = orderSequences.get(vesselNumber);
+            if (!isFeasibleDurationSequence(orderSequence)) return false;
         }
         return true;
     }
 
-    public static boolean isFeasibleDuration(List<Order> orderSequence) {
+    public static boolean isFeasibleDurationSequence(List<Order> orderSequence) {
         if (orderSequence.size() == 0) return true;
         int currentTime = Problem.preparationEndTime;
         currentTime = findTimeAtFirstOrder(currentTime, orderSequence);
@@ -116,9 +114,8 @@ public class Evaluator {
         return Problem.hourToDiscTimePoint(distance / averageMaxSpeed);
     }
 
-    public static boolean isFeasibleVisits(Solution solution) {
-        List<List<Order>> orderSequences = solution.getOrderSequences();
-        List<List<Integer>> instSequences = solution.getInstSequences();
+    public static boolean isFeasibleVisits(List<List<Order>> orderSequences) {
+        List<List<Integer>> instSequences = Helpers.getInstSequences(orderSequences);
         if (instInMoreThanOneSequence(instSequences)) return false;
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             List<Integer> instSequence = instSequences.get(vesselNumber);
@@ -168,5 +165,19 @@ public class Evaluator {
             }
         }
         return false;
+    }
+
+    public static boolean isSolutionComplete(Solution solution) {
+        Set<Order> unscheduledOrders = inferUnscheduledOrders(solution.getOrderSequences());
+        return solution.getPostponedOrders().containsAll(unscheduledOrders);
+    }
+
+    private static Set<Order> inferUnscheduledOrders(List<List<Order>> orderSequences) {
+        return Problem.orders.stream()
+                .filter(o -> !orderSequences.stream()
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList())
+                        .contains(o))
+                .collect(Collectors.toSet());
     }
 }

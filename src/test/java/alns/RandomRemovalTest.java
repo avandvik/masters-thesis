@@ -6,10 +6,7 @@ import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -64,6 +61,6 @@ public class RandomRemovalTest {
             orderSequences.get(2).add(orders.get(k));
         }
 
-        return new Solution(orderSequences);
+        return new Solution(orderSequences, new HashSet<>(), false);
     }
 }

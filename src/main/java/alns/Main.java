@@ -171,7 +171,8 @@ public class Main {
         orderSequences.add(new LinkedList<>());  // SPOT
         for (int i = 0; i < 3; i++) orderSequences.get(0).add(Problem.getOrder(i));
         for (int i = 3; i < Problem.getNumberOfOrders(); i++) orderSequences.get(1).add(Problem.getOrder(i));
-        return new Solution(orderSequences);
+        Set<Order> postponedOrders = new HashSet<>();
+        return new Solution(orderSequences, postponedOrders, false);
     }
 
     public static void main(String[] args) {

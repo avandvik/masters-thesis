@@ -10,7 +10,6 @@ public class Construction {
 
     private final static Random random = new Random();
 
-    // TODO: Refactor when Evaluator is refactored
     public static Map<Integer, List<Integer>> getAllFeasibleInsertions(List<List<Order>> orderSequences, Order order) {
         List<List<Order>> orderSequencesCopy = Helpers.deepCopy2DList(orderSequences);
         Map<Integer, List<Integer>> insertionIndices = new HashMap<>();
@@ -22,7 +21,7 @@ public class Construction {
                 orderSequenceCopy.add(orderIdx, order);
                 List<List<Order>> solutionOrderSequences = Helpers.deepCopy2DList(orderSequencesCopy);
                 solutionOrderSequences.set(vesselNumber, orderSequenceCopy);
-                if (Evaluator.isPartiallyFeasible(new Solution(solutionOrderSequences))) vesselIndices.add(orderIdx);
+                if (Evaluator.isOrderSequencesFeasible(solutionOrderSequences)) vesselIndices.add(orderIdx);
             }
             insertionIndices.put(vesselNumber, vesselIndices);
         }
@@ -56,7 +55,7 @@ public class Construction {
             if (!orderPlaced) postponedOrders.add(orderToPlace);
         }
         Solution initialSolution = new Solution(orderSequences, postponedOrders, true);
-        if (!Evaluator.isFeasible(initialSolution)) System.out.println("Initial solution is infeasible!");
+        if (!Evaluator.isSolutionFeasible(initialSolution)) System.out.println("Initial solution is infeasible!");
         return initialSolution;
     }
 }

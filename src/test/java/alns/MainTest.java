@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import subproblem.SubProblem;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,6 +62,6 @@ public class MainTest {
         for (int i = 0; i < dividerOne; i++) orderSequences.get(0).add(Problem.getOrder(i));
         for (int i = dividerOne; i < dividerTwo; i++) orderSequences.get(1).add(Problem.getOrder(i));
         for (int i = dividerTwo; i < Problem.getNumberOfOrders(); i++) orderSequences.get(2).add(Problem.getOrder(i));
-        return new Solution(orderSequences);
+        return new Solution(orderSequences, new HashSet<>(), false);
     }
 }

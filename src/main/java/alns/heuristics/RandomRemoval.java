@@ -31,11 +31,15 @@ public class RandomRemoval extends Heuristic implements Destroyer {
         return removedOrders;
     }
 
-    // TODO: This should be in Heuristic
+    // TODO: This should be in Heuristic and must be verified
     @Override
     public Solution destroy(Solution solution, Set<Order> ordersToRemove) {
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
         for (List<Order> orderSequence : orderSequences) orderSequence.removeIf(ordersToRemove::contains);
-        return new Solution(orderSequences);  // TODO: Use correct constructor
+
+        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
+        postponedOrders.removeIf(postponedOrders::contains);
+
+        return new Solution(orderSequences, postponedOrders, false);
     }
 }

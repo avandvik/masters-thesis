@@ -4,6 +4,7 @@ import data.Problem;
 import objects.Order;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Helpers {
@@ -63,6 +64,12 @@ public class Helpers {
             }
         }
         return -1;
+    }
+
+    public static List<List<Integer>> getInstSequences(List<List<Order>> orderSequences) {
+        List<List<Integer>> instSequences = new ArrayList<>();
+        for (List<Order> orderSequence : orderSequences) instSequences.add(getInstSequence(orderSequence));
+        return instSequences;
     }
 
     public static List<Integer> getInstSequence(List<Order> orderSequence) {

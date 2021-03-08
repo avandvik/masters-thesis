@@ -7,22 +7,13 @@ import subproblem.Node;
 import utils.Helpers;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Solution {
-
-    // TODO: Tidy up in Constructor game and isPartial
 
     private final List<List<Order>> orderSequences;
     private final Set<Order> postponedOrders;
     private List<List<Node>> shortestPaths;
     private double fitness = Double.POSITIVE_INFINITY;
-
-    // TODO: Remove when Evaluator only needs orderSequences to deem isOrderSequencesFeasible
-    public Solution(List<List<Order>> orderSequences) {
-        this.orderSequences = orderSequences;
-        this.postponedOrders = new HashSet<>();
-    }
 
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, boolean setFitness) {
         this.orderSequences = orderSequences;
@@ -56,30 +47,6 @@ public class Solution {
 
     public void setFitness(double fitness) {
         this.fitness = fitness;
-    }
-
-    // TODO: Move to helpers or a submethod in Evaluator
-    public List<List<Integer>> getInstSequences() {
-        List<List<Integer>> instSequences = new ArrayList<>();
-        for (List<Order> orderSequence : this.orderSequences) {
-            instSequences.add(orderSequence.stream().map(Order::getInstallationId).collect(Collectors.toList()));
-        }
-        return instSequences;
-    }
-
-    // TODO: Consider moving to Evaluator
-    public boolean isPartial() {
-        Set<Order> unscheduledOrders = inferUnscheduledOrders(this.orderSequences);
-        return !this.postponedOrders.containsAll(unscheduledOrders);
-    }
-
-    private Set<Order> inferUnscheduledOrders(List<List<Order>> orderSequences) {
-        return Problem.orders.stream()
-                .filter(o -> !orderSequences.stream()
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toList())
-                        .contains(o))
-                .collect(Collectors.toSet());
     }
 
     public void printSchedules() {

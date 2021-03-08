@@ -31,29 +31,29 @@ public class EvaluatorTest {
         Vessel vessel = Problem.getVessel(0);
 
         // Testing for all orders in sequence: total delivery load should exceed vessel capacity
-        assertFalse(Evaluator.isFeasibleLoad(orders, vessel));
+        assertFalse(Evaluator.isFeasibleLoadSequence(orders, vessel));
 
         // Testing for one delivery order of 1000 sqm = 125 cu: total delivery load = vessel capacity
-        assertTrue(Evaluator.isFeasibleLoad(orderSequenceOne, vessel));
+        assertTrue(Evaluator.isFeasibleLoadSequence(orderSequenceOne, vessel));
         // Testing for two delivery order of total 510 sqm = 64 cu: total delivery load < vessel capacity
-        assertTrue(Evaluator.isFeasibleLoad(orderSequenceTwo, vessel));
+        assertTrue(Evaluator.isFeasibleLoadSequence(orderSequenceTwo, vessel));
         // Testing for two delivery orders of 1010 sqm = 127 cu: total delivery load > vessel capacity
-        assertFalse(Evaluator.isFeasibleLoad(orderSequenceThree, vessel));
+        assertFalse(Evaluator.isFeasibleLoadSequence(orderSequenceThree, vessel));
 
         // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, followed by one pickup order of 10 sqm =
         // 2 cu
-        assertTrue(Evaluator.isFeasibleLoad(orderSequenceFour, vessel));
+        assertTrue(Evaluator.isFeasibleLoadSequence(orderSequenceFour, vessel));
         // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, followed by two pickup order of total
         // 10 + 990 sqm = 126 cu: total load at last order > vessel capacity
-        assertFalse(Evaluator.isFeasibleLoad(orderSequenceFive, vessel));
+        assertFalse(Evaluator.isFeasibleLoadSequence(orderSequenceFive, vessel));
 
         // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, with pickup order of 490 sqm = 62 cu in
         // between
-        assertTrue(Evaluator.isFeasibleLoad(orderSequenceSix, vessel));
+        assertTrue(Evaluator.isFeasibleLoadSequence(orderSequenceSix, vessel));
         // Testing for two delivery orders of total 500 + 490 sqm = 125 cu, with pickup order of 490 sqm = 62 cu in
         // between,
         // and one pickup order of 500 sqm = 63 cu at the end: total load at last order > vessel capacity
-        assertFalse(Evaluator.isFeasibleLoad(orderSequenceSeven, vessel));
+        assertFalse(Evaluator.isFeasibleLoadSequence(orderSequenceSeven, vessel));
     }
 
     @Test
@@ -62,13 +62,13 @@ public class EvaluatorTest {
         List<Order> ordersOne = Problem.orders;
         List<Order> orderSequenceOne = new LinkedList<>();
         orderSequenceOne.addAll(ordersOne);
-        assertFalse(Evaluator.isFeasibleDuration(orderSequenceOne));
+        assertFalse(Evaluator.isFeasibleDurationSequence(orderSequenceOne));
 
         Problem.setUpProblem("duration/duration_short.json", true);
         List<Order> ordersTwo = Problem.orders;
         List<Order> orderSequenceTwo = new LinkedList<>();
         orderSequenceOne.addAll(ordersTwo);
-        assertTrue(Evaluator.isFeasibleDuration(orderSequenceTwo));
+        assertTrue(Evaluator.isFeasibleDurationSequence(orderSequenceTwo));
     }
 
     @Test

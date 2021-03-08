@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,8 +50,8 @@ public class GreedyInsertionTest {
 
         GreedyInsertion greedyInsertion = new GreedyInsertion("greedy", false, true);
 
-        Solution expectedSolution = new Solution(expectedOrderSequencesOne);
-        Solution partialSolution = new Solution(partialOrderSequencesOne);
+        Solution expectedSolution = new Solution(expectedOrderSequencesOne, new HashSet<>(), false);
+        Solution partialSolution = new Solution(partialOrderSequencesOne, new HashSet<>(), false);
         Order orderToBePlaced = Problem.orders.get(0);
         Solution newSolution = greedyInsertion.getGreedyInsertion(partialSolution,orderToBePlaced);
         assertEquals(expectedSolution,newSolution);
@@ -67,8 +68,8 @@ public class GreedyInsertionTest {
             expectedOrderSequencesTwo.get(2).add(orders.get(k));
         }
 
-        Solution expectedSolutionTwo = new Solution(expectedOrderSequencesTwo);
-        Solution partialSolutionTwo = new Solution(partialOrderSequencesTwo);
+        Solution expectedSolutionTwo = new Solution(expectedOrderSequencesTwo, new HashSet<>(), false);
+        Solution partialSolutionTwo = new Solution(partialOrderSequencesTwo, new HashSet<>(), false);
         Order orderToBePlacedTwo = Problem.orders.get(2);
         Solution newSolutionTwo = greedyInsertion.getGreedyInsertion(partialSolutionTwo, orderToBePlacedTwo);
         assertEquals(expectedSolutionTwo,newSolutionTwo);
