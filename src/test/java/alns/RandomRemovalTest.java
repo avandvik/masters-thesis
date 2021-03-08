@@ -1,6 +1,6 @@
 package alns;
 
-import alns.heuristics.RandomRemoval;
+import alns.heuristics.RemovalRandom;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class RandomRemovalTest {
         int ordersBefore = counter;
         counter = 0;
 
-        RandomRemoval randomRemoval = new RandomRemoval("random", true, false);
+        RemovalRandom randomRemoval = new RemovalRandom("random", true, false);
 
         Set<Order> ordersToRemove = randomRemoval.findOrdersToRemove(solution, numberOfOrders);
         Solution partialSolutionOne = randomRemoval.destroy(solution, ordersToRemove);

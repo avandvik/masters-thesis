@@ -1,6 +1,6 @@
 package alns;
 
-import alns.heuristics.GreedyInsertion;
+import alns.heuristics.InsertionGreedy;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class GreedyInsertionTest {
             partialOrderSequencesTwo.get(2).add(orders.get(k));
         }
 
-        GreedyInsertion greedyInsertion = new GreedyInsertion("greedy", false, true);
+        InsertionGreedy greedyInsertion = new InsertionGreedy("greedy", false, true);
 
         Solution expectedSolution = new Solution(expectedOrderSequencesOne, new HashSet<>(), false);
         Solution partialSolution = new Solution(partialOrderSequencesOne, new HashSet<>(), false);

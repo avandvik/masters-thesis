@@ -7,11 +7,11 @@ import utils.Helpers;
 
 import java.util.*;
 
-public class RandomRemoval extends Heuristic implements Destroyer {
+public class RemovalRandom extends Heuristic implements Destroyer {
 
     private final static Random random = new Random();
 
-    public RandomRemoval(String name, boolean destroy, boolean repair) {
+    public RemovalRandom(String name, boolean destroy, boolean repair) {
         super(name, destroy, repair);
     }
 

@@ -2,8 +2,8 @@ package alns;
 
 import alns.heuristics.Heuristic;
 import alns.heuristics.protocols.Destroyer;
-import alns.heuristics.GreedyInsertion;
-import alns.heuristics.RandomRemoval;
+import alns.heuristics.InsertionGreedy;
+import alns.heuristics.RemovalRandom;
 import alns.heuristics.protocols.Repairer;
 import data.Parameters;
 import data.Problem;
@@ -48,8 +48,8 @@ public class Main {
         // Initialize heuristics
         destroyHeuristics = new ArrayList<>();
         repairHeuristics = new ArrayList<>();
-        destroyHeuristics.add(new RandomRemoval("random", true, false));
-        repairHeuristics.add(new GreedyInsertion("greedy", false, true));
+        destroyHeuristics.add(new RemovalRandom("random removal", true, false));
+        repairHeuristics.add(new InsertionGreedy("greedy insertion", false, true));
 
         // Initialize solution fields
         currentSolution = Construction.constructRandomInitialSolution();

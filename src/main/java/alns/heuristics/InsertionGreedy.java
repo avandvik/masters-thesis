@@ -10,9 +10,9 @@ import utils.Helpers;
 
 import java.util.*;
 
-public class GreedyInsertion extends Heuristic implements Repairer {
+public class InsertionGreedy extends Heuristic implements Repairer {
 
-    public GreedyInsertion(String name, boolean destroy, boolean repair) {
+    public InsertionGreedy(String name, boolean destroy, boolean repair) {
         super(name, destroy, repair);
     }
 
