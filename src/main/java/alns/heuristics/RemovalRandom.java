@@ -10,8 +10,6 @@ import java.util.*;
 
 public class RemovalRandom extends Heuristic implements Destroyer {
 
-    // TODO: Test extensively
-
     public RemovalRandom(String name, boolean destroy, boolean repair) {
         super(name, destroy, repair);
     }

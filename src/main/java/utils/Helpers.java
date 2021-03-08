@@ -83,13 +83,9 @@ public class Helpers {
     }
 
     public static <T> T getRandomElementFromSet(Set<T> set) {
-        T randomElement = null;
-        while (randomElement == null) {
-            for (T element : set) {
-                if (Problem.random.nextDouble() < 1.0 / set.size()) randomElement = element;
-            }
-        }
-        return randomElement;
+        List<T> list = new ArrayList<>(set);
+        int rnIdx = Problem.random.nextInt(list.size());
+        return list.get(rnIdx);
     }
 
     public static <T> T removeRandomElementFromSet(Set<T> set) {
