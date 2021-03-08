@@ -1,6 +1,6 @@
 package objects;
 
-public class Order {
+public class Order implements Comparable<Order> {
 
     private int orderId;
     private boolean isMandatory;
@@ -58,5 +58,16 @@ public class Order {
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
         return orderId == order.orderId;
+    }
+
+    @Override
+    public int compareTo(Order o) {
+        if (this.size < o.size) {
+            return -1;
+        } else if (this.size > o.size) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

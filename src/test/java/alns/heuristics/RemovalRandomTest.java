@@ -41,7 +41,6 @@ public class RemovalRandomTest {
 
     private void testRemovalsAsExpected(RemovalRandom removalRandom) {
         Solution solution = SolutionGenerator.createSolutionBasicTestData(2, 3, 5);
-        System.out.println(solution);
         Solution partialSolution = removalRandom.destroy(solution, 3);
         Solution expectedSolution = createExpectedSolutionThree();
         assertEquals(expectedSolution, partialSolution);
@@ -52,9 +51,9 @@ public class RemovalRandomTest {
         orderSequences.add(new LinkedList<>());
         orderSequences.add(new LinkedList<>(Collections.singletonList(Problem.getOrder(2))));
         orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4))));
-        Set<Order> postponedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(7), Problem.getOrder(6)));
+        Set<Order> postponedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(5), Problem.getOrder(6)));
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(1),
-                Problem.getOrder(5)));
+                Problem.getOrder(7)));
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
 }

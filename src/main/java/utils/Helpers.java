@@ -82,13 +82,14 @@ public class Helpers {
         return Problem.random.nextDouble() * (max - min) + min;
     }
 
-    public static <T> T getRandomElementFromSet(Set<T> set) {
+    public static <T extends Comparable<T>> T getRandomElementFromSet(Set<T> set) {
         List<T> list = new ArrayList<>(set);
+        Collections.sort(list);  // Sort for predictability in tests
         int rnIdx = Problem.random.nextInt(list.size());
         return list.get(rnIdx);
     }
 
-    public static <T> T removeRandomElementFromSet(Set<T> set) {
+    public static <T extends Comparable<T>> T removeRandomElementFromSet(Set<T> set) {
         T element = getRandomElementFromSet(set);
         set.remove(element);
         return element;
