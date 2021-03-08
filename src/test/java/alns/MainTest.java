@@ -29,9 +29,9 @@ public class MainTest {
         assertNotNull(solutionTwo);
         assertNotNull(solutionThree);
 
-        solutionOne.setFitness();  // Fitness 2726
-        solutionTwo.setFitness();  // Fitness 2561
-        solutionThree.setFitness();  // Fitness 2594
+        Objective.setObjValAndSchedule(solutionOne);  // Fitness 2726
+        Objective.setObjValAndSchedule(solutionTwo);  // Fitness 2561
+        Objective.setObjValAndSchedule(solutionThree);  // Fitness 2594
 
         Parameters.setTemperatureAndCooling(solutionOne.getFitness(false));
         Main.setCurrentTemperature(Parameters.startTemperature);

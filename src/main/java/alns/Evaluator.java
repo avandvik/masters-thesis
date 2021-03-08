@@ -12,6 +12,8 @@ import java.util.*;
 
 public class Evaluator {
 
+    // TODO: isOrderSequencesFeasible og isSolutionFeasible
+
     public static boolean isFeasible(Solution solution) {
         return isFeasibleLoad(solution)
                 && isFeasibleDuration(solution)

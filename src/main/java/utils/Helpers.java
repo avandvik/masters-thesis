@@ -27,6 +27,10 @@ public class Helpers {
         return copy;
     }
 
+    public static <T> Set<T> deepCopySet(Set<T> original) {
+        return new HashSet<>(original);
+    }
+
     public static List<List<Order>> createEmptyOrderSequences() {
         List<List<Order>> orderSequences = new ArrayList<>();
         for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());

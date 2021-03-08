@@ -7,13 +7,15 @@ public class Order {
     private boolean isDelivery;
     private int size;
     private int installationId;
+    private double penalty;
 
-    public Order(int orderId, boolean isMandatory, boolean isDelivery, int size, int installationId) {
+    public Order(int orderId, boolean isMandatory, boolean isDelivery, int size, int installationId, double penalty) {
         this.orderId = orderId;
         this.isMandatory = isMandatory;
         this.isDelivery = isDelivery;
         this.size = size;
         this.installationId = installationId;
+        this.penalty = penalty;
     }
 
     public int getOrderId() {
@@ -34,6 +36,10 @@ public class Order {
 
     public int getInstallationId() {
         return installationId;
+    }
+
+    public double getPostponementPenalty() {
+        return this.penalty;
     }
 
     @Override

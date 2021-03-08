@@ -4,7 +4,6 @@ import data.Parameters;
 import data.Problem;
 import objects.Order;
 import subproblem.Node;
-import subproblem.SubProblem;
 import utils.Helpers;
 
 import java.util.*;
@@ -19,36 +18,16 @@ public class Solution {
     private List<List<Node>> shortestPaths;
     private double fitness = Double.POSITIVE_INFINITY;
 
+    // TODO: Remove when Evaluator only needs orderSequences to deem isOrderSequencesFeasible
     public Solution(List<List<Order>> orderSequences) {
         this.orderSequences = orderSequences;
         this.postponedOrders = new HashSet<>();
     }
 
-    // Consider only using this
-    public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders) {
-        this.orderSequences = orderSequences;
-        this.postponedOrders = postponedOrders;
-    }
-
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, boolean setFitness) {
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
-        if (setFitness) this.setFitness();
-    }
-
-    public Solution(List<List<Order>> orderSequences, List<List<Node>> shortestPaths, double fitness) {
-        this.orderSequences = orderSequences;
-        this.postponedOrders = new HashSet<>();
-        this.shortestPaths = shortestPaths;
-        this.fitness = fitness;
-    }
-
-    public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, List<List<Node>> shortestPaths,
-                    double fitness) {
-        this.orderSequences = orderSequences;
-        this.postponedOrders = postponedOrders;
-        this.shortestPaths = shortestPaths;
-        this.fitness = fitness;
+        if (setFitness) Objective.setObjValAndSchedule(this);
     }
 
     public List<List<Order>> getOrderSequences() {
@@ -75,18 +54,11 @@ public class Solution {
         return fitness + (noise ? Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise) : 0.0);
     }
 
-    public void setFitness() {
-        double subProblemObjective = SubProblem.runSubProblem(this);
-
-        // TODO: Parameterize penalty - maybe each order can have a penalty field?
-        double postponementPenalty = this.postponedOrders.stream()
-                .map(o -> o.getSize() * 100.0)
-                .mapToDouble(Double::doubleValue)
-                .sum();
-
-        this.fitness = subProblemObjective + postponementPenalty;
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
     }
 
+    // TODO: Move to helpers or a submethod in Evaluator
     public List<List<Integer>> getInstSequences() {
         List<List<Integer>> instSequences = new ArrayList<>();
         for (List<Order> orderSequence : this.orderSequences) {

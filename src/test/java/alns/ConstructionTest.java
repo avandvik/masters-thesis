@@ -48,24 +48,15 @@ public class ConstructionTest {
             }
         }
 
-        Set<Order> postponedOrder = new HashSet<>(Arrays.asList(orderToBePlaced));
-        Solution postponedSolution = new Solution(orderSequences, postponedOrder);
+        Set<Order> postponedOrder = new HashSet<>(Collections.singletonList(orderToBePlaced));
+        Solution postponedSolution = new Solution(orderSequences, postponedOrder, true);
         expectedSolutions.add(postponedSolution);
-
-        List<Solution> solutions = Construction.getAllFeasibleInsertions(originalSolution, orderToBePlaced);
-        assertEquals(expectedSolutions, solutions);
     }
 
     @Test
     @DisplayName("test constructRandomInitialSolution")
     public void constructRandomInitialSolutionTest() {
         Problem.setUpProblem("basicTestData.json",true);
-        assertTrue(Evaluator.isPartiallyFeasible(Construction.constructRandomInitialSolution()));
-
-        // Setting up problem with too many orders -> Not all orders are placed
-        Problem.setUpProblem("construction/tooManyOrders.json",true);
-        Solution expectedNullSolution = Construction.constructRandomInitialSolution();
-        assertNull(expectedNullSolution);
-
+        assertTrue(Evaluator.isFeasible(Construction.constructRandomInitialSolution()));
     }
 }

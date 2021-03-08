@@ -15,6 +15,7 @@ public class RandomRemoval extends Heuristic implements Destroyer {
         super(name, destroy, repair);
     }
 
+    // TODO: This should also remove postponed orders
     @Override
     public Set<Order> findOrdersToRemove(Solution solution, int numberOfOrders) {
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
@@ -35,6 +36,6 @@ public class RandomRemoval extends Heuristic implements Destroyer {
     public Solution destroy(Solution solution, Set<Order> ordersToRemove) {
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
         for (List<Order> orderSequence : orderSequences) orderSequence.removeIf(ordersToRemove::contains);
-        return new Solution(orderSequences);
+        return new Solution(orderSequences);  // TODO: Use correct constructor
     }
 }

@@ -71,7 +71,10 @@ public class IO {
             int installationId = Math.toIntExact((long) jsonOrder.get(Constants.INSTALLATION_KEY));
             boolean isDelivery = ((jsonOrder.get(Constants.TRANSPORTATION_TYPE_KEY)).equals(Constants.DELIVERY_VALUE));
             boolean isMandatory = ((jsonOrder.get(Constants.MANDATORY_VALUE)).equals(Constants.TRUE_VALUE));
-            Order order = new Order(orderId, isMandatory, isDelivery, orderSizeUnits, installationId);
+
+            // TODO: Update with penalty
+
+            Order order = new Order(orderId, isMandatory, isDelivery, orderSizeUnits, installationId, 100000);
             Problem.orders.add(order);
             orderId++;
         }

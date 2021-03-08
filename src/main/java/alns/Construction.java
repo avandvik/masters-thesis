@@ -10,41 +10,7 @@ public class Construction {
 
     private final static Random random = new Random();
 
-    // TODO: Tidy up in this method - should it be used at all? Must be looked at together with the heuristics
-    public static List<Solution> getAllFeasibleInsertions(Solution partialSolution, Order order) {
-        /* Returns the solutions resulting from inserting the order in any order sequence or the postponement set */
-        List<Solution> solutions = new ArrayList<>();
-
-        // Copy orderSequences of original solution
-        List<List<Order>> originalOrderSequences = new ArrayList<>();
-        for (List<Order> orderSequence : partialSolution.getOrderSequences()) {
-            originalOrderSequences.add(new LinkedList<>(orderSequence));
-        }
-
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            for (int i = 0; i <= originalOrderSequences.get(vesselNumber).size(); i++) {
-                List<Order> orderSequence = new LinkedList<>(originalOrderSequences.get(vesselNumber));
-                orderSequence.add(i, order);
-                List<List<Order>> orderSequences = new ArrayList<>();
-                for (int j = 0; j < Problem.getNumberOfVessels(); j++) {
-                    if (j == vesselNumber) {
-                        orderSequences.add(orderSequence);
-                        continue;
-                    }
-                    orderSequences.add(j, new LinkedList<>(originalOrderSequences.get(j)));
-                }
-                Solution newSolution = new Solution(orderSequences);
-                if (Evaluator.isPartiallyFeasible(newSolution)) solutions.add(newSolution);
-            }
-        }
-
-        // Add the option of postponing the order
-        Set<Order> postponed = new HashSet<>(Collections.singletonList(order));
-        solutions.add(new Solution(partialSolution.getOrderSequences(), postponed));
-
-        return solutions;
-    }
-
+    // TODO: Refactor when Evaluator is refactored
     public static Map<Integer, List<Integer>> getAllFeasibleInsertions(List<List<Order>> orderSequences, Order order) {
         List<List<Order>> orderSequencesCopy = Helpers.deepCopy2DList(orderSequences);
         Map<Integer, List<Integer>> insertionIndices = new HashMap<>();
@@ -90,7 +56,7 @@ public class Construction {
             if (!orderPlaced) postponedOrders.add(orderToPlace);
         }
         Solution initialSolution = new Solution(orderSequences, postponedOrders, true);
-        if (!Evaluator.isFeasible(initialSolution)) System.out.println("Initial solution is infeasible!");;
+        if (!Evaluator.isFeasible(initialSolution)) System.out.println("Initial solution is infeasible!");
         return initialSolution;
     }
 }

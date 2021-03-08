@@ -1,12 +1,14 @@
 package alns.heuristics;
 
 import alns.Construction;
+import alns.Objective;
 import alns.Solution;
 import alns.heuristics.protocols.Repairer;
+import data.Problem;
 import objects.Order;
+import utils.Helpers;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GreedyInsertion extends Heuristic implements Repairer {
 
@@ -14,24 +16,34 @@ public class GreedyInsertion extends Heuristic implements Repairer {
         super(name, destroy, repair);
     }
 
-    // TODO: Solve smaller subproblems for each insertion, and implement cache (in SubProblem? In Main?)
-    public Solution getGreedyInsertion(Solution partialSolution, Order order) {
+    // TODO: Must be verified, tested, and shortened
+    public Solution getGreedyInsertion(Solution partialSolution, Order orderToPlace) {
         /* Inserts order in an available vessel, a spot vessel, or the set of postponed orders */
-        List<Solution> feasibleInsertions = Construction.getAllFeasibleInsertions(partialSolution,order);
-
-        double bestObjective = Double.POSITIVE_INFINITY;
-        Solution bestSolution = partialSolution;
-
-        for (Solution solution : feasibleInsertions) {
-            solution.setFitness();
-            double tempObjective = solution.getFitness(false);
-            if (tempObjective < bestObjective) {
-                bestObjective = tempObjective;
-                bestSolution = solution;
+        List<List<Order>> orderSequences = Helpers.deepCopy2DList(partialSolution.getOrderSequences());
+        Set<Order> postponedOrders = Helpers.deepCopySet(partialSolution.getPostponedOrders());
+        Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, orderToPlace);
+        double leastIncrease = Double.POSITIVE_INFINITY;
+        List<Integer> bestInsertion = null;
+        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
+            List<Order> orderSequence = orderSequences.get(vesselNumber);
+            double currentObj = Objective.runSubProblemLean(orderSequence, vesselNumber);
+            for (int insertionIdx : insertions.get(vesselNumber)) {
+                List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
+                orderSequenceCopy.add(insertionIdx, orderToPlace);
+                double increase = Objective.runSubProblemLean(orderSequenceCopy, vesselNumber) - currentObj;
+                if (increase < leastIncrease) {
+                    leastIncrease = increase;
+                    bestInsertion = new ArrayList<>(Arrays.asList(vesselNumber, insertionIdx));
+                }
             }
         }
-
-        return bestSolution;
+        double increase = orderToPlace.getPostponementPenalty();
+        if (increase < leastIncrease || bestInsertion == null) {
+            postponedOrders.add(orderToPlace);
+            return new Solution(orderSequences, postponedOrders, true);
+        }
+        orderSequences.get(bestInsertion.get(0)).add(bestInsertion.get(1), orderToPlace);
+        return new Solution(orderSequences, postponedOrders, true);
     }
 
     @Override
