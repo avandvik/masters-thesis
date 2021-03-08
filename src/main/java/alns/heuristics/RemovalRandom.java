@@ -2,6 +2,7 @@ package alns.heuristics;
 
 import alns.Solution;
 import alns.heuristics.protocols.Destroyer;
+import data.Problem;
 import objects.Order;
 import utils.Helpers;
 
@@ -9,37 +10,38 @@ import java.util.*;
 
 public class RemovalRandom extends Heuristic implements Destroyer {
 
-    private final static Random random = new Random();
+    // TODO: Test extensively
 
     public RemovalRandom(String name, boolean destroy, boolean repair) {
         super(name, destroy, repair);
     }
 
-    // TODO: This should also remove postponed orders
     @Override
-    public Set<Order> findOrdersToRemove(Solution solution, int numberOfOrders) {
+    public Solution destroy(Solution solution, int numberOfOrders) {
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
-        Set<Order> removedOrders = new HashSet<>();
+        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
+        Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
         while (numberOfOrders > 0) {
-            int randomSequenceNumber = random.nextInt(orderSequences.size());
-            if (orderSequences.get(randomSequenceNumber).size() == 0) continue;
-            int randomOrderNumber = random.nextInt(orderSequences.get(randomSequenceNumber).size());
-            Order removedOrder = orderSequences.get(randomSequenceNumber).remove(randomOrderNumber);
-            removedOrders.add(removedOrder);
+            int rnSequenceIdx = Problem.random.nextInt(orderSequences.size() + 1);
+
+            if (rnSequenceIdx == orderSequences.size() && postponedOrders.size() > 0) {
+                unplacedOrders.add(Helpers.removeRandomElementFromSet(postponedOrders));
+                numberOfOrders--;
+                continue;
+            }
+
+            if (rnSequenceIdx == orderSequences.size() || orderSequences.get(rnSequenceIdx).size() == 0) continue;
+
+            int randomOrderNumber = Problem.random.nextInt(orderSequences.get(rnSequenceIdx).size());
+            unplacedOrders.add(orderSequences.get(rnSequenceIdx).remove(randomOrderNumber));
             numberOfOrders--;
         }
-        return removedOrders;
-    }
 
-    // TODO: This should be in Heuristic and must be verified
-    @Override
-    public Solution destroy(Solution solution, Set<Order> ordersToRemove) {
-        List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
-        for (List<Order> orderSequence : orderSequences) orderSequence.removeIf(ordersToRemove::contains);
+        // Remove unplaced orders from orderSequences and postponedOrders
+        for (List<Order> orderSequence : orderSequences) orderSequence.removeIf(unplacedOrders::contains);
+        postponedOrders.removeIf(unplacedOrders::contains);
 
-        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
-        postponedOrders.removeIf(postponedOrders::contains);
-
-        return new Solution(orderSequences, postponedOrders, false);
+        // Return a partial solution
+        return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
 }

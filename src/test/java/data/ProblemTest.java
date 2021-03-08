@@ -9,7 +9,7 @@ public class ProblemTest {
 
     @Test
     public void testTimeConversion() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         double decimalHour = 12.3;
         double decimalDisc = 49.2;
         int discTimePoint = 112;
@@ -20,7 +20,7 @@ public class ProblemTest {
         assertEquals(16, Problem.discToDiscDayTime(discTimePoint));
         assertEquals(0, Problem.discToDiscDayTime(tippingTimePoint));
 
-        Problem.setUpProblem("time/discretizationEight.json", true);
+        Problem.setUpProblem("time/discretizationEight.json", true, 10);
 
     }
 }

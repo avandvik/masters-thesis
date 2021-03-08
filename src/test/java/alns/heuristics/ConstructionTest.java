@@ -1,6 +1,7 @@
-package alns;
+package alns.heuristics;
 
-import alns.heuristics.Construction;
+import alns.Evaluator;
+import alns.Solution;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -15,7 +16,7 @@ public class ConstructionTest {
     @Test
     @DisplayName("test getFeasibleInsertions")
     public void getFeasibleInsertionsTest() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         List<List<Order>> orderSequences = new ArrayList<>();
         for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
         for (int i = 0; i < 2; i++) orderSequences.get(0).add(Problem.getOrder(i));
@@ -59,7 +60,7 @@ public class ConstructionTest {
     @Test
     @DisplayName("test constructRandomInitialSolution")
     public void constructRandomInitialSolutionTest() {
-        Problem.setUpProblem("basicTestData.json",true);
+        Problem.setUpProblem("basicTestData.json",true, 10);
         assertTrue(Evaluator.isSolutionFeasible(Construction.constructRandomInitialSolution()));
     }
 }

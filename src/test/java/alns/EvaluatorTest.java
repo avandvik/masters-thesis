@@ -18,7 +18,7 @@ public class EvaluatorTest {
 
     @Test
     public void testIsFeasibleLoad() {
-        Problem.setUpProblem("load/load.json", true);
+        Problem.setUpProblem("load/load.json", true, 10);
 
         List<Order> orders = Problem.orders;
         List<Order> orderSequenceOne = Problem.orders.subList(0, 1);
@@ -58,13 +58,13 @@ public class EvaluatorTest {
 
     @Test
     public void testIsFeasibleDuration() {
-        Problem.setUpProblem("duration/duration_long.json", true);
+        Problem.setUpProblem("duration/duration_long.json", true, 10);
         List<Order> ordersOne = Problem.orders;
         List<Order> orderSequenceOne = new LinkedList<>();
         orderSequenceOne.addAll(ordersOne);
         assertFalse(Evaluator.isFeasibleDurationSequence(orderSequenceOne));
 
-        Problem.setUpProblem("duration/duration_short.json", true);
+        Problem.setUpProblem("duration/duration_short.json", true, 10);
         List<Order> ordersTwo = Problem.orders;
         List<Order> orderSequenceTwo = new LinkedList<>();
         orderSequenceOne.addAll(ordersTwo);
@@ -73,7 +73,7 @@ public class EvaluatorTest {
 
     @Test
     public void testIsInstInMoreThanOneSequence() {
-        Problem.setUpProblem("visits/allOrderCombos.json", true);
+        Problem.setUpProblem("visits/allOrderCombos.json", true, 10);
 
         // Check valid
         List<List<Integer>> validSequences = new ArrayList<>();
@@ -113,7 +113,7 @@ public class EvaluatorTest {
 
     @Test
     public void testIsIllegalPattern() {
-        Problem.setUpProblem("visits/allOrderCombos.json", true);
+        Problem.setUpProblem("visits/allOrderCombos.json", true, 10);
         List<Order> orderSequence = new LinkedList<>(Problem.orders);
 
         // Check valid (All combos present MD-OD-OP, MD-OD, MD-OP, OD-OP)

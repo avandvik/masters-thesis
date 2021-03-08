@@ -49,6 +49,9 @@ public class Problem {
     public static List<Integer> weatherForecast;
     public static List<Integer> weatherForecastDisc;
 
+    // Random object
+    public static Random random;
+
 
     /* =========== INSTALLATION =========== */
 
@@ -153,7 +156,7 @@ public class Problem {
 
     /* =========== SETUP =========== */
 
-    public static void setUpProblem(String fileName, boolean isTest) {
+    public static void setUpProblem(String fileName, boolean isTest, int randomSeed) {
         Problem.fileName = fileName;
         Problem.pathToInstanceFile = (isTest ? Constants.PATH_TO_TEST : Constants.PATH_TO_INSTANCE) + fileName;
         IO.setUpInstanceInfo();
@@ -162,6 +165,7 @@ public class Problem {
         IO.setUpVessels();
         IO.setUpWeather();
         IO.setUpOrders();
+        Problem.random = new Random(randomSeed);
     }
 }
 

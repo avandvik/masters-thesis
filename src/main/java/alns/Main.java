@@ -88,11 +88,10 @@ public class Main {
 
     public static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
         Destroyer destroyer = (Destroyer) heuristics.get(0);
-        Set<Order> ordersToPlace = destroyer.findOrdersToRemove(solution, 2);
-        Solution partialSolution = destroyer.destroy(solution, ordersToPlace);  // No need to evaluate
+        Solution partialSolution = destroyer.destroy(solution, 2);  // No need to evaluate
 
         Repairer repairer = (Repairer) heuristics.get(1);
-        return repairer.repair(partialSolution, ordersToPlace);
+        return repairer.repair(partialSolution);
     }
 
     public static Double acceptSolution(Solution candidateSolution) {
@@ -177,7 +176,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Problem.setUpProblem("example.json", false);
+        Problem.setUpProblem("example.json", false, 10);
         run();
     }
 }

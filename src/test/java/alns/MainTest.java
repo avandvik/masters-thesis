@@ -20,7 +20,7 @@ public class MainTest {
     @Test
     @DisplayName("test acceptSolution")
     public void testAcceptSolution() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
 
         Solution solutionOne = createFeasibleSolution(2, Problem.getNumberOfOrders());
         Solution solutionTwo = createFeasibleSolution(3, Problem.getNumberOfOrders());

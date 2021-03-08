@@ -42,6 +42,10 @@ public class Order {
         return this.penalty;
     }
 
+    public void setPostponementPenalty(double penalty) {
+        this.penalty = penalty;
+    }
+
     @Override
     public String toString() {
         return "(O" + orderId + "-" + (this.isMandatory ? "M" : "O") + (this.isDelivery ? "D" : "P") +

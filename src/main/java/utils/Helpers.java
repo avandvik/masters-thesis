@@ -1,10 +1,10 @@
 package utils;
 
+import alns.Solution;
 import data.Problem;
 import objects.Order;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Helpers {
@@ -79,6 +79,29 @@ public class Helpers {
     }
 
     public static double getRandomDouble(double min, double max) {
-        return Math.random() * (max - min) + min;
+        return Problem.random.nextDouble() * (max - min) + min;
+    }
+
+    public static <T> T getRandomElementFromSet(Set<T> set) {
+        T randomElement = null;
+        while (randomElement == null) {
+            for (T element : set) {
+                if (Problem.random.nextDouble() < 1.0 / set.size()) randomElement = element;
+            }
+        }
+        return randomElement;
+    }
+
+    public static <T> T removeRandomElementFromSet(Set<T> set) {
+        T element = getRandomElementFromSet(set);
+        set.remove(element);
+        return element;
+    }
+
+    public static Solution copySolution(Solution solution) {
+        List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
+        Set<Order> posponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
+        Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
+        return new Solution(orderSequences, posponedOrders, unplacedOrders);
     }
 }

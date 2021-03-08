@@ -14,7 +14,7 @@ public class SolutionTest {
     @Test
     @DisplayName("test Constructor")
     public void testConstructor() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         List<List<Order>> orderSequences = getOrderSequences();
 
         Solution solutionOne = new Solution(orderSequences, new HashSet<>(), false);

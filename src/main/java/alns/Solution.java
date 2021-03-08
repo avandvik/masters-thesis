@@ -12,13 +12,23 @@ public class Solution {
 
     private final List<List<Order>> orderSequences;
     private final Set<Order> postponedOrders;
+    private final Set<Order> unplacedOrders;
     private List<List<Node>> shortestPaths;
     private double fitness = Double.POSITIVE_INFINITY;
 
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, boolean setFitness) {
+        /* Use this constructor when generating a complete solution */
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
+        this.unplacedOrders = new HashSet<>();  // Solutions from this constructor must have no unplaced orders
         if (setFitness) Objective.setObjValAndSchedule(this);
+    }
+
+    public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, Set<Order> unplacedOrders) {
+        /* Use this constructor when generating a partial solution */
+        this.orderSequences = orderSequences;
+        this.postponedOrders = postponedOrders;
+        this.unplacedOrders = unplacedOrders;
     }
 
     public List<List<Order>> getOrderSequences() {
@@ -31,6 +41,10 @@ public class Solution {
 
     public Set<Order> getPostponedOrders() {
         return postponedOrders;
+    }
+
+    public Set<Order> getUnplacedOrders() {
+        return unplacedOrders;
     }
 
     public List<List<Node>> getShortestPaths() {
@@ -72,7 +86,9 @@ public class Solution {
 
     @Override
     public String toString() {
-        return this.orderSequences.toString();
+        return "Order sequences: " + this.orderSequences.toString()
+                + "\nPostponed orders: " + this.postponedOrders.toString()
+                + "\nUnplaced orders: " + this.unplacedOrders.toString();
     }
 
     @Override
@@ -80,11 +96,12 @@ public class Solution {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Solution solution = (Solution) o;
-        return Objects.equals(orderSequences, solution.getOrderSequences());
+        return Objects.equals(orderSequences, solution.orderSequences) && Objects.equals(postponedOrders,
+                solution.postponedOrders) && Objects.equals(unplacedOrders, solution.unplacedOrders);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderSequences);
+        return Objects.hash(orderSequences, postponedOrders);
     }
 }

@@ -15,7 +15,6 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         super(name, destroy, repair);
     }
 
-    // TODO: Must be verified, tested, and shortened
     public Solution getGreedyInsertion(Solution partialSolution, Order orderToPlace) {
         /* Inserts order in an available vessel, a spot vessel, or the set of postponed orders */
 
@@ -47,9 +46,9 @@ public class InsertionGreedy extends Heuristic implements Repairer {
     }
 
     @Override
-    public Solution repair(Solution partialSolution, Set<Order> ordersToPlace) {
+    public Solution repair(Solution partialSolution) {
         Solution solution = partialSolution;
-        for (Order order : ordersToPlace) solution = getGreedyInsertion(solution, order);
+        for (Order order : partialSolution.getUnplacedOrders()) solution = getGreedyInsertion(solution, order);
         return solution;
     }
 }

@@ -17,12 +17,12 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test getSpeeds")
     public void testGetSpeeds() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         List<Double> expectedSpeeds = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0));
         double distance = 30.0;
         int startTime = 145;
         assertEquals(expectedSpeeds, ArcGenerator.getSpeeds(distance, startTime));
-        Problem.setUpProblem("weather/criticalWeather.json", true);
+        Problem.setUpProblem("weather/criticalWeather.json", true, 10);
         double avgMaxSpeed = ArcGenerator.calculateAverageMaxSpeed(startTime, distance);
         List<Double> expectedSpeedsTwo = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, avgMaxSpeed));
         assertEquals(expectedSpeedsTwo, ArcGenerator.getSpeeds(distance, startTime));
@@ -31,7 +31,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test mapSpeedsToArrTimes")
     public void testMapSpeedsToArrTimes() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         double distance = 30.0;
         int startTime = 100;
         List<Double> speeds = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0));
@@ -53,7 +53,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test mapSpeedsToTimePoints")
     public void testMapSpeedsToTimePoints() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         double distance = 30.0;
         int serviceDuration = 10;
         Installation depot = Problem.getDepot();
@@ -111,7 +111,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test isReturnPossible")
     public void testIsReturnPossible() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         double distanceOne = 40.0;
         double distanceTwo = 0.0;
         int endTimeOne = 100;
@@ -126,7 +126,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test isServicingPossible")
     public void testIsServicingPossible() {
-        Problem.setUpProblem("weather/criticalWeather.json", true);
+        Problem.setUpProblem("weather/criticalWeather.json", true, 10);
         int startTimeWS3 = Helpers.getStartTimeOfWeatherState(3);
         int serviceStartTimeOne = 100;
         int serviceEndTimeOne = 120;
@@ -145,7 +145,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test calculateAverageMaxSpeed")
     public void testCalculateAverageMaxSpeed() {
-        Problem.setUpProblem("weather/criticalWeather.json", true);
+        Problem.setUpProblem("weather/criticalWeather.json", true, 10);
         double distance = 40.0;
         double delta = 0.1;
         int startTimeWS2 = Helpers.getStartTimeOfWeatherState(2);
@@ -159,7 +159,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test calculateServiceDuration")
     public void testCalculateServiceDuration() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         Order MDOrder = Problem.orders.get(0);
         Order OPOrder = Problem.orders.get(1);
         Order ODOrder = Problem.orders.get(2);
@@ -171,7 +171,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test calculateArcCost")
     public void testCalculateArcCost() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         int startTime = 100;
         int arrTime = 120;
         int serviceStartTime = 130;
@@ -197,7 +197,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test mapWSToTimeSpent and getTimeInWS")
     public void testWSFunctions() {
-        Problem.setUpProblem("weather/criticalWeather.json", true);
+        Problem.setUpProblem("weather/criticalWeather.json", true, 10);
         int startTime = 50;
         int endTime = 160;
         assertEquals(0, ArcGenerator.getTimeInWS(startTime, endTime, 0));
