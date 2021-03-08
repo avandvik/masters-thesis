@@ -1,5 +1,6 @@
 package alns;
 
+import alns.heuristics.Construction;
 import alns.heuristics.Heuristic;
 import alns.heuristics.protocols.Destroyer;
 import alns.heuristics.InsertionGreedy;

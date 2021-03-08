@@ -1,5 +1,7 @@
-package alns;
+package alns.heuristics;
 
+import alns.Evaluator;
+import alns.Solution;
 import data.Problem;
 import objects.Order;
 import utils.Helpers;

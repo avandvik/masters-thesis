@@ -1,6 +1,5 @@
 package alns.heuristics;
 
-import alns.Construction;
 import alns.Objective;
 import alns.Solution;
 import alns.heuristics.protocols.Repairer;

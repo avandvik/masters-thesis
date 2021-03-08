@@ -1,5 +1,6 @@
 package alns;
 
+import alns.heuristics.Construction;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
