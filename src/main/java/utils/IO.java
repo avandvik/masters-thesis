@@ -63,18 +63,21 @@ public class IO {
     public static void setUpOrders() {
         Problem.orders = new ArrayList<>();
         JSONObject jsonOrders = (JSONObject) getJSONObject(Problem.pathToInstanceFile).get(Constants.ORDERS_KEY);
-        int orderId = 0;
         for (Object key : jsonOrders.keySet()) {
             JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
+            int orderId = Integer.parseInt((String) key);
             double orderSizeSqm = (double) jsonOrder.get(Constants.ORDER_SIZE_KEY);
             int orderSizeUnits = (int) Math.ceil(orderSizeSqm / Problem.sqmInCargoUnit);
             int installationId = Math.toIntExact((long) jsonOrder.get(Constants.INSTALLATION_KEY));
             boolean isDelivery = ((jsonOrder.get(Constants.TRANSPORTATION_TYPE_KEY)).equals(Constants.DELIVERY_VALUE));
             boolean isMandatory = ((jsonOrder.get(Constants.MANDATORY_VALUE)).equals(Constants.TRUE_VALUE));
-            Order order = new Order(orderId, isMandatory, isDelivery, orderSizeUnits, installationId);
+
+            // TODO: Update with penalty
+
+            Order order = new Order(orderId, isMandatory, isDelivery, orderSizeUnits, installationId, 100000);
             Problem.orders.add(order);
-            orderId++;
         }
+        Collections.sort(Problem.orders);
     }
 
     public static void setUpVessels() {

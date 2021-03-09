@@ -1,5 +1,6 @@
 package alns;
 
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import subproblem.SubProblem;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,9 +20,9 @@ public class MainTest {
     @Test
     @DisplayName("test acceptSolution")
     public void testAcceptSolution() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
 
-        Solution solutionOne = createFeasibleSolution(2, Problem.getNumberOfOrders() - 1);
+        Solution solutionOne = createFeasibleSolution(2, Problem.getNumberOfOrders());
         Solution solutionTwo = createFeasibleSolution(3, Problem.getNumberOfOrders());
         Solution solutionThree = createFeasibleSolution(5, Problem.getNumberOfOrders());
 
@@ -28,26 +30,27 @@ public class MainTest {
         assertNotNull(solutionTwo);
         assertNotNull(solutionThree);
 
-        solutionOne.setFitness();  // Fitness 2726
-        solutionTwo.setFitness();  // Fitness 2561
-        solutionThree.setFitness();  // Fitness 2594
+        Objective.setObjValAndSchedule(solutionOne);  // Fitness 2726
+        Objective.setObjValAndSchedule(solutionTwo);  // Fitness 2561
+        Objective.setObjValAndSchedule(solutionThree);  // Fitness 2594
+
+        Parameters.setTemperatureAndCooling(solutionOne.getFitness(false));
+        Main.setCurrentTemperature(Parameters.startTemperature);
 
         Main.setCurrentSolution(solutionOne);
         Main.setBestSolution(solutionOne);
 
-        List<Double> rewardsOne = Main.acceptSolution(solutionTwo);
+        double rewardOne = Main.acceptSolution(solutionTwo);
 
         assertEquals(solutionTwo, Main.getBestSolution());
         assertEquals(solutionTwo, Main.getCurrentSolution());
-        assertEquals(33.0, rewardsOne.get(0), 0.0);
+        assertEquals(33.0, rewardOne, 0.0);
 
-        List<Double> rewardsTwo = new ArrayList<>();
-        while (Main.getCurrentSolution() != solutionThree) {
-            rewardsTwo = Main.acceptSolution(solutionThree);
-        }
+        double rewardTwo = 0.0;
+        while (Main.getCurrentSolution() != solutionThree) rewardTwo = Main.acceptSolution(solutionThree);
 
         assertEquals(solutionThree, Main.getCurrentSolution());
-        assertEquals(9.0, rewardsTwo.get(2), 0.0);
+        assertEquals(9.0, rewardTwo, 0.0);
 
     }
 
@@ -59,6 +62,6 @@ public class MainTest {
         for (int i = 0; i < dividerOne; i++) orderSequences.get(0).add(Problem.getOrder(i));
         for (int i = dividerOne; i < dividerTwo; i++) orderSequences.get(1).add(Problem.getOrder(i));
         for (int i = dividerTwo; i < Problem.getNumberOfOrders(); i++) orderSequences.get(2).add(Problem.getOrder(i));
-        return new Solution(orderSequences);
+        return new Solution(orderSequences, new HashSet<>(), false);
     }
 }

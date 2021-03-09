@@ -1,11 +1,9 @@
 package subproblem;
 
-import alns.Solution;
 import data.Problem;
 import objects.Order;
 import objects.Vessel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SubProblem {
@@ -48,30 +46,5 @@ public class SubProblem {
     private void isVesselNumberValid(int vesselNumber) throws IllegalArgumentException {
         if (vesselNumber < 0 || vesselNumber >= Problem.getNumberOfVessels()) throw new IllegalArgumentException(
                 "Invalid vesselNumber passed to SubProblem.");
-    }
-
-    public static double runSubProblem(Solution solution) {
-        List<List<Node>> shortestPaths = new ArrayList<>();
-        double objectiveValue = 0.0;
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            SubProblem subProblem = runSingleSubProblem(solution.getOrderSequence(vesselNumber), vesselNumber);
-            shortestPaths.add(subProblem != null ? subProblem.getShortestPath() : new ArrayList<>());
-            objectiveValue += subProblem != null ? subProblem.getShortestPathCost() : 0.0;
-        }
-        solution.setShortestPaths(shortestPaths);
-        return objectiveValue;
-    }
-
-    public static SubProblem runSingleSubProblem(List<Order> orderSequence, int vesselNumber) {
-        try {
-            SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
-            subProblem.solve();
-            // System.out.println(subProblem.getShortestPath() + ": " + subProblem.getShortestPathCost());
-            return subProblem;
-        } catch (IllegalArgumentException e) {
-            // e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
-        return null;
     }
 }

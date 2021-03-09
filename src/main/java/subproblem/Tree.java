@@ -34,8 +34,12 @@ public class Tree {
 
     private Node getExistingNode(int time, Order order) {
         for (Node node : this.nodes) {
-            if (node.getDiscreteTime() == time && node.getOrder().equals(order)) {
-                return node;
+            if (node.getDiscreteTime() == time) {
+                if (node.getOrder() == null && order == null) {
+                    return node;
+                } else if (node.getOrder() != null && node.getOrder().equals(order)) {
+                    return node;
+                }
             }
         }
         return null;
@@ -88,7 +92,7 @@ public class Tree {
     private void updateGlobalBest(Node currentNode) {
         if (currentNode.getBestCost() < this.globalBestCost) {
             this.globalBestCost = currentNode.getBestCost();
-            this.shortestPath = Helpers.deepCopyList(currentNode.getBestPath());
+            this.shortestPath = Helpers.deepCopyList(currentNode.getBestPath(), false);
         }
     }
 
@@ -97,7 +101,7 @@ public class Tree {
             double currentCost = parent.getBestCost() + parent.getCostOfChild(currentNode);
             if (currentCost < currentNode.getBestCost()) {
                 currentNode.setBestCost(currentCost);
-                List<Node> path = Helpers.deepCopyList(parent.getBestPath());
+                List<Node> path = Helpers.deepCopyList(parent.getBestPath(), false);
                 path.add(currentNode);
                 currentNode.setBestPath(path);
             }
@@ -108,7 +112,7 @@ public class Tree {
         Order firstOrder = ((LinkedList<Order>) orderSequence).getFirst();
         this.generateNodesDepotToOrder(firstOrder, isSpotVessel);
 
-        List<Node> queue = Helpers.deepCopyList(this.getNodesExclDepot());
+        List<Node> queue = Helpers.deepCopyList(this.getNodesExclDepot(), false);
         Set<Node> addedNodes = new HashSet<>();
         while (!queue.isEmpty()) {
             Node fromNode = queue.remove(0);
@@ -251,10 +255,19 @@ public class Tree {
         double minCostSpeed = Helpers.getKeyWithMinValue(speedsToCosts);
         double cost = speedsToCosts.get(minCostSpeed);
         List<Integer> timePoints = speedsToTimePoints.get(minCostSpeed);
-        Node depotNode = new Node(null, fromNode, timePoints);
-        fromNode.addChild(depotNode);
-        fromNode.setChildToCost(depotNode, cost);
-        this.addNode(depotNode);
+        int endTime = timePoints.get(2);
+
+        Node existingDepotNode = getExistingNode(endTime, null);
+        if (existingDepotNode == null) {
+            Node depotNode = new Node(null, fromNode, timePoints);
+            fromNode.addChild(depotNode);
+            fromNode.setChildToCost(depotNode, cost);
+            this.addNode(depotNode);
+        } else {
+            existingDepotNode.addParent(fromNode);
+            fromNode.addChild(existingDepotNode);
+            fromNode.setChildToCost(existingDepotNode, cost);
+        }
     }
 
     protected void printTree() {

@@ -5,10 +5,7 @@ import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -17,23 +14,12 @@ public class SolutionTest {
     @Test
     @DisplayName("test Constructor")
     public void testConstructor() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         List<List<Order>> orderSequences = getOrderSequences();
 
-        Solution solutionOne = new Solution(orderSequences);
+        Solution solutionOne = new Solution(orderSequences, new HashSet<>(), false);
         assertNotNull(solutionOne);
         assertEquals(orderSequences, solutionOne.getOrderSequences());
-    }
-
-    @Test
-    @DisplayName("test getInstSequences")
-    public void testGetInstSequences() {
-        Problem.setUpProblem("basicTestData.json", true);
-        List<List<Order>> orderSequences = getOrderSequences();
-        Solution solution = new Solution(orderSequences);
-        List<List<Integer>> instSequences = solution.getInstSequences();
-        List<List<Integer>> instSequencesExpected = getExpectedInstSequences();
-        assertEquals(instSequencesExpected, instSequences);
     }
 
     private List<List<Order>> getOrderSequences() {

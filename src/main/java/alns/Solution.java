@@ -4,42 +4,31 @@ import data.Parameters;
 import data.Problem;
 import objects.Order;
 import subproblem.Node;
-import subproblem.SubProblem;
 import utils.Helpers;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Solution {
 
     private final List<List<Order>> orderSequences;
     private final Set<Order> postponedOrders;
+    private final Set<Order> unplacedOrders;
     private List<List<Node>> shortestPaths;
     private double fitness = Double.POSITIVE_INFINITY;
 
-    public Solution(List<List<Order>> orderSequences) {
-        this.orderSequences = orderSequences;
-        this.postponedOrders = inferPostponedOrders(orderSequences);
-    }
-
-    public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders) {
+    public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, boolean setFitness) {
+        /* Use this constructor when generating a complete solution */
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
+        this.unplacedOrders = new HashSet<>();  // Solutions from this constructor must have no unplaced orders
+        if (setFitness) Objective.setObjValAndSchedule(this);
     }
 
-    public Solution(List<List<Order>> orderSequences, List<List<Node>> shortestPaths, double fitness) {
-        this.orderSequences = orderSequences;
-        this.postponedOrders = inferPostponedOrders(orderSequences);
-        this.shortestPaths = shortestPaths;
-        this.fitness = fitness;
-    }
-
-    public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, List<List<Node>> shortestPaths,
-                    double fitness) {
+    public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, Set<Order> unplacedOrders) {
+        /* Use this constructor when generating a partial solution */
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
-        this.shortestPaths = shortestPaths;
-        this.fitness = fitness;
+        this.unplacedOrders = unplacedOrders;
     }
 
     public List<List<Order>> getOrderSequences() {
@@ -54,6 +43,10 @@ public class Solution {
         return postponedOrders;
     }
 
+    public Set<Order> getUnplacedOrders() {
+        return unplacedOrders;
+    }
+
     public List<List<Node>> getShortestPaths() {
         return shortestPaths;
     }
@@ -66,24 +59,8 @@ public class Solution {
         return fitness + (noise ? Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise) : 0.0);
     }
 
-    public void setFitness() {
-        double subProblemObjective = SubProblem.runSubProblem(this);
-
-        // TODO: Parameterize penalty - maybe each order can have a penalty field?
-        double postponementPenalty = this.postponedOrders.stream()
-                .map(o -> o.getSize() * 100.0)
-                .mapToDouble(Double::doubleValue)
-                .sum();
-
-        this.fitness = subProblemObjective + postponementPenalty;
-    }
-
-    public List<List<Integer>> getInstSequences() {
-        List<List<Integer>> instSequences = new ArrayList<>();
-        for (List<Order> orderSequence : this.orderSequences) {
-            instSequences.add(orderSequence.stream().map(Order::getInstallationId).collect(Collectors.toList()));
-        }
-        return instSequences;
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
     }
 
     public void printSchedules() {
@@ -107,18 +84,11 @@ public class Solution {
         }
     }
 
-    private Set<Order> inferPostponedOrders(List<List<Order>> orderSequences) {
-        return Problem.orders.stream()
-                .filter(o -> !orderSequences.stream()
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toList())
-                        .contains(o))
-                .collect(Collectors.toSet());
-    }
-
     @Override
     public String toString() {
-        return this.orderSequences.toString();
+        return "Order sequences: " + this.orderSequences.toString()
+                + "\nPostponed orders: " + this.postponedOrders.toString()
+                + "\nUnplaced orders: " + this.unplacedOrders.toString();
     }
 
     @Override
@@ -126,11 +96,12 @@ public class Solution {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Solution solution = (Solution) o;
-        return Objects.equals(orderSequences, solution.getOrderSequences());
+        return Objects.equals(orderSequences, solution.orderSequences) && Objects.equals(postponedOrders,
+                solution.postponedOrders) && Objects.equals(unplacedOrders, solution.unplacedOrders);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderSequences);
+        return Objects.hash(orderSequences, postponedOrders);
     }
 }

@@ -15,7 +15,7 @@ public class TreeTest {
     @Test
     @DisplayName("Test generateTree")
     public void testGenerateTree() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         LinkedList<Order> orderSequence = new LinkedList<>();
         for (int i = 0; i < 5; i++) orderSequence.add(Problem.orders.get(i));
         Tree tree = new Tree();
@@ -59,7 +59,7 @@ public class TreeTest {
     @Test
     @DisplayName("Test findShortestPath")
     public void testFindShortestPath() {
-        Problem.setUpProblem("basicTestData.json", true);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         LinkedList<Order> orderSequence = new LinkedList<>();
         for (int i = 0; i < 5; i++) orderSequence.add(Problem.orders.get(i));
         Tree tree = new Tree();
