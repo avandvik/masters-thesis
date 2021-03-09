@@ -6,6 +6,7 @@ import alns.heuristics.protocols.Destroyer;
 import alns.heuristics.InsertionGreedy;
 import alns.heuristics.RemovalRandom;
 import alns.heuristics.protocols.Repairer;
+import data.Constants;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
@@ -32,6 +33,7 @@ public class Main {
         int segmentIterations = 0;
         for (int iteration = 0; iteration < Parameters.totalIterations; iteration++) {
             segmentIterations++;
+            iterationsCurrentSolution++;
 
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
@@ -40,7 +42,6 @@ public class Main {
 
             double reward = acceptSolution(candidateSolution);
 
-            iterationsCurrentSolution++;
             currentTemperature *= Parameters.coolingRate;
             updateScores(reward, heuristics);
             if (segmentIterations < 10) continue;
@@ -75,7 +76,7 @@ public class Main {
         return new ArrayList<>(Arrays.asList(chosenDestroyer, chosenRepairer));
     }
 
-    // TODO: Must be verified
+    // TODO: Must be verified when there are more heuristics to choose from
     private static Heuristic rouletteWheelSelection(List<Heuristic> heuristics) {
         double weights = heuristics.stream().mapToDouble(Heuristic::getWeight).sum();
         List<Double> probabilities = heuristics.stream().map(o -> o.getWeight() / weights).collect(Collectors.toList());
@@ -173,20 +174,20 @@ public class Main {
 
     private static void printIterationInfo(int iteration, Solution candidateSolution) {
         System.out.println("_".repeat(400));
-        System.out.println("Iteration: " + iteration);
-        System.out.println("Current solution: " + currentSolution
+        System.out.println("Iteration: " + iteration + "\n");
+        System.out.println(Constants.ANSI_GREEN + "Best solution \n" + bestSolution + "\n"
+                + "Fitness: " + bestSolution.getFitness(false)
+                + "\nHash: " + bestSolution.hashCode() + Constants.ANSI_RESET);
+        System.out.println();
+        System.out.println(Constants.ANSI_BLUE + "Current solution \n" + currentSolution
                 + "\nFitness: " + currentSolution.getFitness(false)
                 + "\nHash: " + currentSolution.hashCode());
-        System.out.println("Iterations with current solution: " + iterationsCurrentSolution);
+        System.out.println("Iterations with current solution: " + iterationsCurrentSolution + Constants.ANSI_RESET);
         System.out.println();
-        System.out.println("Best solution: " + bestSolution
-                + "\nFitness: " + bestSolution.getFitness(false)
-                + "\nHash: " + bestSolution.hashCode());
-        System.out.println();
-        System.out.println("Candidate solution: " + candidateSolution
+        System.out.println(Constants.ANSI_YELLOW + "Candidate solution \n" + candidateSolution
                 + "\nFitness: " + candidateSolution.getFitness(false)
                 + "\nHash: " + candidateSolution.hashCode());
-        System.out.println("Equal solutions: " + candidateSolution.equals(currentSolution));
+        System.out.println("Equal solutions: " + candidateSolution.equals(currentSolution) + Constants.ANSI_RESET);
         System.out.println();
     }
 
