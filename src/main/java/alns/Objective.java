@@ -10,8 +10,6 @@ import java.util.List;
 
 public class Objective {
 
-    // TODO: Implement cache
-
     public static void setObjValAndSchedule(Solution solution) {
         /* Calculates and sets the objective value of the solution and sets the corresponding vessel schedules */
         List<List<Node>> shortestPaths = new ArrayList<>();

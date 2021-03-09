@@ -83,7 +83,7 @@ public class Main {
             rouletteWheel.put(aggregatedProbability, heuristics.get(idx));
         }
 
-        return rouletteWheel.higherEntry(Math.random()).getValue();
+        return rouletteWheel.higherEntry(Problem.random.nextDouble()).getValue();
     }
 
     public static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
@@ -128,7 +128,7 @@ public class Main {
     }
 
     private static boolean simulatedAnnealing(double currentFitness, double candidateFitness) {
-        return Math.random() < Math.exp(-(candidateFitness - currentFitness) / currentTemperature);
+        return Problem.random.nextDouble() < Math.exp(-(candidateFitness - currentFitness) / currentTemperature);
     }
 
     private static void updateScores(double reward, List<Heuristic> heuristics) {
