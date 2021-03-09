@@ -34,8 +34,12 @@ public class Tree {
 
     private Node getExistingNode(int time, Order order) {
         for (Node node : this.nodes) {
-            if (node.getDiscreteTime() == time && node.getOrder().equals(order)) {
-                return node;
+            if (node.getDiscreteTime() == time) {
+                if (node.getOrder() == null && order == null) {
+                    return node;
+                } else if (node.getOrder() != null && node.getOrder().equals(order)) {
+                    return node;
+                }
             }
         }
         return null;
@@ -251,10 +255,19 @@ public class Tree {
         double minCostSpeed = Helpers.getKeyWithMinValue(speedsToCosts);
         double cost = speedsToCosts.get(minCostSpeed);
         List<Integer> timePoints = speedsToTimePoints.get(minCostSpeed);
-        Node depotNode = new Node(null, fromNode, timePoints);
-        fromNode.addChild(depotNode);
-        fromNode.setChildToCost(depotNode, cost);
-        this.addNode(depotNode);
+        int endTime = timePoints.get(2);
+
+        Node existingDepotNode = getExistingNode(endTime, null);
+        if (existingDepotNode == null) {
+            Node depotNode = new Node(null, fromNode, timePoints);
+            fromNode.addChild(depotNode);
+            fromNode.setChildToCost(depotNode, cost);
+            this.addNode(depotNode);
+        } else {
+            existingDepotNode.addParent(fromNode);
+            fromNode.addChild(existingDepotNode);
+            fromNode.setChildToCost(existingDepotNode, cost);
+        }
     }
 
     protected void printTree() {

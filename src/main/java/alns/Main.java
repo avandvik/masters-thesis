@@ -30,13 +30,17 @@ public class Main {
         initialize();
 
         int segmentIterations = 0;
-        for (int iteration = 0; iteration < 5; iteration++) {
+        for (int iteration = 0; iteration < Parameters.totalIterations; iteration++) {
             segmentIterations++;
 
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
+
+            if (Parameters.verbose) printIterationInfo(iteration, candidateSolution);
+
             double reward = acceptSolution(candidateSolution);
 
+            iterationsCurrentSolution++;
             currentTemperature *= Parameters.coolingRate;
             updateScores(reward, heuristics);
             if (segmentIterations < 10) continue;
@@ -95,12 +99,15 @@ public class Main {
     }
 
     public static Double acceptSolution(Solution candidateSolution) {
-        if (candidateSolution.getFitness(false) < bestSolution.getFitness(false)) {
+        if (candidateSolution.equals(currentSolution)) {
+            if (iterationsCurrentSolution > Parameters.maxIterSolution) {
+                currentSolution = Construction.constructRandomInitialSolution();
+                iterationsCurrentSolution = 0;
+            }
+        } else if (candidateSolution.getFitness(false) < bestSolution.getFitness(false)) {
             return doGlobalBestUpdates(candidateSolution);
         } else if (simulatedAnnealing(currentSolution.getFitness(false), candidateSolution.getFitness(false))) {
             return doLocalUpdates(candidateSolution);
-        } else if (iterationsCurrentSolution > Parameters.maxIterationsCurrentSolution) {
-            currentSolution = candidateSolution;
         }
         return 0.0;
     }
@@ -162,6 +169,25 @@ public class Main {
 
     public static void setCurrentTemperature(double temperature) {
         currentTemperature = temperature;
+    }
+
+    private static void printIterationInfo(int iteration, Solution candidateSolution) {
+        System.out.println("_".repeat(400));
+        System.out.println("Iteration: " + iteration);
+        System.out.println("Current solution: " + currentSolution
+                + "\nFitness: " + currentSolution.getFitness(false)
+                + "\nHash: " + currentSolution.hashCode());
+        System.out.println("Iterations with current solution: " + iterationsCurrentSolution);
+        System.out.println();
+        System.out.println("Best solution: " + bestSolution
+                + "\nFitness: " + bestSolution.getFitness(false)
+                + "\nHash: " + bestSolution.hashCode());
+        System.out.println();
+        System.out.println("Candidate solution: " + candidateSolution
+                + "\nFitness: " + candidateSolution.getFitness(false)
+                + "\nHash: " + candidateSolution.hashCode());
+        System.out.println("Equal solutions: " + candidateSolution.equals(currentSolution));
+        System.out.println();
     }
 
     private static Solution createFeasibleSolution() {

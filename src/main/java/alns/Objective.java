@@ -41,7 +41,7 @@ public class Objective {
             subProblem.solve();
             return subProblem;
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         }
         return null;
     }
@@ -53,7 +53,7 @@ public class Objective {
             subProblem.solve();
             return subProblem.getShortestPathCost();
         } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+            // System.out.println(e.getMessage());
         }
         return 0.0;
     }
