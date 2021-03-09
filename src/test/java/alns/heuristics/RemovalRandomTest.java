@@ -51,9 +51,9 @@ public class RemovalRandomTest {
         orderSequences.add(new LinkedList<>());
         orderSequences.add(new LinkedList<>(Collections.singletonList(Problem.getOrder(2))));
         orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4))));
-        Set<Order> postponedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(5), Problem.getOrder(6)));
+        Set<Order> postponedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(5), Problem.getOrder(7)));
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(1),
-                Problem.getOrder(7)));
+                Problem.getOrder(6)));
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
 }

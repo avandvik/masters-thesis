@@ -140,6 +140,66 @@
       "transport": "delivery",
       "size": 120.0,
       "installation": 26
+    },
+    "21": {
+      "mandatory": "False",
+      "transport": "delivery",
+      "size": 120.0,
+      "installation": 1
+    },
+    "22": {
+      "mandatory": "True",
+      "transport": "delivery",
+      "size": 120.0,
+      "installation": 3
+    },
+    "23": {
+      "mandatory": "False",
+      "transport": "pickup",
+      "size": 120.0,
+      "installation": 7
+    },
+    "24": {
+      "mandatory": "True",
+      "transport": "delivery",
+      "size": 120.0,
+      "installation": 12
+    },
+    "25": {
+      "mandatory": "False",
+      "transport": "pickup",
+      "size": 120.0,
+      "installation": 15
+    },
+    "26": {
+      "mandatory": "True",
+      "transport": "delivery",
+      "size": 120.0,
+      "installation": 2
+    },
+    "27": {
+      "mandatory": "True",
+      "transport": "delivery",
+      "size": 120.0,
+      "installation": 4
+    },
+    "28": {
+      "mandatory": "False",
+      "transport": "pickup",
+      "size": 120.0,
+      "installation": 6
+    },
+    "29": {
+      "mandatory": "True",
+      "transport": "delivery",
+      "size": 120.0,
+      "installation": 12
+    },
+    "26": {
+      "mandatory": "False",
+      "transport": "delivery",
+      "size": 120.0,
+      "installation": 14
     }
   }
 }

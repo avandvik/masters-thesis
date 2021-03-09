@@ -126,7 +126,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test isServicingPossible")
     public void testIsServicingPossible() {
-        Problem.setUpProblem("weather/criticalWeather.json", true, 10);
+        Problem.setUpProblem("criticalWeather.json", true, 10);
         int startTimeWS3 = Helpers.getStartTimeOfWeatherState(3);
         int serviceStartTimeOne = 100;
         int serviceEndTimeOne = 120;
@@ -145,7 +145,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test calculateAverageMaxSpeed")
     public void testCalculateAverageMaxSpeed() {
-        Problem.setUpProblem("weather/criticalWeather.json", true, 10);
+        Problem.setUpProblem("criticalWeather.json", true, 10);
         double distance = 40.0;
         double delta = 0.1;
         int startTimeWS2 = Helpers.getStartTimeOfWeatherState(2);
@@ -197,7 +197,7 @@ public class ArcGeneratorTest {
     @Test
     @DisplayName("Test mapWSToTimeSpent and getTimeInWS")
     public void testWSFunctions() {
-        Problem.setUpProblem("weather/criticalWeather.json", true, 10);
+        Problem.setUpProblem("criticalWeather.json", true, 10);
         int startTime = 50;
         int endTime = 160;
         assertEquals(0, ArcGenerator.getTimeInWS(startTime, endTime, 0));

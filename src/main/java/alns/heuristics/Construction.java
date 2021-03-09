@@ -10,8 +10,6 @@ import java.util.*;
 
 public class Construction {
 
-    private final static Random random = new Random();
-
     public static Map<Integer, List<Integer>> getAllFeasibleInsertions(List<List<Order>> orderSequences, Order order) {
         List<List<Order>> orderSequencesCopy = Helpers.deepCopy2DList(orderSequences);
         Map<Integer, List<Integer>> insertionIndices = new HashMap<>();
@@ -31,7 +29,11 @@ public class Construction {
     }
 
     public static Solution constructRandomInitialSolution() {
+
+        // Copy orders and group orders from same installation to place these together
         List<Order> ordersToPlace = Helpers.deepCopyList(Problem.orders, false);
+        ordersToPlace.sort(Comparator.comparingInt(Order::getInstallationId));
+
         List<List<Order>> orderSequences = Helpers.createEmptyOrderSequences();
         Set<Order> postponedOrders = new HashSet<>();
 
@@ -40,14 +42,14 @@ public class Construction {
             Map<Integer, List<Integer>> feasibleInsertions = getAllFeasibleInsertions(orderSequences, orderToPlace);
 
             List<Integer> vesselNumbers = new ArrayList<>(feasibleInsertions.keySet());
-            Collections.shuffle(vesselNumbers.subList(0, vesselNumbers.size() - 1));
+            Collections.shuffle(vesselNumbers.subList(0, vesselNumbers.size() - 1), Problem.random);
 
             // Attempt placing order in fleet vessels, then spot vessel
             boolean orderPlaced = false;
             for (int vesselNumber : vesselNumbers) {
                 List<Integer> vesselInsertions = feasibleInsertions.get(vesselNumber);
                 if (vesselInsertions.isEmpty()) continue;
-                int orderIdx = vesselInsertions.get(random.nextInt(vesselInsertions.size()));
+                int orderIdx = vesselInsertions.get(Problem.random.nextInt(vesselInsertions.size()));
                 orderSequences.get(vesselNumber).add(orderIdx, orderToPlace);
                 orderPlaced = true;
                 break;

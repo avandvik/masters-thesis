@@ -62,9 +62,9 @@ public class Order implements Comparable<Order> {
 
     @Override
     public int compareTo(Order o) {
-        if (this.size < o.size) {
+        if (this.orderId < o.orderId) {
             return -1;
-        } else if (this.size > o.size) {
+        } else if (this.orderId > o.orderId) {
             return 1;
         } else {
             return 0;

@@ -1,6 +1,7 @@
 package alns.heuristics;
 
 import alns.Evaluator;
+import alns.Objective;
 import alns.Solution;
 import data.Problem;
 import objects.Order;
@@ -61,6 +62,38 @@ public class ConstructionTest {
     @DisplayName("test constructRandomInitialSolution")
     public void constructRandomInitialSolutionTest() {
         Problem.setUpProblem("basicTestData.json",true, 10);
-        assertTrue(Evaluator.isSolutionFeasible(Construction.constructRandomInitialSolution()));
+        testInitialSolutionAsExpected();
+
+        Problem.setUpProblem("tooManyOrders.json", true, 10);
+        testPostponementInInitialSolution();
+    }
+
+    private void testInitialSolutionAsExpected() {
+        Solution expectedSolution = createExpectedSolution();
+        Solution actualSolution = Construction.constructRandomInitialSolution();
+        assertEquals(expectedSolution, actualSolution);
+        Objective.setObjValAndSchedule(expectedSolution);
+        assertEquals(expectedSolution.getFitness(false), actualSolution.getFitness(false), 0.0);
+    }
+
+    private void testPostponementInInitialSolution() {
+        Solution actualSolution = Construction.constructRandomInitialSolution();
+        assertEquals(createExpectedPostponedOrders(), actualSolution.getPostponedOrders());
+    }
+
+    private Solution createExpectedSolution() {
+        List<List<Order>> orderSequences = new ArrayList<>();
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(6), Problem.getOrder(7),
+                Problem.getOrder(3), Problem.getOrder(4))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2), Problem.getOrder(5),
+                Problem.getOrder(0), Problem.getOrder(1))));
+        orderSequences.add(new LinkedList<>());
+        Set<Order> postponedOrders = new HashSet<>();
+        Set<Order> unplacedOrders = new HashSet<>();
+        return new Solution(orderSequences, postponedOrders, unplacedOrders);
+    }
+
+    private Set<Order> createExpectedPostponedOrders() {
+        return new HashSet<>(Collections.singletonList(Problem.getOrder(29)));
     }
 }

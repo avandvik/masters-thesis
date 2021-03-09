@@ -20,7 +20,7 @@ public class ProblemTest {
         assertEquals(16, Problem.discToDiscDayTime(discTimePoint));
         assertEquals(0, Problem.discToDiscDayTime(tippingTimePoint));
 
-        Problem.setUpProblem("time/discretizationEight.json", true, 10);
+        Problem.setUpProblem("discretizationEight.json", true, 10);
 
     }
 }
