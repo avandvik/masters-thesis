@@ -9,7 +9,6 @@ import alns.heuristics.protocols.Repairer;
 import data.Constants;
 import data.Parameters;
 import data.Problem;
-import objects.Order;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -189,17 +188,6 @@ public class Main {
                 + "\nHash: " + candidateSolution.hashCode());
         System.out.println("Equal solutions: " + candidateSolution.equals(currentSolution) + Constants.ANSI_RESET);
         System.out.println();
-    }
-
-    private static Solution createFeasibleSolution() {
-        List<List<Order>> orderSequences = new ArrayList<>();
-        orderSequences.add(new LinkedList<>());  // PSV 1
-        orderSequences.add(new LinkedList<>());  // PSV 4
-        orderSequences.add(new LinkedList<>());  // SPOT
-        for (int i = 0; i < 3; i++) orderSequences.get(0).add(Problem.getOrder(i));
-        for (int i = 3; i < Problem.getNumberOfOrders(); i++) orderSequences.get(1).add(Problem.getOrder(i));
-        Set<Order> postponedOrders = new HashSet<>();
-        return new Solution(orderSequences, postponedOrders, false);
     }
 
     public static void main(String[] args) {
