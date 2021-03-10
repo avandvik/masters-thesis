@@ -191,7 +191,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Problem.setUpProblem("example.json", false, 10);
-        run();
+        Random random = new Random(69);
+        for (int i = 0; i < 50; i++) {
+            int randomSeed = random.nextInt(1000);
+            Problem.setUpProblem("example.json", false, randomSeed);
+            run();
+        }
     }
 }

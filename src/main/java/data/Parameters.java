@@ -16,7 +16,7 @@ public class Parameters {
     public static double coolingRate;
 
     // Iterations
-    public static int totalIterations = 65;
+    public static int totalIterations = 10000;
     public static int maxIterSolution = 20;
 
     // Verbose
