@@ -5,6 +5,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import utils.Helpers;
 
 import java.util.*;
 
@@ -23,10 +24,17 @@ public class MainTest {
 
         Main.run();
 
-        Solution expectedBestSolution = createBestExpectedSolution();
+        Solution expectedBestSolutionOne = createBestExpectedSolution();
+        List<List<Order>> orderSequences = Helpers.deepCopy2DList(expectedBestSolutionOne.getOrderSequences());
+        Set<Order> postponedOrders = Helpers.deepCopySet(expectedBestSolutionOne.getPostponedOrders());
+        Collections.swap(orderSequences, 0, 1);
+        Solution expectedBestSolutionTwo = new Solution(orderSequences, postponedOrders, true);
 
-        assertEquals(expectedBestSolution, Main.getBestSolution());
-        assertEquals(expectedBestSolution.getFitness(false), Main.getBestSolution().getFitness(false), 0.0);
+        assertTrue(Main.getBestSolution().equals(expectedBestSolutionOne) ||
+                Main.getBestSolution().equals(expectedBestSolutionTwo));
+
+        assertEquals(expectedBestSolutionOne.getFitness(false), Main.getBestSolution().getFitness(false), 0.0);
+        assertEquals(expectedBestSolutionTwo.getFitness(false), Main.getBestSolution().getFitness(false), 0.0);
     }
 
 
