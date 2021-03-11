@@ -1,5 +1,6 @@
 package data;
 
+import arcs.ArcGenerator;
 import objects.Installation;
 import objects.Order;
 import objects.Vessel;
@@ -92,6 +93,27 @@ public class Problem {
         return Problem.orders.size();
     }
 
+    public static void calcAndSetPostponementPenalties() {
+        for (Order order : Problem.orders) {
+            if (!order.isMandatory()) {
+                Installation depot = Problem.getDepot();
+                Installation inst = Problem.getInstallation(order);
+                double emergencyCost = calcCost(depot, inst, order, Problem.maxSpeed);
+                order.setPostponementPenalty(emergencyCost);
+            }
+        }
+    }
+
+    private static double calcCost(Installation depot, Installation inst, Order order, double speed) {
+        double distance = DistanceCalculator.distance(depot, inst, "N");
+        int startTime = Problem.preparationEndTime;
+        int arrTime = startTime + Problem.hourToDiscTimePoint(distance / speed);
+        int serviceEndTime = arrTime + ArcGenerator.calculateServiceDuration(order);
+        double sailCost = ArcGenerator.calculateFuelCostSailing(startTime, arrTime, speed, distance) * 2;
+        double serviceCost = ArcGenerator.calculateFuelCostServicing(arrTime, serviceEndTime);
+        return sailCost + serviceCost;
+    }
+
 
     /* =========== VESSEL =========== */
 
@@ -166,6 +188,7 @@ public class Problem {
         IO.setUpWeather();
         IO.setUpOrders();
         Problem.random = new Random(randomSeed);
+        Problem.calcAndSetPostponementPenalties();
     }
 }
 
