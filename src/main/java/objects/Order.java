@@ -2,20 +2,19 @@ package objects;
 
 public class Order implements Comparable<Order> {
 
-    private int orderId;
-    private boolean isMandatory;
-    private boolean isDelivery;
-    private int size;
-    private int installationId;
+    private final int orderId;
+    private final boolean isMandatory;
+    private final boolean isDelivery;
+    private final int size;
+    private final int installationId;
     private double penalty;
 
-    public Order(int orderId, boolean isMandatory, boolean isDelivery, int size, int installationId, double penalty) {
+    public Order(int orderId, boolean isMandatory, boolean isDelivery, int size, int installationId) {
         this.orderId = orderId;
         this.isMandatory = isMandatory;
         this.isDelivery = isDelivery;
         this.size = size;
         this.installationId = installationId;
-        this.penalty = penalty;
     }
 
     public int getOrderId() {
