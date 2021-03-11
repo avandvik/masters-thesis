@@ -16,11 +16,11 @@ public class Parameters {
     public static double coolingRate;
 
     // Iterations
-    public static int totalIterations = 10000;
+    public static int totalIterations = 100;
     public static int maxIterSolution = 20;
 
     // Verbose
-    public static boolean verbose = false;
+    public static boolean verbose = true;
 
     public static void setTemperatureAndCooling(double currentFitness) {
         double candidateFitness = currentFitness * 1.05;
