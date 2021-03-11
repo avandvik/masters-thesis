@@ -1,5 +1,6 @@
 package alns;
 
+import data.Messages;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
@@ -21,6 +22,7 @@ public class Solution {
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
         this.unplacedOrders = new HashSet<>();  // Solutions from this constructor must have no unplaced orders
+        if (!Evaluator.isSolutionFeasible(this)) throw new IllegalStateException(Messages.infeasibleSolutionCreated);
         if (setFitness) Objective.setObjValAndSchedule(this);
     }
 
