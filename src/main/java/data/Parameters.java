@@ -11,6 +11,9 @@ public class Parameters {
     public static double newLocalImprovement = 9.0;
     public static double newLocal = 9.0;
 
+    // Weights for heuristics
+    public static double initialWeight = 0.2;
+
     // Simulated annealing
     public static double startTemperature;
     public static double coolingRate;

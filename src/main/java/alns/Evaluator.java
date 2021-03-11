@@ -14,11 +14,16 @@ import java.util.stream.Collectors;
 public class Evaluator {
 
     public static boolean isSolutionFeasible(Solution solution) {
-        return isFeasibleLoad(solution.getOrderSequences())
-                && isFeasibleDuration(solution.getOrderSequences())
-                && isFeasibleVisits(solution.getOrderSequences())
+        return isOrderSequencesFeasible(solution.getOrderSequences())
                 && isSolutionComplete(solution)
-                && noMandatoryOrdersPostponed(solution.getPostponedOrders());
+                && noMandatoryOrdersPostponed(solution.getPostponedOrders())
+                && eachOrderOccursOnce(solution);
+    }
+
+    public static boolean isPartFeasible(Solution partialSolution) {
+        return isOrderSequencesFeasible(partialSolution.getOrderSequences())
+                && noMandatoryOrdersPostponed(partialSolution.getPostponedOrders())
+                && eachOrderOccursOnce(partialSolution);
     }
 
     public static boolean isOrderSequencesFeasible(List<List<Order>> orderSequences) {
@@ -187,6 +192,25 @@ public class Evaluator {
             if (order.isMandatory()) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    public static boolean eachOrderOccursOnce(Solution solution) {
+        Set<Order> seenOrders = new HashSet<>();
+        for (List<Order> orderSequence : solution.getOrderSequences()) {
+            for (Order order : orderSequence) {
+                if (seenOrders.contains(order)) return false;
+                seenOrders.add(order);
+            }
+        }
+        for (Order order : solution.getPostponedOrders()) {
+            if (seenOrders.contains(order)) return false;
+            seenOrders.add(order);
+        }
+        for (Order order : solution.getUnplacedOrders()) {
+            if (seenOrders.contains(order)) return false;
+            seenOrders.add(order);
         }
         return true;
     }
