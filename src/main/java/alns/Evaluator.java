@@ -28,9 +28,8 @@ public class Evaluator {
     }
 
     public static boolean isFeasibleLoad(List<List<Order>> orderSequences) {
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            if (!isFeasibleLoadSequence(orderSequences.get(vesselNumber), Problem.getVessel(vesselNumber)))
-                return false;
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            if (!isFeasibleLoadSequence(orderSequences.get(vesselIdx), Problem.getVessel(vesselIdx))) return false;
         }
         return true;
     }
@@ -51,7 +50,7 @@ public class Evaluator {
         return true;
     }
 
-    public static double findTotalStartLoad(List<Order> orderSequence) {
+    private static double findTotalStartLoad(List<Order> orderSequence) {
         double totalStartLoad = 0.0;
         for (Order order : orderSequence) {
             if (order.isDelivery()) totalStartLoad += order.getSize();
