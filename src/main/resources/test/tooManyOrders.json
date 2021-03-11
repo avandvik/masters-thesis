@@ -190,12 +190,6 @@
       "installation": 6
     },
     "29": {
-      "mandatory": "True",
-      "transport": "delivery",
-      "size": 120.0,
-      "installation": 12
-    },
-    "26": {
       "mandatory": "False",
       "transport": "delivery",
       "size": 120.0,
