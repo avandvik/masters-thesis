@@ -23,8 +23,6 @@ public class RemovalWorst extends Heuristic implements Destroyer {
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
         Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
         Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
-        List<Order> postponedOrdersList = new ArrayList<Order>();
-        postponedOrdersList.addAll(postponedOrders);
 
         double greatestDecrease = Double.NEGATIVE_INFINITY;
         List<Integer> worstRemovalIndices = null;
@@ -46,25 +44,23 @@ public class RemovalWorst extends Heuristic implements Destroyer {
                 }
             }
 
-            for (int orderIdx = 0; orderIdx < postponedOrdersList.size(); orderIdx++) {
-                List<Order> postponedOrdersListCopy = Helpers.deepCopyList(postponedOrdersList, true);
-                Order postponedOrder = postponedOrdersListCopy.get(orderIdx);
+            for (Order postponedOrder : postponedOrders) {
                 double decrease = postponedOrder.getPostponementPenalty();
                 if (decrease > greatestDecrease) {
                     greatestDecrease = decrease;
-                    worstRemovalPostponedOrder = postponedOrdersList.get(orderIdx);
+                    worstRemovalPostponedOrder = postponedOrder;
                 }
             }
 
-            if (worstRemovalPostponedOrder == null && worstRemovalIndices != null) {
-                Order worstRemovalOrder = orderSequences.get(worstRemovalIndices.get(0)).get(worstRemovalIndices.get(1));
-                unplacedOrders.add(worstRemovalOrder);
-                orderSequences.remove(worstRemovalOrder);
-            } else {
+            if (worstRemovalPostponedOrder != null) {
                 unplacedOrders.add(worstRemovalPostponedOrder);
                 postponedOrders.remove(worstRemovalPostponedOrder);
+            } else if (worstRemovalIndices != null) {
+                unplacedOrders.add(orderSequences.get(worstRemovalIndices.get(0)).remove((int) worstRemovalIndices.get(1)));
+            } else {
+                break;
             }
-
+            greatestDecrease = Double.NEGATIVE_INFINITY;
             numberOfOrders--;
         }
 
