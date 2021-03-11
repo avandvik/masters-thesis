@@ -175,10 +175,14 @@ public class Tree {
         int serviceDuration = toOrder != null ? ArcGenerator.calculateServiceDuration(toOrder) : 0;
         Map<Double, List<Integer>> speedsToTimePoints = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, distance,
                 serviceDuration, toOrder != null ? Problem.getInstallation(toOrder) : Problem.getDepot());
+
+        // Check for early break
+        if (speedsToTimePoints.values().isEmpty()) return;
+
         Map<Double, Double> speedsToCosts = ArcGenerator.mapSpeedsToCosts(speedsToTimePoints, distance, startTime,
                 isSpot);
-        addNodesToTree(speedsToCosts, speedsToTimePoints, fromNode, toOrder, c);
 
+        addNodesToTree(speedsToCosts, speedsToTimePoints, fromNode, toOrder, c);
     }
 
     private void addNodesToTree(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,

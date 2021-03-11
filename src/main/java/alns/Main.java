@@ -193,5 +193,6 @@ public class Main {
     public static void main(String[] args) {
         Problem.setUpProblem("example.json", false, 10);
         run();
+        Main.getBestSolution().printSchedules();
     }
 }
