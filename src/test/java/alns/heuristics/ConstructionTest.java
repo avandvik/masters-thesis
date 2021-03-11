@@ -83,10 +83,10 @@ public class ConstructionTest {
 
     private Solution createExpectedSolution() {
         List<List<Order>> orderSequences = new ArrayList<>();
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(6), Problem.getOrder(7),
-                Problem.getOrder(3), Problem.getOrder(4))));
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2), Problem.getOrder(5),
-                Problem.getOrder(0), Problem.getOrder(1))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(1),
+                Problem.getOrder(7), Problem.getOrder(3), Problem.getOrder(4))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(5), Problem.getOrder(2),
+                Problem.getOrder(6))));
         orderSequences.add(new LinkedList<>());
         Set<Order> postponedOrders = new HashSet<>();
         Set<Order> unplacedOrders = new HashSet<>();
@@ -94,6 +94,7 @@ public class ConstructionTest {
     }
 
     private Set<Order> createExpectedPostponedOrders() {
-        return new HashSet<>(Collections.singletonList(Problem.getOrder(29)));
+        return new HashSet<>(Arrays.asList(Problem.getOrder(15), Problem.getOrder(18),
+                Problem.getOrder(12), Problem.getOrder(4)));
     }
 }

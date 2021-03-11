@@ -8,6 +8,7 @@ import utils.DistanceCalculator;
 import utils.IO;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Problem {
 
@@ -87,6 +88,10 @@ public class Problem {
 
     public static Order getOrder(int orderIndex) {
         return Problem.orders.get(orderIndex);
+    }
+
+    public static List<Order> getOrdersFromInstallation(Installation installation) {
+        return Problem.orders.stream().filter(o -> o.getInstallationId() == installation.getId()).collect(Collectors.toList());
     }
 
     public static int getNumberOfOrders() {

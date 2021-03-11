@@ -17,7 +17,8 @@ public class Evaluator {
         return isFeasibleLoad(solution.getOrderSequences())
                 && isFeasibleDuration(solution.getOrderSequences())
                 && isFeasibleVisits(solution.getOrderSequences())
-                && isSolutionComplete(solution);
+                && isSolutionComplete(solution)
+                && noMandatoryOrdersPostponed(solution.getPostponedOrders());
     }
 
     public static boolean isOrderSequencesFeasible(List<List<Order>> orderSequences) {
@@ -28,7 +29,8 @@ public class Evaluator {
 
     public static boolean isFeasibleLoad(List<List<Order>> orderSequences) {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            if (!isFeasibleLoadSequence(orderSequences.get(vesselNumber), Problem.getVessel(vesselNumber))) return false;
+            if (!isFeasibleLoadSequence(orderSequences.get(vesselNumber), Problem.getVessel(vesselNumber)))
+                return false;
         }
         return true;
     }
@@ -49,7 +51,7 @@ public class Evaluator {
         return true;
     }
 
-    private static double findTotalStartLoad(List<Order> orderSequence) {
+    public static double findTotalStartLoad(List<Order> orderSequence) {
         double totalStartLoad = 0.0;
         for (Order order : orderSequence) {
             if (order.isDelivery()) totalStartLoad += order.getSize();
@@ -179,5 +181,14 @@ public class Evaluator {
                         .collect(Collectors.toList())
                         .contains(o))
                 .collect(Collectors.toSet());
+    }
+
+    public static boolean noMandatoryOrdersPostponed(Set<Order> postponedOrders) {
+        for (Order order : postponedOrders) {
+            if (order.isMandatory()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
