@@ -181,17 +181,8 @@ public class Tree {
 
         Map<Double, Double> speedsToCosts = ArcGenerator.mapSpeedsToCosts(speedsToTimePoints, distance, startTime,
                 isSpot);
-        try {
-            addNodesToTree(speedsToCosts, speedsToTimePoints, fromNode, toOrder, c);
-        } catch (NullPointerException e) {
-            System.out.println("FromNode: " + fromNode);
-            System.out.println("ToOrder: " + toOrder);
-            System.out.println("Speeds: " + speeds);
-            System.out.println("Speeds to arrival times: " + speedsToArrTimes);
-            System.out.println("Speeds to time points: " + speedsToTimePoints);
-            System.out.println("Speeds to costs: " + speedsToCosts);
-            throw new NullPointerException();
-        }
+
+        addNodesToTree(speedsToCosts, speedsToTimePoints, fromNode, toOrder, c);
     }
 
     private void addNodesToTree(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,

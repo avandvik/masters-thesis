@@ -41,7 +41,8 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         double increase = orderToPlace.getPostponementPenalty();
         if (!orderToPlace.isMandatory() && (increase < leastIncrease || bestInsertion == null)) {
             postponedOrders.add(orderToPlace);
-            return new Solution(orderSequences, postponedOrders, true);
+            unplacedOrders.remove(orderToPlace);
+            return new Solution(orderSequences, postponedOrders, unplacedOrders);
         }
 
         if (bestInsertion == null) throw new IllegalStateException(Messages.cannotPlaceMDOrder);
