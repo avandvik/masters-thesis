@@ -103,7 +103,7 @@ public class Problem {
             if (!order.isMandatory()) {
                 Installation depot = Problem.getDepot();
                 Installation inst = Problem.getInstallation(order);
-                double emergencyCost = calcCost(depot, inst, order, Problem.maxSpeed);
+                double emergencyCost = calcCost(depot, inst, order, Problem.designSpeed);
                 order.setPostponementPenalty(emergencyCost);
             }
         }

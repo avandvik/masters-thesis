@@ -3,7 +3,6 @@ package alns.heuristics;
 import alns.Solution;
 import alns.heuristics.protocols.Destroyer;
 import data.Problem;
-import objects.Installation;
 import objects.Order;
 import utils.Helpers;
 
@@ -26,7 +25,9 @@ public class RemovalRandom extends Heuristic implements Destroyer {
 
             if (rnSequenceIdx == orderSequences.size() && postponedOrders.size() > 0) {
                 Order orderToRemove = Helpers.removeRandomElementFromSet(postponedOrders);
-                unplacedOrders.addAll(getOrdersToRemove(orderToRemove));
+                List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
+                unplacedOrders.addAll(ordersToRemove);
+                postponedOrders.removeAll(ordersToRemove);
                 continue;
             }
 
@@ -34,19 +35,12 @@ public class RemovalRandom extends Heuristic implements Destroyer {
 
             int randomOrderNumber = Problem.random.nextInt(orderSequences.get(rnSequenceIdx).size());
             Order orderToRemove = orderSequences.get(rnSequenceIdx).remove(randomOrderNumber);
-            unplacedOrders.addAll(getOrdersToRemove(orderToRemove));
+            List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
+            unplacedOrders.addAll(ordersToRemove);
+            orderSequences.get(rnSequenceIdx).removeIf(unplacedOrders::contains);
         }
-
-        // Remove unplaced orders from orderSequences and postponedOrders
-        for (List<Order> orderSequence : orderSequences) orderSequence.removeIf(unplacedOrders::contains);
-        postponedOrders.removeIf(unplacedOrders::contains);
 
         // Return a partial solution
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
-    }
-
-    private List<Order> getOrdersToRemove(Order orderToRemove) {
-        Installation instWithOrder = Problem.getInstallation(orderToRemove);
-        return new ArrayList<>(Problem.getOrdersFromInstallation(instWithOrder));
     }
 }
