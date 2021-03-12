@@ -23,7 +23,8 @@ public class Evaluator {
     public static boolean isPartFeasible(Solution partialSolution) {
         return isOrderSequencesFeasible(partialSolution.getOrderSequences())
                 && noMandatoryOrdersPostponed(partialSolution.getPostponedOrders())
-                && eachOrderOccursOnce(partialSolution);
+                && eachOrderOccursOnce(partialSolution)
+                && hasVoyageForEachVessel(partialSolution);
     }
 
     public static boolean isOrderSequencesFeasible(List<List<Order>> orderSequences) {
@@ -213,5 +214,9 @@ public class Evaluator {
             seenOrders.add(order);
         }
         return true;
+    }
+
+    public static boolean hasVoyageForEachVessel(Solution solution) {
+        return solution.getOrderSequences().size() == Problem.getNumberOfVessels();
     }
 }
