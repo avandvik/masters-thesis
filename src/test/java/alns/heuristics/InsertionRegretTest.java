@@ -27,7 +27,7 @@ public class InsertionRegretTest {
     }
 
     private void testRegretTwoOrders(InsertionRegret insertionRegret) {
-        Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5, Problem.getNumberOfOrders());
+        Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5);
         Solution expectedSolution = Helpers.copySolution(originalSolution);
         expectedSolution.getOrderSequences().get(0).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
 
@@ -41,7 +41,7 @@ public class InsertionRegretTest {
     }
 
     private void testRegretThreeOrders(InsertionRegret insertionRegret) {
-        Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5, Problem.getNumberOfOrders());
+        Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5);
         Solution expectedSolution = Helpers.copySolution(originalSolution);
         expectedSolution.getOrderSequences().get(0).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
         expectedSolution.getOrderSequences().get(0).add(1, expectedSolution.getOrderSequences().get(2).remove(0));
