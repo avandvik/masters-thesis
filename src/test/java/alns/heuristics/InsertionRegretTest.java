@@ -28,7 +28,7 @@ public class InsertionRegretTest {
 
     private void testRegretTwoOrders(InsertionRegret insertionRegret) {
         Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5);
-        Solution expectedSolution = Helpers.copySolution(originalSolution);
+        Solution expectedSolution = Helpers.deepCopySolution(originalSolution);
         expectedSolution.getOrderSequences().get(0).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
 
         List<List<Order>> partialOrderSequences = Helpers.deepCopy2DList(expectedSolution.getOrderSequences());
@@ -42,7 +42,7 @@ public class InsertionRegretTest {
 
     private void testRegretThreeOrders(InsertionRegret insertionRegret) {
         Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5);
-        Solution expectedSolution = Helpers.copySolution(originalSolution);
+        Solution expectedSolution = Helpers.deepCopySolution(originalSolution);
         expectedSolution.getOrderSequences().get(0).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
         expectedSolution.getOrderSequences().get(0).add(1, expectedSolution.getOrderSequences().get(2).remove(0));
 
@@ -51,7 +51,7 @@ public class InsertionRegretTest {
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(partialOrderSequences.get(0).remove(2),
                 partialOrderSequences.get(1).remove(0), partialOrderSequences.get(2).remove(0)));
         Solution partialSolution = new Solution(partialOrderSequences, postponedOrders, unplacedOrders);
-        Solution repairedSolution = insertionRegret.getRegretInsertion(partialSolution,3);
+        Solution repairedSolution = insertionRegret.getRegretSolution(partialSolution,3);
         assertEquals(expectedSolution, repairedSolution);
     }
 
