@@ -278,7 +278,9 @@ public class Tree {
         for (Node node : this.nodes) {
             System.out.println(node);
             System.out.println("\tChildren");
-            for (Node child : node.getChildren()) {
+            List<Node> sortedChildren = new ArrayList<>(node.getChildren());
+            sortedChildren.sort(Comparator.comparing(Node::getDiscreteTime));
+            for (Node child : sortedChildren) {
                 System.out.println("\t\t" + child + " at cost " + node.getCostOfChild(child));
             }
             System.out.println("\tParents");

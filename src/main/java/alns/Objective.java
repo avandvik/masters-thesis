@@ -5,8 +5,7 @@ import objects.Order;
 import subproblem.Node;
 import subproblem.SubProblem;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Objective {
 
@@ -66,4 +65,34 @@ public class Objective {
         return obj;
     }
 
+    private static Solution createOptimalSolution() {
+        List<List<Order>> orderSequences = new ArrayList<>();
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2), Problem.getOrder(5),
+                Problem.getOrder(0), Problem.getOrder(1), Problem.getOrder(6),
+                Problem.getOrder(7))));
+        orderSequences.add(new LinkedList<>());
+        Set<Order> postponedOrders = new HashSet<>();
+        return new Solution(orderSequences, postponedOrders, true);
+    }
+
+    private static Solution createOptimalSolutionSimple() {
+        List<List<Order>> orderSequences = new ArrayList<>();
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4),
+                Problem.getOrder(0), Problem.getOrder(1), Problem.getOrder(5),
+                Problem.getOrder(2))));
+        orderSequences.add(new LinkedList<>());
+        orderSequences.add(new LinkedList<>());
+        Set<Order> postponedOrders = new HashSet<>();
+        return new Solution(orderSequences, postponedOrders, true);
+    }
+
+    public static void main(String[] args) {
+        Problem.setUpProblem("example_simple.json", false, 10);
+        // for (Order order : Problem.orders) System.out.println(order + ", " + order.getSize());
+        System.out.println(Problem.orders);
+        Solution optimum = createOptimalSolutionSimple();
+        System.out.println(optimum.getFitness(false));
+        optimum.printSchedules();
+    }
 }

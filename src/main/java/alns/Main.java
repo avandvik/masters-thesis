@@ -196,8 +196,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Problem.setUpProblem("example.json", false, 10);
+        Problem.setUpProblem("example_simple.json", false, 10);
         run();
+        System.out.println(Main.getBestSolution().getFitness(false));
         Main.getBestSolution().printSchedules();
     }
 }
