@@ -7,34 +7,37 @@
     "PSV_1": {
       "return_time": 80
     },
+    "PSV_4": {
+      "return_time": 80
+    },
     "SPOT": {
       "return_time": 80
     }
   },
   "orders": {
     "0": {
-      "transport": "delivery",
       "mandatory": "True",
-      "size": 120.0,
-      "installation": 18
+      "transport": "delivery",
+      "size": 200.0,
+      "installation": 21
     },
     "1": {
-      "transport": "delivery",
       "mandatory": "False",
-      "size": 90.0,
-      "installation": 18
+      "transport": "pickup",
+      "size": 100.0,
+      "installation": 21
     },
     "2": {
+      "mandatory": "False",
       "transport": "delivery",
-      "mandatory": "True",
-      "size": 120.0,
-      "installation": 16
+      "size": 250.0,
+      "installation": 13
     },
     "3": {
-      "transport": "pickup",
-      "mandatory": "False",
-      "size": 90.0,
-      "installation": 16
+      "mandatory": "True",
+      "transport": "delivery",
+      "size": 150.0,
+      "installation": 5
     }
   }
 }
