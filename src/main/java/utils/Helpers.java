@@ -85,11 +85,11 @@ public class Helpers {
         return element;
     }
 
-    public static Solution copySolution(Solution solution) {
+    public static Solution deepCopySolution(Solution solution) {
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
-        Set<Order> posponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
+        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
         Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
-        return new Solution(orderSequences, posponedOrders, unplacedOrders);
+        return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
 
     public static List<Order> sortUnplacedOrders(List<Order> unplacedOrders) {

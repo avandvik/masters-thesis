@@ -48,11 +48,11 @@ public class InsertionGreedyTest {
 
     private void testPostponementInsertion(InsertionGreedy insertionGreedy) {
         Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, Problem.getNumberOfOrders());
-        Solution expectedSolution = Helpers.copySolution(originalSolution);
+        Solution expectedSolution = Helpers.deepCopySolution(originalSolution);
         Order removedOrder = expectedSolution.getOrderSequences().get(0).remove(2);
         expectedSolution.getPostponedOrders().add(removedOrder);
 
-        Solution partialSolution = Helpers.copySolution(originalSolution);
+        Solution partialSolution = Helpers.deepCopySolution(originalSolution);
         partialSolution.getOrderSequences().get(0).remove(2);
         removedOrder.setPostponementPenalty(50.0);  // Very low penalty, will be best option
         partialSolution.getUnplacedOrders().add(removedOrder);

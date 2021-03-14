@@ -45,14 +45,14 @@ public class RemovalWorstTest {
     }
 
     private void testRemovalsAsExpectedHighPenalty(RemovalWorst removalWorst, Solution solution) {
-        Solution solutionCopy = Helpers.copySolution(solution);
+        Solution solutionCopy = Helpers.deepCopySolution(solution);
         Solution partialSolution = removalWorst.destroy(solutionCopy, 3);
         Solution expectedSolution = createExpectedSolutionHighPenalty();
         assertEquals(expectedSolution, partialSolution);
     }
 
     private void testRemovalsAsExpectedLowPenalty(RemovalWorst removalWorst, Solution solution) {
-        Solution solutionCopy = Helpers.copySolution(solution);
+        Solution solutionCopy = Helpers.deepCopySolution(solution);
         Solution partialSolution = removalWorst.destroy(solutionCopy, 2);
         Solution expectedSolution = createExpectedSolutionLowPenalty();
         assertEquals(expectedSolution, partialSolution);
