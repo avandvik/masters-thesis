@@ -28,6 +28,7 @@ public class RemovalRandom extends Heuristic implements Destroyer {
                 List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
                 unplacedOrders.addAll(ordersToRemove);
                 postponedOrders.removeAll(ordersToRemove);
+                for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
                 continue;
             }
 
@@ -37,7 +38,8 @@ public class RemovalRandom extends Heuristic implements Destroyer {
             Order orderToRemove = orderSequences.get(rnSequenceIdx).remove(randomOrderNumber);
             List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
             unplacedOrders.addAll(ordersToRemove);
-            orderSequences.get(rnSequenceIdx).removeIf(unplacedOrders::contains);
+            orderSequences.get(rnSequenceIdx).removeAll(ordersToRemove);
+            postponedOrders.removeAll(ordersToRemove);
         }
 
         // Return a partial solution

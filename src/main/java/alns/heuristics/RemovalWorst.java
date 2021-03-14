@@ -38,13 +38,15 @@ public class RemovalWorst extends Heuristic implements Destroyer {
                 List<Order> ordersToRemove = getOrdersToRemove(postponedOrderToRemove);
                 unplacedOrders.addAll(ordersToRemove);
                 postponedOrders.removeAll(ordersToRemove);
+                for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
             } else if (orderIdxToRemove != null) {
                 int vesselIdx = orderIdxToRemove.get(0);
                 int orderIdx = orderIdxToRemove.get(1);
                 Order orderToRemove = orderSequences.get(vesselIdx).remove(orderIdx);
                 List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
                 unplacedOrders.addAll(ordersToRemove);
-                orderSequences.get(vesselIdx).removeIf(unplacedOrders::contains);
+                orderSequences.get(vesselIdx).removeAll(ordersToRemove);
+                postponedOrders.removeAll(ordersToRemove);
             } else {
                 break;
             }
