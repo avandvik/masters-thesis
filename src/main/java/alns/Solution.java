@@ -1,9 +1,12 @@
 package alns;
 
+import data.Messages;
 import data.Parameters;
 import data.Problem;
+import objects.Installation;
 import objects.Order;
 import subproblem.Node;
+import utils.DistanceCalculator;
 import utils.Helpers;
 
 import java.util.*;
@@ -21,6 +24,7 @@ public class Solution {
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
         this.unplacedOrders = new HashSet<>();  // Solutions from this constructor must have no unplaced orders
+        if (!Evaluator.isSolutionFeasible(this)) throw new IllegalStateException(Messages.infeasibleSolutionCreated);
         if (setFitness) Objective.setObjValAndSchedule(this);
     }
 
@@ -66,9 +70,11 @@ public class Solution {
     public void printSchedules() {
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             System.out.println("Schedule for " + Problem.getVessel(vesselNumber));
+            Node prevNode = null;
             for (Node node : this.shortestPaths.get(vesselNumber)) {
                 String orderName = "";
                 String schedule = "";
+
                 if (node.getOrder() != null) {
                     orderName = node.getOrder().toString();
                     schedule = "\t\tArrives at: " + node.getArrTime()
@@ -79,7 +85,9 @@ public class Solution {
                     schedule = "\t\t" + (node.getChildren().size() > 0 ? "Leaves at: " : "Arrives at ")
                             + node.getDiscreteTime();
                 }
+                if (prevNode != null) schedule += "\n\t\tCost: " + prevNode.getCostOfChild(node);
                 System.out.println("\t" + orderName + "\n" + schedule);
+                prevNode = node;
             }
         }
     }

@@ -5,18 +5,8 @@ import data.Problem;
 import objects.Order;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
 public class Helpers {
-
-    public static List<Order> createDummyOrderSequence(int length, int seedValue) {
-        Integer[] indicesArray = IntStream.range(0, Problem.orders.size()).boxed().toArray(Integer[]::new);
-        List<Integer> indices = Arrays.asList(indicesArray);
-        Collections.shuffle(indices, new Random(seedValue));
-        List<Order> orderSequence = new LinkedList<>();
-        for (int i = 0; i < length; i++) orderSequence.add(Problem.orders.get(indices.get(i)));
-        return orderSequence;
-    }
 
     public static <T> List<T> deepCopyList(List<T> original, boolean linkedList) {
         return linkedList ? new LinkedList<>(original) : new ArrayList<>(original);
@@ -101,4 +91,25 @@ public class Helpers {
         Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
         return new Solution(orderSequences, posponedOrders, unplacedOrders);
     }
+
+    public static List<Order> sortUnplacedOrders(List<Order> unplacedOrders) {
+        List<Order> sortedUnplacedOrders = new ArrayList<>();
+        int numberOfMand = 0;
+        for (Order order : unplacedOrders) {
+            if (order.isMandatory()) {
+                sortedUnplacedOrders.add(0, order);
+                numberOfMand++;
+            } else {
+                sortedUnplacedOrders.add(order);
+            }
+        }
+        Collections.shuffle(sortedUnplacedOrders.subList(0, numberOfMand), Problem.random);
+        Collections.shuffle(sortedUnplacedOrders.subList(numberOfMand, sortedUnplacedOrders.size()), Problem.random);
+        return sortedUnplacedOrders;
+    }
+
+    public static List<Order> sortUnplacedOrders(Set<Order> unplacedOrders) {
+        return sortUnplacedOrders(new ArrayList<>(unplacedOrders));  // Convert Set to ArrayList for predictability
+    }
+
 }

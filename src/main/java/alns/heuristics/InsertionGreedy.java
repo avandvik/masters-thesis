@@ -3,6 +3,7 @@ package alns.heuristics;
 import alns.Objective;
 import alns.Solution;
 import alns.heuristics.protocols.Repairer;
+import data.Messages;
 import data.Problem;
 import objects.Order;
 import utils.Helpers;
@@ -20,6 +21,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
 
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(partialSolution.getOrderSequences());
         Set<Order> postponedOrders = Helpers.deepCopySet(partialSolution.getPostponedOrders());
+        Set<Order> unplacedOrders = Helpers.deepCopySet(partialSolution.getUnplacedOrders());
         Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, orderToPlace);
         double leastIncrease = Double.POSITIVE_INFINITY;
         List<Integer> bestInsertion = null;
@@ -37,18 +39,25 @@ public class InsertionGreedy extends Heuristic implements Repairer {
             }
         }
         double increase = orderToPlace.getPostponementPenalty();
-        if (increase < leastIncrease || bestInsertion == null) {
+        if (!orderToPlace.isMandatory() && (increase < leastIncrease || bestInsertion == null)) {
             postponedOrders.add(orderToPlace);
-            return new Solution(orderSequences, postponedOrders, true);
+            unplacedOrders.remove(orderToPlace);
+            return new Solution(orderSequences, postponedOrders, unplacedOrders);
         }
+
+        if (bestInsertion == null) throw new IllegalStateException(Messages.cannotPlaceMDOrder);
+
         orderSequences.get(bestInsertion.get(0)).add(bestInsertion.get(1), orderToPlace);
-        return new Solution(orderSequences, postponedOrders, true);
+        unplacedOrders.remove(orderToPlace);
+
+        return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
 
     @Override
     public Solution repair(Solution partialSolution) {
+        List<Order> sortedUnplacedOrders = Helpers.sortUnplacedOrders(partialSolution.getUnplacedOrders());
         Solution solution = partialSolution;
-        for (Order order : partialSolution.getUnplacedOrders()) solution = getGreedyInsertion(solution, order);
-        return solution;
+        for (Order order : sortedUnplacedOrders) solution = getGreedyInsertion(solution, order);
+        return new Solution(solution.getOrderSequences(), solution.getPostponedOrders(), true);
     }
 }

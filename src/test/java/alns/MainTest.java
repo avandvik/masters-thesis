@@ -5,7 +5,6 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import utils.Helpers;
 
 import java.util.*;
 
@@ -72,15 +71,5 @@ public class MainTest {
         for (int i = dividerOne; i < dividerTwo; i++) orderSequences.get(1).add(Problem.getOrder(i));
         for (int i = dividerTwo; i < Problem.getNumberOfOrders(); i++) orderSequences.get(2).add(Problem.getOrder(i));
         return new Solution(orderSequences, new HashSet<>(), false);
-    }
-
-    private Solution createBestExpectedSolution() {
-        List<List<Order>> orderSequences = new ArrayList<>();
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4))));
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(7), Problem.getOrder(6),
-                Problem.getOrder(0), Problem.getOrder(1), Problem.getOrder(5),
-                Problem.getOrder(2))));
-        orderSequences.add(new LinkedList<>());
-        return new Solution(orderSequences, new HashSet<>(), true);
     }
 }

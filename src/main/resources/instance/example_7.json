@@ -7,7 +7,7 @@
     "PSV_1": {
       "return_time": 80
     },
-    "PSV_2": {
+    "PSV_4": {
       "return_time": 80
     },
     "SPOT": {
@@ -18,26 +18,26 @@
     "0": {
       "mandatory": "True",
       "transport": "delivery",
-      "size": 1000.0,
-      "installation": 1
+      "size": 200.0,
+      "installation": 21
     },
     "1": {
-      "mandatory": "True",
-      "transport": "delivery",
-      "size": 1000.0,
-      "installation": 2
+      "mandatory": "False",
+      "transport": "pickup",
+      "size": 100.0,
+      "installation": 21
     },
     "2": {
-      "mandatory": "True",
+      "mandatory": "False",
       "transport": "delivery",
-      "size": 1000.0,
-      "installation": 3
+      "size": 250.0,
+      "installation": 13
     },
     "3": {
       "mandatory": "True",
       "transport": "delivery",
-      "size": 500.0,
-      "installation": 4
+      "size": 150.0,
+      "installation": 5
     },
     "4": {
       "mandatory": "False",
@@ -46,22 +46,16 @@
       "installation": 5
     },
     "5": {
-      "mandatory": "False",
+      "mandatory": "True",
       "transport": "delivery",
       "size": 220.0,
       "installation": 11
     },
     "6": {
-      "mandatory": "False",
+      "mandatory": "True",
       "transport": "delivery",
       "size": 80.0,
       "installation": 25
-    },
-    "7": {
-      "mandatory": "False",
-      "transport": "delivery",
-      "size": 120.0,
-      "installation": 17
     }
   }
 }

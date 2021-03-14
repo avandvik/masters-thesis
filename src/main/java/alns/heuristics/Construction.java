@@ -30,9 +30,8 @@ public class Construction {
 
     public static Solution constructRandomInitialSolution() {
 
-        // Copy orders and group orders from same installation to place these together
-        List<Order> ordersToPlace = Helpers.deepCopyList(Problem.orders, false);
-        ordersToPlace.sort(Comparator.comparingInt(Order::getInstallationId));
+        // Create a list of ordersToPlace sorted with mandatory orders first, then optional
+        List<Order> ordersToPlace = Helpers.sortUnplacedOrders(Problem.orders);
 
         List<List<Order>> orderSequences = Helpers.createEmptyOrderSequences();
         Set<Order> postponedOrders = new HashSet<>();
@@ -56,10 +55,9 @@ public class Construction {
             }
 
             // If there are no feasible insertions in any vessels, place in postponed orders
-            if (!orderPlaced) postponedOrders.add(orderToPlace);
+            if (!orderPlaced && !orderToPlace.isMandatory()) postponedOrders.add(orderToPlace);
         }
-        Solution initialSolution = new Solution(orderSequences, postponedOrders, true);
-        if (!Evaluator.isSolutionFeasible(initialSolution)) System.out.println("Initial solution is infeasible!");
-        return initialSolution;
+
+        return new Solution(orderSequences, postponedOrders, true);
     }
 }

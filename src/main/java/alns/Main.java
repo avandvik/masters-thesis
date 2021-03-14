@@ -1,12 +1,10 @@
 package alns;
 
-import alns.heuristics.Construction;
-import alns.heuristics.Heuristic;
+import alns.heuristics.*;
 import alns.heuristics.protocols.Destroyer;
-import alns.heuristics.InsertionGreedy;
-import alns.heuristics.RemovalRandom;
 import alns.heuristics.protocols.Repairer;
 import data.Constants;
+import data.Messages;
 import data.Parameters;
 import data.Problem;
 
@@ -54,6 +52,7 @@ public class Main {
         destroyHeuristics = new ArrayList<>();
         repairHeuristics = new ArrayList<>();
         destroyHeuristics.add(new RemovalRandom("random removal", true, false));
+        destroyHeuristics.add(new RemovalWorst("worst removal", true, false));
         repairHeuristics.add(new InsertionGreedy("greedy insertion", false, true));
 
         // Initialize solution fields
@@ -65,6 +64,10 @@ public class Main {
         // Initialize simulated annealing
         Parameters.setTemperatureAndCooling(currentSolution.getFitness(false));
         currentTemperature = Parameters.startTemperature;
+
+        // Initialize adaptive weights
+        for (Heuristic heuristic : destroyHeuristics) heuristic.setWeight(Parameters.initialWeight);
+        for (Heuristic heuristic : repairHeuristics) heuristic.setWeight(Parameters.initialWeight);
     }
 
     private static List<Heuristic> chooseHeuristics() {
@@ -93,6 +96,8 @@ public class Main {
     public static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
         Destroyer destroyer = (Destroyer) heuristics.get(0);
         Solution partialSolution = destroyer.destroy(solution, 2);  // No need to evaluate
+
+        if (!Evaluator.isPartFeasible(partialSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
 
         Repairer repairer = (Repairer) heuristics.get(1);
         return repairer.repair(partialSolution);
@@ -191,7 +196,9 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Problem.setUpProblem("example.json", false, 10);
+        Problem.setUpProblem("example_10.json", false, 10);
         run();
+        System.out.println(Main.getBestSolution().getFitness(false));
+        Main.getBestSolution().printSchedules();
     }
 }

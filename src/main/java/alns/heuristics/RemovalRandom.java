@@ -19,25 +19,28 @@ public class RemovalRandom extends Heuristic implements Destroyer {
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
         Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
         Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
-        while (numberOfOrders > 0) {
+
+        while (unplacedOrders.size() < numberOfOrders) {
             int rnSequenceIdx = Problem.random.nextInt(orderSequences.size() + 1);
 
             if (rnSequenceIdx == orderSequences.size() && postponedOrders.size() > 0) {
-                unplacedOrders.add(Helpers.removeRandomElementFromSet(postponedOrders));
-                numberOfOrders--;
+                Order orderToRemove = Helpers.removeRandomElementFromSet(postponedOrders);
+                List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
+                unplacedOrders.addAll(ordersToRemove);
+                postponedOrders.removeAll(ordersToRemove);
+                for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
                 continue;
             }
 
             if (rnSequenceIdx == orderSequences.size() || orderSequences.get(rnSequenceIdx).size() == 0) continue;
 
             int randomOrderNumber = Problem.random.nextInt(orderSequences.get(rnSequenceIdx).size());
-            unplacedOrders.add(orderSequences.get(rnSequenceIdx).remove(randomOrderNumber));
-            numberOfOrders--;
+            Order orderToRemove = orderSequences.get(rnSequenceIdx).remove(randomOrderNumber);
+            List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
+            unplacedOrders.addAll(ordersToRemove);
+            orderSequences.get(rnSequenceIdx).removeAll(ordersToRemove);
+            postponedOrders.removeAll(ordersToRemove);
         }
-
-        // Remove unplaced orders from orderSequences and postponedOrders
-        for (List<Order> orderSequence : orderSequences) orderSequence.removeIf(unplacedOrders::contains);
-        postponedOrders.removeIf(unplacedOrders::contains);
 
         // Return a partial solution
         return new Solution(orderSequences, postponedOrders, unplacedOrders);

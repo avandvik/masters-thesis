@@ -5,8 +5,7 @@ import objects.Order;
 import subproblem.Node;
 import subproblem.SubProblem;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Objective {
 
@@ -65,5 +64,4 @@ public class Objective {
         }
         return obj;
     }
-
 }

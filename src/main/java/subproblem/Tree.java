@@ -175,10 +175,14 @@ public class Tree {
         int serviceDuration = toOrder != null ? ArcGenerator.calculateServiceDuration(toOrder) : 0;
         Map<Double, List<Integer>> speedsToTimePoints = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, distance,
                 serviceDuration, toOrder != null ? Problem.getInstallation(toOrder) : Problem.getDepot());
+
+        // Check for early break
+        if (speedsToTimePoints.values().isEmpty()) return;
+
         Map<Double, Double> speedsToCosts = ArcGenerator.mapSpeedsToCosts(speedsToTimePoints, distance, startTime,
                 isSpot);
-        addNodesToTree(speedsToCosts, speedsToTimePoints, fromNode, toOrder, c);
 
+        addNodesToTree(speedsToCosts, speedsToTimePoints, fromNode, toOrder, c);
     }
 
     private void addNodesToTree(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,
@@ -274,7 +278,9 @@ public class Tree {
         for (Node node : this.nodes) {
             System.out.println(node);
             System.out.println("\tChildren");
-            for (Node child : node.getChildren()) {
+            List<Node> sortedChildren = new ArrayList<>(node.getChildren());
+            sortedChildren.sort(Comparator.comparing(Node::getDiscreteTime));
+            for (Node child : sortedChildren) {
                 System.out.println("\t\t" + child + " at cost " + node.getCostOfChild(child));
             }
             System.out.println("\tParents");

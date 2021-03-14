@@ -1,5 +1,12 @@
 package alns.heuristics;
 
+import data.Problem;
+import objects.Installation;
+import objects.Order;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Heuristic {
 
     private String name;
@@ -63,5 +70,15 @@ public abstract class Heuristic {
     // TODO: Parameterize r (replace 0.8 with 1 - r and 0.2 with r)
     private void smoothenWeights() {
         this.weight = 0.8 * this.weight + 0.2 * (this.score / this.selections);
+    }
+
+    List<Order> getOrdersToRemove(Order orderToRemove) {
+        Installation instWithOrder = Problem.getInstallation(orderToRemove);
+        return new ArrayList<>(Problem.getOrdersFromInstallation(instWithOrder));
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

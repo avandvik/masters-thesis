@@ -14,10 +14,17 @@ import java.util.stream.Collectors;
 public class Evaluator {
 
     public static boolean isSolutionFeasible(Solution solution) {
-        return isFeasibleLoad(solution.getOrderSequences())
-                && isFeasibleDuration(solution.getOrderSequences())
-                && isFeasibleVisits(solution.getOrderSequences())
-                && isSolutionComplete(solution);
+        return isOrderSequencesFeasible(solution.getOrderSequences())
+                && isSolutionComplete(solution)
+                && noMandatoryOrdersPostponed(solution.getPostponedOrders())
+                && eachOrderOccursOnce(solution);
+    }
+
+    public static boolean isPartFeasible(Solution partialSolution) {
+        return isOrderSequencesFeasible(partialSolution.getOrderSequences())
+                && noMandatoryOrdersPostponed(partialSolution.getPostponedOrders())
+                && eachOrderOccursOnce(partialSolution)
+                && hasVoyageForEachVessel(partialSolution);
     }
 
     public static boolean isOrderSequencesFeasible(List<List<Order>> orderSequences) {
@@ -27,8 +34,8 @@ public class Evaluator {
     }
 
     public static boolean isFeasibleLoad(List<List<Order>> orderSequences) {
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            if (!isFeasibleLoadSequence(orderSequences.get(vesselNumber), Problem.getVessel(vesselNumber))) return false;
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            if (!isFeasibleLoadSequence(orderSequences.get(vesselIdx), Problem.getVessel(vesselIdx))) return false;
         }
         return true;
     }
@@ -179,5 +186,37 @@ public class Evaluator {
                         .collect(Collectors.toList())
                         .contains(o))
                 .collect(Collectors.toSet());
+    }
+
+    public static boolean noMandatoryOrdersPostponed(Set<Order> postponedOrders) {
+        for (Order order : postponedOrders) {
+            if (order.isMandatory()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean eachOrderOccursOnce(Solution solution) {
+        Set<Order> seenOrders = new HashSet<>();
+        for (List<Order> orderSequence : solution.getOrderSequences()) {
+            for (Order order : orderSequence) {
+                if (seenOrders.contains(order)) return false;
+                seenOrders.add(order);
+            }
+        }
+        for (Order order : solution.getPostponedOrders()) {
+            if (seenOrders.contains(order)) return false;
+            seenOrders.add(order);
+        }
+        for (Order order : solution.getUnplacedOrders()) {
+            if (seenOrders.contains(order)) return false;
+            seenOrders.add(order);
+        }
+        return true;
+    }
+
+    public static boolean hasVoyageForEachVessel(Solution solution) {
+        return solution.getOrderSequences().size() == Problem.getNumberOfVessels();
     }
 }
