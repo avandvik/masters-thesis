@@ -54,8 +54,6 @@ public class TreeTest {
 
         // 6. Check that there is one leaf node for each lastLayer node
         assertEquals(numberOfNodesLastOrder, numberOfLeaves);
-
-        tree.printTree();
     }
 
     @Test

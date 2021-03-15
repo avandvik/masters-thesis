@@ -4,7 +4,9 @@ import data.Problem;
 import objects.Order;
 import objects.Vessel;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SubProblem {
 
@@ -12,6 +14,10 @@ public class SubProblem {
     private final boolean isSpotVessel;
     private List<Node> shortestPath;
     private double shortestPathCost;
+
+    // Cache
+    private final static Map<Integer, Double> hashToCost = new HashMap<>();
+    private final static Map<Integer, List<Node>> hashToShortestPath = new HashMap<>();
 
     public SubProblem(List<Order> orderSequence, int vesselNumber) throws IllegalArgumentException {
         isOrderSequenceValid(orderSequence);
@@ -30,10 +36,18 @@ public class SubProblem {
     }
 
     public void solve() {
-        Tree tree = new Tree();
-        tree.generateTree(this.orderSequence, this.isSpotVessel);
-        this.shortestPath = tree.findShortestPath();
-        this.shortestPathCost = tree.getGlobalBestCost();
+        int hash = this.orderSequence.hashCode();
+        if (hashToCost.containsKey(hash)) {
+            this.shortestPath = hashToShortestPath.get(hash);
+            this.shortestPathCost = hashToCost.get(hash);
+        } else {
+            Tree tree = new Tree();
+            tree.generateTree(this.orderSequence, this.isSpotVessel);
+            this.shortestPath = tree.findShortestPath();
+            hashToShortestPath.put(hash, this.shortestPath);
+            this.shortestPathCost = tree.getGlobalBestCost();
+            hashToCost.put(hash, this.shortestPathCost);
+        }
     }
 
     private void isOrderSequenceValid(List<Order> orderSequence) throws IllegalArgumentException {
