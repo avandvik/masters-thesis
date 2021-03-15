@@ -62,6 +62,7 @@ public class RemovalRelated extends Heuristic implements Destroyer {
                     orderToRemove = (Order) distanceToRemovalPair.getKey();
                     break;
                 }
+                iterator.remove();
             }
             List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
             unplacedOrders.addAll(ordersToRemove);
