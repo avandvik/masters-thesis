@@ -57,23 +57,32 @@ public class Objective {
         return 0.0;
     }
 
-    public static double runSubProblemParallel(List<List<Order>> orderSequences, List<Integer> vesselIndices) {
+    public static void runSubProblemParallel(List<List<Order>> orderSequences, List<Integer> vesselIndices) {
 
         if (orderSequences.size() != vesselIndices.size()) throw new IllegalArgumentException("");
 
-        Map<Integer, Double> hashToCost = new HashMap<>();
-        Map<Integer, List<Node>> hashToShortestPath = new HashMap<>();
+        SubProblem.initializeParallelRuns();
 
-        // Update cache!
+        List<Thread> threads = new ArrayList<>();
 
         for (int i = 0; i < orderSequences.size(); i++) {
             List<Order> orderSequence = orderSequences.get(i);
             int vesselIdx = vesselIndices.get(i);
             Thread thread = new Thread(new SubProblem(orderSequence, vesselIdx));
+            threads.add(thread);
             thread.start();
         }
 
-        return 0.0;
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
     }
 
     public static double runSubProblemLean(List<List<Order>> orderSequences) {
@@ -84,12 +93,21 @@ public class Objective {
         return obj;
     }
 
-    public static List<List<Order>> createDummy() {
+    public static List<List<Order>> createOrderSequences() {
         List<List<Order>> orderSequences = new ArrayList<>();
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(1))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2), Problem.getOrder(3))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(4), Problem.getOrder(5))));
         return orderSequences;
     }
 
     public static void main(String[] args) {
+        Problem.setUpProblem("example_6.json", false, 10);
+        List<List<Order>> orderSequences = createOrderSequences();
+        List<Integer> vesselIndices = new ArrayList<>(Arrays.asList(0, 1, 2));
+        runSubProblemParallel(orderSequences, vesselIndices);
+
+        System.out.println(SubProblem.getSharedObjectiveValues());
 
     }
 }

@@ -4,7 +4,10 @@ import data.Problem;
 import objects.Order;
 import objects.Vessel;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SubProblem implements Runnable {
 
@@ -12,6 +15,8 @@ public class SubProblem implements Runnable {
     private final boolean isSpotVessel;
     private List<Node> shortestPath;
     private double shortestPathCost;
+
+    public static Map<Integer, Double> sharedObjectiveValues;
 
     public SubProblem(List<Order> orderSequence, int vesselNumber) throws IllegalArgumentException {
         isOrderSequenceValid(orderSequence);
@@ -48,8 +53,24 @@ public class SubProblem implements Runnable {
                 "Invalid vesselNumber passed to SubProblem.");
     }
 
+    public static void initializeParallelRuns() {
+        sharedObjectiveValues = new ConcurrentHashMap<>();
+    }
+
+    public static Map<Integer, Double> getSharedObjectiveValues() {
+        return sharedObjectiveValues;
+    }
+
     @Override
     public void run() {
-        solve();
+        Tree tree = new Tree();
+        tree.generateTree(this.orderSequence, this.isSpotVessel);
+        tree.findShortestPath();
+
+        Map<List<Order>, Boolean> hashStructure = new HashMap<>();
+        hashStructure.put(orderSequence, isSpotVessel);
+        int hash = hashStructure.hashCode();
+
+        sharedObjectiveValues.put(hash, tree.getGlobalBestCost());
     }
 }
