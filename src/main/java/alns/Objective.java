@@ -14,7 +14,7 @@ public class Objective {
         List<List<Node>> shortestPaths = new ArrayList<>();
         double objectiveValue = 0.0;
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            SubProblem subProblem = runSubProblemComplete(solution.getOrderSequence(vesselNumber), vesselNumber);
+            SubProblem subProblem = runSPComplete(solution.getOrderSequence(vesselNumber), vesselNumber);
             shortestPaths.add(subProblem != null ? subProblem.getShortestPath() : new ArrayList<>());
             objectiveValue += subProblem != null ? subProblem.getShortestPathCost() : 0.0;
         }
@@ -33,7 +33,7 @@ public class Objective {
                 .sum();
     }
 
-    public static SubProblem runSubProblemComplete(List<Order> orderSequence, int vesselNumber) {
+    public static SubProblem runSPComplete(List<Order> orderSequence, int vesselNumber) {
         /* Runs SubProblem and returns entire object to access all solution info (schedules) */
         try {
             SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
@@ -45,7 +45,7 @@ public class Objective {
         return null;
     }
 
-    public static double runSubProblemLean(List<Order> orderSequence, int vesselNumber) {
+    public static double runSPLean(List<Order> orderSequence, int vesselNumber) {
         /* Run SubProblem and returns only objective value */
         try {
             SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
@@ -57,22 +57,25 @@ public class Objective {
         return 0.0;
     }
 
-    public static void runSubProblemParallel(List<List<Order>> orderSequences, List<Integer> vesselIndices) {
-
-        if (orderSequences.size() != vesselIndices.size()) throw new IllegalArgumentException("");
-
+    public static Map<Integer, List<Double>> runMultipleSPs(Map<Integer, List<List<Order>>> vesselToOrderSequences) {
         SubProblem.initializeParallelRuns();
-
         List<Thread> threads = new ArrayList<>();
-
-        for (int i = 0; i < orderSequences.size(); i++) {
-            List<Order> orderSequence = orderSequences.get(i);
-            int vesselIdx = vesselIndices.get(i);
-            Thread thread = new Thread(new SubProblem(orderSequence, vesselIdx));
-            threads.add(thread);
-            thread.start();
+        for (int vesselIdx : vesselToOrderSequences.keySet()) {
+            for (List<Order> orderSequence : vesselToOrderSequences.get(vesselIdx)) {
+                if (orderSequence.isEmpty()) {
+                    SubProblem.sharedObjectiveValues.put(vesselIdx, new ArrayList<>());
+                } else {
+                    Thread thread = new Thread(new SubProblem(orderSequence, vesselIdx));
+                    threads.add(thread);
+                    thread.start();
+                }
+            }
         }
+        collectThreads(threads);
+        return SubProblem.sharedObjectiveValues;
+    }
 
+    private static void collectThreads(List<Thread> threads) {
         for (Thread thread : threads) {
             try {
                 thread.join();
@@ -80,34 +83,5 @@ public class Objective {
                 e.printStackTrace();
             }
         }
-
-
-
-    }
-
-    public static double runSubProblemLean(List<List<Order>> orderSequences) {
-        double obj = 0.0;
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            obj += runSubProblemLean(orderSequences.get(vesselNumber), vesselNumber);
-        }
-        return obj;
-    }
-
-    public static List<List<Order>> createOrderSequences() {
-        List<List<Order>> orderSequences = new ArrayList<>();
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(1))));
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2), Problem.getOrder(3))));
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(4), Problem.getOrder(5))));
-        return orderSequences;
-    }
-
-    public static void main(String[] args) {
-        Problem.setUpProblem("example_6.json", false, 10);
-        List<List<Order>> orderSequences = createOrderSequences();
-        List<Integer> vesselIndices = new ArrayList<>(Arrays.asList(0, 1, 2));
-        runSubProblemParallel(orderSequences, vesselIndices);
-
-        System.out.println(SubProblem.getSharedObjectiveValues());
-
     }
 }

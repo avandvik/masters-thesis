@@ -59,11 +59,11 @@ public class RemovalWorst extends Heuristic implements Destroyer {
         List<Integer> worstRemovalIndices = null;
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             List<Order> orderSequence = orderSequences.get(vesselNumber);
-            double currentObj = Objective.runSubProblemLean(orderSequence, vesselNumber);
+            double currentObj = Objective.runSPLean(orderSequence, vesselNumber);
             for (int orderIdx = 0; orderIdx < orderSequence.size(); orderIdx++) {
                 List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
                 orderSequenceCopy.remove(orderSequenceCopy.get(orderIdx));
-                double decrease = currentObj - Objective.runSubProblemLean(orderSequenceCopy, vesselNumber);
+                double decrease = currentObj - Objective.runSPLean(orderSequenceCopy, vesselNumber);
                 if (decrease > this.greatestDecrease) {
                     this.greatestDecrease = decrease;
                     worstRemovalIndices = new ArrayList<>(Arrays.asList(vesselNumber, orderIdx));
