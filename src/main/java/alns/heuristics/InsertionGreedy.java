@@ -7,6 +7,7 @@ import data.Messages;
 import data.Problem;
 import objects.Order;
 import subproblem.SubProblem;
+import subproblem.SubProblemInsertion;
 import utils.Helpers;
 
 import java.util.*;
@@ -22,62 +23,29 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         Solution solutionCopy = Helpers.deepCopySolution(partialSolution);
         List<List<Order>> orderSequences = solutionCopy.getOrderSequences();
 
-        SubProblem.initializeParallelRuns();
-        List<Thread> threads = new ArrayList<>();
-
-        for (Order order : ordersToPlace) {
-            Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
-            for (int vesselIdx : insertions.keySet()) {
-                List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequences.get(vesselIdx), true);
-                for (int insertionIdx : insertions.get(vesselIdx)) {
-                    orderSequenceCopy.add(insertionIdx, order);
-                    Thread thread = new Thread(new SubProblem(orderSequenceCopy, vesselIdx, insertionIdx, order));
-                    threads.add(thread);
-                    thread.start();
-                }
-            }
-        }
-
-        Map<Integer, Double> vesselToObjective = new HashMap<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            vesselToObjective.put(vesselIdx, Objective.runSPLean(orderSequences.get(vesselIdx), vesselIdx));
-        }
-
-        collect(threads);
-
-        System.out.println(SubProblem.sharedObjectiveValues);
+        Objective.runMultipleSPInsertion(orderSequences, ordersToPlace);
+        Objective.runMultipleSPEvaluate(orderSequences);
 
         double leastIncrease = Double.POSITIVE_INFINITY;
         List<Integer> bestInsertion = null;
         Order bestOrder = null;
         for (Order order : ordersToPlace) {
-            Map<List<Integer>, Double> insertionToObjective = SubProblem.sharedObjectiveValues.get(order);
-            List<Integer> minInsertion = getMinInsertion(insertionToObjective);
-            double increase = insertionToObjective.get(minInsertion) - vesselToObjective.get(minInsertion.get(0));
-            if (increase < leastIncrease) {
-                leastIncrease = increase;
-                bestInsertion = minInsertion;
-                bestOrder = order;
+            Map<List<Integer>, Double> insertionToObj = SubProblemInsertion.orderToInsertionToObjective.get(order);
+            for (List<Integer> insertion : insertionToObj.keySet()) {
+                int vesselIdx = insertion.get(0);
+                double increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
+                if (increase < leastIncrease) {
+                    leastIncrease = increase;
+                    bestInsertion = insertion;
+                    bestOrder = order;
+                }
             }
         }
 
-        System.out.println(leastIncrease);
-        System.out.println(bestInsertion);
-        System.out.println(bestOrder);
-    }
+        // Postponement
 
-    private static List<Integer> getMinInsertion(Map<List<Integer>, Double> map) {
-        return Collections.min(map.entrySet(), Comparator.comparingDouble(Map.Entry::getValue)).getKey();
-    }
-
-    private static void collect(List<Thread> threads) {
-        for (Thread thread : threads) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        int vesselIdx = bestInsertion.get(0);
+        int insertionIdx = bestInsertion.get(1);
     }
 
     public static Solution getGreedyInsertion(Solution partialSolution, Order orderToPlace) {

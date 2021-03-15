@@ -51,7 +51,7 @@ public class InsertionGreedyTest {
         assertEquals(expectedSolution, insertionGreedy.repair(partialSolution));
 
         // System.out.println(unplacedOrders);
-        // System.out.println(partialSolution);
+        System.out.println(partialSolution);
         InsertionGreedy.greedyVol2(partialSolution, unplacedOrders);
     }
 

@@ -1,8 +1,8 @@
 package subproblem;
 
+import data.Messages;
 import data.Problem;
 import objects.Order;
-import utils.Helpers;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,11 +15,8 @@ public class SubProblem implements Runnable {
     private List<Node> shortestPath;
     private double shortestPathCost;
 
-    private int insertionIdx;
-    private Order orderToPlace;
-
-    // orderToPlace -> (vesselIdx, insertionIdx) -> objective
-    public static Map<Order, Map<List<Integer>, Double>> sharedObjectiveValues;
+    // vesselIdx -> objective value
+    public static Map<Integer, Double> vesselToObjective;
 
     // Cache
     private final static Map<Integer, Double> hashToCost = new HashMap<>();
@@ -33,67 +30,72 @@ public class SubProblem implements Runnable {
         this.isSpotVessel = Problem.isSpotVessel(vesselIdx);
     }
 
-    public SubProblem(List<Order> orderSequence, int vesselIdx, int insertionIdx, Order order) throws IllegalArgumentException {
-        isOrderSequenceValid(orderSequence);
-        isVesselIdxValid(vesselIdx);
-        this.orderSequence = orderSequence;
-        this.vesselIdx = vesselIdx;
-        this.insertionIdx = insertionIdx;
-        this.orderToPlace = order;
-        this.isSpotVessel = Problem.isSpotVessel(vesselIdx);
-    }
-
-    public void solve() {
-        int hash = Helpers.generateSubProblemHash(this.orderSequence, this.isSpotVessel);
-        if (hashToCost.containsKey(hash)) {
-            this.shortestPath = hashToShortestPath.get(hash);
-            this.shortestPathCost = hashToCost.get(hash);
-        } else {
-            Tree tree = new Tree();
-            tree.generateTree(this.orderSequence, this.isSpotVessel);
-            this.shortestPath = tree.findShortestPath();
-            hashToShortestPath.put(hash, this.shortestPath);
-            this.shortestPathCost = tree.getGlobalBestCost();
-            hashToCost.put(hash, this.shortestPathCost);
-        }
+    public static void initialize() {
+        vesselToObjective = new ConcurrentHashMap<>();
     }
 
     @Override
     public void run() {
-        Tree tree = new Tree();
-        tree.generateTree(this.orderSequence, this.isSpotVessel);
-        tree.findShortestPath();
-        double cost = tree.getGlobalBestCost();
-
-        List<Integer> insertionKey = new ArrayList<>(Arrays.asList(vesselIdx, insertionIdx));
-
-        if (!sharedObjectiveValues.containsKey(this.orderToPlace)) {
-            sharedObjectiveValues.put(this.orderToPlace, new HashMap<>());
+        boolean cachedSolution = checkCache(this.hashCode());
+        if (!cachedSolution) {
+            Tree tree = new Tree();
+            tree.generateTree(this.orderSequence, this.isSpotVessel);
+            this.shortestPath = tree.findShortestPath();
+            hashToShortestPath.put(this.hashCode(), this.shortestPath);
+            this.shortestPathCost = tree.getGlobalBestCost();
+            hashToCost.put(this.hashCode(), this.shortestPathCost);
         }
-        sharedObjectiveValues.get(this.orderToPlace).put(insertionKey, cost);
+        vesselToObjective.put(vesselIdx, this.shortestPathCost);
     }
 
-    public static void initializeParallelRuns() {
-        sharedObjectiveValues = new ConcurrentHashMap<>();
+    public boolean checkCache(int hash) {
+        if (hashToCost.containsKey(hash)) {
+            this.shortestPath = hashToShortestPath.get(hash);
+            this.shortestPathCost = hashToCost.get(hash);
+            return true;
+        }
+        return false;
     }
 
     public List<Node> getShortestPath() {
         return shortestPath;
     }
 
+    public void setShortestPath(List<Node> shortestPath) {
+        this.shortestPath = shortestPath;
+    }
+
     public double getShortestPathCost() {
         return shortestPathCost;
     }
 
-    private void isOrderSequenceValid(List<Order> orderSequence) throws IllegalArgumentException {
-        if (orderSequence.isEmpty()) throw new IllegalArgumentException("Empty order sequence passed to SubProblem, " +
-                "skipping.");
-
-        // Can be expanded
+    public void setShortestPathCost(double shortestPathCost) {
+        this.shortestPathCost = shortestPathCost;
     }
 
-    private void isVesselIdxValid(int vesselNumber) throws IllegalArgumentException {
-        if (vesselNumber < 0 || vesselNumber >= Problem.getNumberOfVessels()) throw new IllegalArgumentException(
-                "Invalid vesselNumber passed to SubProblem.");
+    public List<Order> getOrderSequence() {
+        return orderSequence;
+    }
+
+    public int getVesselIdx() {
+        return vesselIdx;
+    }
+
+    public boolean isSpotVessel() {
+        return isSpotVessel;
+    }
+
+    private void isOrderSequenceValid(List<Order> orderSequence) throws IllegalArgumentException {
+        if (orderSequence.isEmpty()) throw new IllegalArgumentException(Messages.emptySequenceSP);
+    }
+
+    private void isVesselIdxValid(int vesselIdx) throws IllegalArgumentException {
+        if (vesselIdx < 0 || vesselIdx >= Problem.getNumberOfVessels())
+            throw new IllegalArgumentException(Messages.invalidVesselIdx);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderSequence, isSpotVessel);
     }
 }
