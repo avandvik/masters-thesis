@@ -36,7 +36,9 @@ public class SubProblem {
     }
 
     public void solve() {
-        int hash = this.orderSequence.hashCode();
+        Map<List<Order>, Boolean> hashStructure = new HashMap<>();
+        hashStructure.put(this.orderSequence, this.isSpotVessel);
+        int hash = hashStructure.hashCode();
         if (hashToCost.containsKey(hash)) {
             this.shortestPath = hashToShortestPath.get(hash);
             this.shortestPathCost = hashToCost.get(hash);
