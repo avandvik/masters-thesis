@@ -16,6 +16,19 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         super(name, destroy, repair);
     }
 
+    public static void greedyVol2(Solution partialSolution, Order orderToPlace) {
+
+        Solution solutionCopy = Helpers.deepCopySolution(partialSolution);
+        List<List<Order>> orderSequences = solutionCopy.getOrderSequences();
+        Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, orderToPlace);
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            List<Order> orderSequence = orderSequences.get(vesselIdx);
+            
+        }
+
+
+    }
+
     public static Solution getGreedyInsertion(Solution partialSolution, Order orderToPlace) {
         /* Inserts order in an available vessel, a spot vessel, or the set of postponed orders */
 
