@@ -6,7 +6,7 @@ import objects.Vessel;
 
 import java.util.List;
 
-public class SubProblem {
+public class SubProblem implements Runnable {
 
     private final List<Order> orderSequence;
     private final boolean isSpotVessel;
@@ -46,5 +46,10 @@ public class SubProblem {
     private void isVesselNumberValid(int vesselNumber) throws IllegalArgumentException {
         if (vesselNumber < 0 || vesselNumber >= Problem.getNumberOfVessels()) throw new IllegalArgumentException(
                 "Invalid vesselNumber passed to SubProblem.");
+    }
+
+    @Override
+    public void run() {
+        solve();
     }
 }

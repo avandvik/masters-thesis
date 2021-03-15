@@ -57,11 +57,39 @@ public class Objective {
         return 0.0;
     }
 
+    public static double runSubProblemParallel(List<List<Order>> orderSequences, List<Integer> vesselIndices) {
+
+        if (orderSequences.size() != vesselIndices.size()) throw new IllegalArgumentException("");
+
+        Map<Integer, Double> hashToCost = new HashMap<>();
+        Map<Integer, List<Node>> hashToShortestPath = new HashMap<>();
+
+        // Update cache!
+
+        for (int i = 0; i < orderSequences.size(); i++) {
+            List<Order> orderSequence = orderSequences.get(i);
+            int vesselIdx = vesselIndices.get(i);
+            Thread thread = new Thread(new SubProblem(orderSequence, vesselIdx));
+            thread.start();
+        }
+
+        return 0.0;
+    }
+
     public static double runSubProblemLean(List<List<Order>> orderSequences) {
         double obj = 0.0;
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             obj += runSubProblemLean(orderSequences.get(vesselNumber), vesselNumber);
         }
         return obj;
+    }
+
+    public static List<List<Order>> createDummy() {
+        List<List<Order>> orderSequences = new ArrayList<>();
+        return orderSequences;
+    }
+
+    public static void main(String[] args) {
+
     }
 }
