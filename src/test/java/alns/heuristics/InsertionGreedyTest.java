@@ -31,6 +31,11 @@ public class InsertionGreedyTest {
         Set<Order> unplacedOrders = new HashSet<>(Collections.singletonList(partialOrderSequences.get(0).remove(0)));
         Solution partialSolution = new Solution(partialOrderSequences, postponedOrders, unplacedOrders);
         assertEquals(expectedSolution, insertionGreedy.repair(partialSolution));
+
+        // System.out.println(unplacedOrders);
+        // System.out.println(partialSolution);
+        // InsertionGreedy.greedyVol2(partialSolution, unplacedOrders);
+
     }
 
     private void testTripleInsertion(InsertionGreedy insertionGreedy) {
@@ -44,6 +49,10 @@ public class InsertionGreedyTest {
         Solution partialSolution = new Solution(partialOrderSequences, new HashSet<>(), unplacedOrders);
         Solution expectedSolution = createExpectedSolutionTripleInsertion();
         assertEquals(expectedSolution, insertionGreedy.repair(partialSolution));
+
+        // System.out.println(unplacedOrders);
+        // System.out.println(partialSolution);
+        InsertionGreedy.greedyVol2(partialSolution, unplacedOrders);
     }
 
     private void testPostponementInsertion(InsertionGreedy insertionGreedy) {

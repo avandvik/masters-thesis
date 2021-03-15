@@ -15,7 +15,11 @@ public class SubProblem implements Runnable {
     private List<Node> shortestPath;
     private double shortestPathCost;
 
-    public static Map<Integer, List<Double>> sharedObjectiveValues;
+    private int insertionIdx;
+    private Order orderToPlace;
+
+    // orderToPlace -> (vesselIdx, insertionIdx) -> objective
+    public static Map<Order, Map<List<Integer>, Double>> sharedObjectiveValues;
 
     // Cache
     private final static Map<Integer, Double> hashToCost = new HashMap<>();
@@ -26,6 +30,16 @@ public class SubProblem implements Runnable {
         isVesselIdxValid(vesselIdx);
         this.orderSequence = orderSequence;
         this.vesselIdx = vesselIdx;
+        this.isSpotVessel = Problem.isSpotVessel(vesselIdx);
+    }
+
+    public SubProblem(List<Order> orderSequence, int vesselIdx, int insertionIdx, Order order) throws IllegalArgumentException {
+        isOrderSequenceValid(orderSequence);
+        isVesselIdxValid(vesselIdx);
+        this.orderSequence = orderSequence;
+        this.vesselIdx = vesselIdx;
+        this.insertionIdx = insertionIdx;
+        this.orderToPlace = order;
         this.isSpotVessel = Problem.isSpotVessel(vesselIdx);
     }
 
@@ -51,11 +65,12 @@ public class SubProblem implements Runnable {
         tree.findShortestPath();
         double cost = tree.getGlobalBestCost();
 
-        if (sharedObjectiveValues.containsKey(this.vesselIdx)) {
-            sharedObjectiveValues.get(this.vesselIdx).add(cost);
-        } else {
-            sharedObjectiveValues.put(this.vesselIdx, new ArrayList<>(Collections.singletonList(cost)));
+        List<Integer> insertionKey = new ArrayList<>(Arrays.asList(vesselIdx, insertionIdx));
+
+        if (!sharedObjectiveValues.containsKey(this.orderToPlace)) {
+            sharedObjectiveValues.put(this.orderToPlace, new HashMap<>());
         }
+        sharedObjectiveValues.get(this.orderToPlace).put(insertionKey, cost);
     }
 
     public static void initializeParallelRuns() {

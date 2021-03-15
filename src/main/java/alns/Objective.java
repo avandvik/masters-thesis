@@ -57,6 +57,7 @@ public class Objective {
         return 0.0;
     }
 
+    /*
     public static Map<Integer, List<Double>> runMultipleSPs(Map<Integer, List<List<Order>>> vesselToOrderSequences) {
         SubProblem.initializeParallelRuns();
         List<Thread> threads = new ArrayList<>();
@@ -74,6 +75,8 @@ public class Objective {
         collectThreads(threads);
         return SubProblem.sharedObjectiveValues;
     }
+
+     */
 
     private static void collectThreads(List<Thread> threads) {
         for (Thread thread : threads) {
