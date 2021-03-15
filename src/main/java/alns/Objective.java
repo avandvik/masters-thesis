@@ -14,7 +14,7 @@ public class Objective {
         List<List<Node>> shortestPaths = new ArrayList<>();
         double objectiveValue = 0.0;
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            SubProblem subProblem = runSubProblemComplete(solution.getOrderSequence(vesselNumber), vesselNumber);
+            SubProblem subProblem = runSPComplete(solution.getOrderSequence(vesselNumber), vesselNumber);
             shortestPaths.add(subProblem != null ? subProblem.getShortestPath() : new ArrayList<>());
             objectiveValue += subProblem != null ? subProblem.getShortestPathCost() : 0.0;
         }
@@ -33,7 +33,7 @@ public class Objective {
                 .sum();
     }
 
-    public static SubProblem runSubProblemComplete(List<Order> orderSequence, int vesselNumber) {
+    public static SubProblem runSPComplete(List<Order> orderSequence, int vesselNumber) {
         /* Runs SubProblem and returns entire object to access all solution info (schedules) */
         try {
             SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
@@ -45,7 +45,7 @@ public class Objective {
         return null;
     }
 
-    public static double runSubProblemLean(List<Order> orderSequence, int vesselNumber) {
+    public static double runSPLean(List<Order> orderSequence, int vesselNumber) {
         /* Run SubProblem and returns only objective value */
         try {
             SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
@@ -57,11 +57,31 @@ public class Objective {
         return 0.0;
     }
 
-    public static double runSubProblemLean(List<List<Order>> orderSequences) {
-        double obj = 0.0;
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            obj += runSubProblemLean(orderSequences.get(vesselNumber), vesselNumber);
+    public static Map<Integer, List<Double>> runMultipleSPs(Map<Integer, List<List<Order>>> vesselToOrderSequences) {
+        SubProblem.initializeParallelRuns();
+        List<Thread> threads = new ArrayList<>();
+        for (int vesselIdx : vesselToOrderSequences.keySet()) {
+            for (List<Order> orderSequence : vesselToOrderSequences.get(vesselIdx)) {
+                if (orderSequence.isEmpty()) {
+                    SubProblem.sharedObjectiveValues.put(vesselIdx, new ArrayList<>());
+                } else {
+                    Thread thread = new Thread(new SubProblem(orderSequence, vesselIdx));
+                    threads.add(thread);
+                    thread.start();
+                }
+            }
         }
-        return obj;
+        collectThreads(threads);
+        return SubProblem.sharedObjectiveValues;
+    }
+
+    private static void collectThreads(List<Thread> threads) {
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
