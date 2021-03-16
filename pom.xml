@@ -44,6 +44,7 @@
             <artifactId>gurobi</artifactId>
             <version>9.1</version>
             <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/gurobi/gurobi.jar</systemPath>
         </dependency>
     </dependencies>
 
