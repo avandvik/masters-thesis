@@ -34,7 +34,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
     }
 
     public Solution getGreedyInsertion(Solution partialSolution) {
-        /* Finds and inserts the order in ordersToPlace that increases the objective the least */
+        /* Finds and inserts the order in partialSolution's unplacedOrders that increases the objective the least */
 
         Solution newSolution = Helpers.deepCopySolution(partialSolution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
@@ -42,12 +42,12 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         if (Parameters.parallelHeuristics) {
             Objective.runMultipleSPInsertion(orderSequences, ordersToPlace);
             Objective.runMultipleSPEvaluate(orderSequences);
-            this.findBestInsertionOrderSequencesPar(ordersToPlace);
+            this.findLeastIncreaseInsertionOrderSequencesPar(ordersToPlace);
         } else {
-            this.findBestInsertionOrderSequencesSeq(orderSequences, ordersToPlace);
+            this.findLeastIncreaseInsertionOrderSequencesSeq(orderSequences, ordersToPlace);
         }
 
-        boolean postponement = this.findBestInsertionPostponedOrders(ordersToPlace);
+        boolean postponement = this.findLeastIncreaseInsertionPostponedOrders(ordersToPlace);
 
         if (postponement) {
             newSolution.addPostponedOrder(bestOrder);
@@ -62,7 +62,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         return newSolution;
     }
 
-    private void findBestInsertionOrderSequencesPar(Set<Order> ordersToPlace) {
+    private void findLeastIncreaseInsertionOrderSequencesPar(Set<Order> ordersToPlace) {
         this.leastIncrease = Double.POSITIVE_INFINITY;
         this.bestInsertion = null;
         this.bestOrder = null;
@@ -82,7 +82,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         }
     }
 
-    private void findBestInsertionOrderSequencesSeq(List<List<Order>> orderSequences, Set<Order> ordersToPlace) {
+    private void findLeastIncreaseInsertionOrderSequencesSeq(List<List<Order>> orderSequences, Set<Order> ordersToPlace) {
         this.leastIncrease = Double.POSITIVE_INFINITY;
         this.bestInsertion = null;
         this.bestOrder = null;
@@ -115,7 +115,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         return false;
     }
 
-    private boolean findBestInsertionPostponedOrders(Set<Order> ordersToPlace) {
+    private boolean findLeastIncreaseInsertionPostponedOrders(Set<Order> ordersToPlace) {
         for (Order order : ordersToPlace) {
             double increase = order.getPostponementPenalty();
             if (!order.isMandatory() && (increase < this.leastIncrease || this.bestOrder == null)) {
@@ -125,5 +125,30 @@ public class InsertionGreedy extends Heuristic implements Repairer {
             }
         }
         return false;
+    }
+
+    public static Solution insertGreedilyInSolution(Solution partialSolution, Order order) {
+        Solution newSolution = Helpers.deepCopySolution(partialSolution);
+        List<List<Order>> orderSequences = newSolution.getOrderSequences();
+        Set<Order> wrapperOrder = new HashSet<>(Collections.singletonList(order));
+
+        Objective.runMultipleSPInsertion(orderSequences, wrapperOrder);
+        Map<List<Integer>, Double> insertionToObj = SubProblemInsertion.orderToInsertionToObjective.get(order);
+        List<Integer> bestInsertion = Collections.min(insertionToObj.entrySet(), Map.Entry.comparingByValue()).getKey();
+        double bestObj = insertionToObj.get(bestInsertion);
+
+        int vesselIdx = bestInsertion.get(0);
+        int insertionIdx = bestInsertion.get(1);
+        double increase = bestObj - Objective.runSPLean(orderSequences.get(vesselIdx), vesselIdx);
+
+        if (!order.isMandatory() && order.getPostponementPenalty() < increase) {
+            newSolution.addPostponedOrder(order);
+            newSolution.removeUnplacedOrder(order);
+            return newSolution;
+        }
+
+        newSolution.insertInOrderSequence(vesselIdx, insertionIdx, order);
+        newSolution.removeUnplacedOrder(order);
+        return newSolution;
     }
 }

@@ -2,6 +2,7 @@ package alns.heuristics;
 
 import alns.Solution;
 import alns.SolutionGenerator;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -29,30 +30,46 @@ public class InsertionRegretTest {
     private void testRegretTwoOrders(InsertionRegret insertionRegret) {
         Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5);
         Solution expectedSolution = Helpers.deepCopySolution(originalSolution);
-        expectedSolution.getOrderSequences().get(0).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
+        expectedSolution.getOrderSequences().get(1).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
 
         List<List<Order>> partialOrderSequences = Helpers.deepCopy2DList(expectedSolution.getOrderSequences());
         Set<Order> postponedOrders = Helpers.deepCopySet(expectedSolution.getPostponedOrders());
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(partialOrderSequences.get(0).remove(0),
-                partialOrderSequences.get(0).remove(1)));
+                partialOrderSequences.get(1).remove(0)));
         Solution partialSolution = new Solution(partialOrderSequences, postponedOrders, unplacedOrders);
-        Solution repairedSolution = insertionRegret.repair(partialSolution);
-        assertEquals(expectedSolution, repairedSolution);
+
+        Parameters.regretParameter = 3;
+        Parameters.parallelHeuristics = false;
+        Solution sequentialSolution = insertionRegret.repair(partialSolution);
+        Parameters.parallelHeuristics = true;
+        Solution parallelSolution = insertionRegret.repair(partialSolution);
+
+        assertEquals(expectedSolution, sequentialSolution);
+        assertEquals(expectedSolution, parallelSolution);
+        assertEquals(parallelSolution, sequentialSolution);
     }
 
     private void testRegretThreeOrders(InsertionRegret insertionRegret) {
         Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5);
         Solution expectedSolution = Helpers.deepCopySolution(originalSolution);
-        expectedSolution.getOrderSequences().get(0).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
-        expectedSolution.getOrderSequences().get(0).add(1, expectedSolution.getOrderSequences().get(2).remove(0));
+        expectedSolution.getOrderSequences().get(1).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
+        expectedSolution.getOrderSequences().get(1).add(1, expectedSolution.getOrderSequences().get(2).remove(0));
 
         List<List<Order>> partialOrderSequences = Helpers.deepCopy2DList(originalSolution.getOrderSequences());
         Set<Order> postponedOrders = Helpers.deepCopySet(expectedSolution.getPostponedOrders());
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(partialOrderSequences.get(0).remove(2),
                 partialOrderSequences.get(1).remove(0), partialOrderSequences.get(2).remove(0)));
         Solution partialSolution = new Solution(partialOrderSequences, postponedOrders, unplacedOrders);
-        Solution repairedSolution = insertionRegret.getRegretSolution(partialSolution,3);
-        assertEquals(expectedSolution, repairedSolution);
+
+        Parameters.regretParameter = 4;
+        Parameters.parallelHeuristics = false;
+        Solution sequentialSolution = insertionRegret.repair(partialSolution);
+        Parameters.parallelHeuristics = true;
+        Solution parallelSolution = insertionRegret.repair(partialSolution);
+
+        assertEquals(expectedSolution, sequentialSolution);
+        assertEquals(expectedSolution, parallelSolution);
+        assertEquals(parallelSolution, sequentialSolution);
     }
 
 }

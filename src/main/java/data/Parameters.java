@@ -21,6 +21,9 @@ public class Parameters {
     // Random parameter removal methods
     public static double randomParameter = 0.5;
 
+    // Regret parameter for regret insertion
+    public static int regretParameter = 2;
+
     // Concurrency
     public static boolean parallelHeuristics = false;
 
