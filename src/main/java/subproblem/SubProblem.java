@@ -19,8 +19,8 @@ public class SubProblem implements Runnable {
     public static Map<Integer, Double> vesselToObjective;
 
     // Cache
-    private final static Map<Integer, Double> hashToCost = new HashMap<>();
-    private final static Map<Integer, List<Node>> hashToShortestPath = new HashMap<>();
+    public final static Map<Integer, Double> hashToCost = new HashMap<>();
+    public final static Map<Integer, List<Node>> hashToShortestPath = new HashMap<>();
 
     public SubProblem(List<Order> orderSequence, int vesselIdx) throws IllegalArgumentException {
         isOrderSequenceValid(orderSequence);

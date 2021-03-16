@@ -30,7 +30,9 @@ public class SubProblemInsertion extends SubProblem implements Runnable{
             Tree tree = new Tree();
             tree.generateTree(super.getOrderSequence(), super.isSpotVessel());
             super.setShortestPath(tree.findShortestPath());
+            hashToShortestPath.put(this.hashCode(), super.getShortestPath());
             super.setShortestPathCost(tree.getGlobalBestCost());
+            hashToCost.put(this.hashCode(), super.getShortestPathCost());
         }
         List<Integer> insertionKey = new ArrayList<>(Arrays.asList(super.getVesselIdx(), this.insertionIdx));
         if (!orderToInsertionToObjective.containsKey(this.orderToPlace)) {

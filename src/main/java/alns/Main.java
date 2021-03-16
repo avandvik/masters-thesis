@@ -7,6 +7,8 @@ import data.Constants;
 import data.Messages;
 import data.Parameters;
 import data.Problem;
+import objects.Order;
+import subproblem.SubProblem;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +24,8 @@ public class Main {
 
     private static int iterationsCurrentSolution;
     private static double currentTemperature;
+
+    private static Map<Integer, Map<List<Order>, Double>> vesselToSequenceToCost;
 
     public static void run() {
 
@@ -68,6 +72,12 @@ public class Main {
         // Initialize adaptive weights
         for (Heuristic heuristic : destroyHeuristics) heuristic.setWeight(Parameters.initialWeight);
         for (Heuristic heuristic : repairHeuristics) heuristic.setWeight(Parameters.initialWeight);
+
+        // Initialize route saving
+        vesselToSequenceToCost = new HashMap<>();
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
+        }
     }
 
     private static List<Heuristic> chooseHeuristics() {
@@ -118,6 +128,7 @@ public class Main {
     }
 
     private static double doGlobalBestUpdates(Solution candidateSolution) {
+        saveVoyages(candidateSolution);
         bestSolution = candidateSolution;
         currentSolution = candidateSolution;
         visitedSolutions.add(candidateSolution.hashCode());
@@ -126,6 +137,7 @@ public class Main {
     }
 
     private static double doLocalUpdates(Solution candidateSolution) {
+        saveVoyages(candidateSolution);
         currentSolution = candidateSolution;
         iterationsCurrentSolution = 0;
         if (!visitedSolutions.contains(candidateSolution.hashCode())) {
@@ -137,6 +149,18 @@ public class Main {
             }
         }
         return 0.0;  // No reward if solution has been visited before, but current solution is updated
+    }
+
+    private static void saveVoyages(Solution solution) {
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+
+            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
+            boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
+            int hash = Objects.hash(orderSequence, isSpotVessel);
+            double cost = orderSequence.isEmpty() ? 0.0 : SubProblem.hashToCost.get(hash);
+
+            vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
+        }
     }
 
     private static boolean simulatedAnnealing(double currentFitness, double candidateFitness) {
