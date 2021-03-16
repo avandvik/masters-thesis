@@ -5,6 +5,7 @@ import alns.Objective;
 import alns.Solution;
 import alns.heuristics.protocols.Repairer;
 import data.Messages;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import subproblem.SubProblem;
@@ -23,14 +24,22 @@ public class InsertionGreedy extends Heuristic implements Repairer {
     private List<Integer> bestInsertion;
     private Order bestOrder;
 
-    public Solution getGreedyInsertion(Solution partialSolution, boolean parallel) {
+    @Override
+    public Solution repair(Solution partialSolution) {
+        Solution solution = partialSolution;
+        while (!solution.getUnplacedOrders().isEmpty()) solution = getGreedyInsertion(solution);
+        Objective.setObjValAndSchedule(solution);
+        if (!Evaluator.isSolutionFeasible(solution)) throw new IllegalStateException(Messages.solutionInfeasible);
+        return solution;
+    }
+
+    public Solution getGreedyInsertion(Solution partialSolution) {
         /* Finds and inserts the order in ordersToPlace that increases the objective the least */
 
         Solution newSolution = Helpers.deepCopySolution(partialSolution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
         Set<Order> ordersToPlace = newSolution.getUnplacedOrders();
-
-        if (parallel) {
+        if (Parameters.parallelHeuristics) {
             Objective.runMultipleSPInsertion(orderSequences, ordersToPlace);
             Objective.runMultipleSPEvaluate(orderSequences);
             this.findBestInsertionOrderSequencesPar(ordersToPlace);
@@ -46,13 +55,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
             return newSolution;
         }
 
-        if (bestOrder == null) {
-            System.out.println(partialSolution);
-            List<Order> unplacedOrders = new ArrayList<>(partialSolution.getUnplacedOrders());
-            Order order = unplacedOrders.remove(0);
-            System.out.println(Construction.getAllFeasibleInsertions(partialSolution.getOrderSequences(), order));
-            throw new IllegalStateException(Messages.cannotPlaceMDOrder);
-        }
+        if (bestOrder == null) throw new IllegalStateException(Messages.cannotPlaceMDOrder);
 
         newSolution.insertInOrderSequence(bestInsertion.get(0), bestInsertion.get(1), bestOrder);
         newSolution.removeUnplacedOrder(bestOrder);
@@ -70,12 +73,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
                 int vesselIdx = insertion.get(0);
                 double increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
                 if (increase < this.leastIncrease) {
-
-                    if (!order.isMandatory()) {
-                        Order mandOrder = Problem.getMandatoryOrder(order);
-                        if (mandOrder != null && ordersToPlace.contains(mandOrder)) continue outer;
-                    }
-
+                    if (instHasMandUnplacedOrder(order, ordersToPlace)) continue outer;
                     this.leastIncrease = increase;
                     this.bestInsertion = insertion;
                     this.bestOrder = order;
@@ -99,12 +97,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
                     orderSequenceCopy.add(insertionIdx, order);
                     double increase = Objective.runSPLean(orderSequenceCopy, vesselIdx) - currentObjective;
                     if (increase < this.leastIncrease) {
-
-                        if (!order.isMandatory()) {
-                            Order mandOrder = Problem.getMandatoryOrder(order);
-                            if (mandOrder != null && ordersToPlace.contains(mandOrder)) continue outer;
-                        }
-
+                        if (instHasMandUnplacedOrder(order, ordersToPlace)) continue outer;
                         this.leastIncrease = increase;
                         this.bestInsertion = new ArrayList<>(Arrays.asList(vesselIdx, insertionIdx));
                         this.bestOrder = order;
@@ -112,6 +105,14 @@ public class InsertionGreedy extends Heuristic implements Repairer {
                 }
             }
         }
+    }
+
+    private boolean instHasMandUnplacedOrder(Order order, Set<Order> ordersToPlace) {
+        if (!order.isMandatory()) {
+            Order mandOrder = Problem.getMandatoryOrder(order);
+            return mandOrder != null && ordersToPlace.contains(mandOrder);
+        }
+        return false;
     }
 
     private boolean findBestInsertionPostponedOrders(Set<Order> ordersToPlace) {
@@ -124,14 +125,5 @@ public class InsertionGreedy extends Heuristic implements Repairer {
             }
         }
         return false;
-    }
-
-    @Override
-    public Solution repair(Solution partialSolution) {
-        Solution solution = partialSolution;
-        while (!solution.getUnplacedOrders().isEmpty()) solution = getGreedyInsertion(solution, false);
-        Objective.setObjValAndSchedule(solution);
-        if (!Evaluator.isSolutionFeasible(solution)) throw new IllegalStateException(Messages.solutionInfeasible);
-        return solution;
     }
 }

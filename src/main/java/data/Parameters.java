@@ -21,6 +21,9 @@ public class Parameters {
     // Random parameter removal methods
     public static double randomParameter = 0.5;
 
+    // Concurrency
+    public static boolean parallelHeuristics = false;
+
     // Iterations
     public static int totalIterations = 1000;
     public static int maxIterSolution = 20;

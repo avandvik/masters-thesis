@@ -2,6 +2,7 @@ package alns.heuristics;
 
 import alns.Solution;
 import alns.SolutionGenerator;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -30,7 +31,15 @@ public class InsertionGreedyTest {
         Set<Order> postponedOrders = Helpers.deepCopySet(expectedSolution.getPostponedOrders());
         Set<Order> unplacedOrders = new HashSet<>(Collections.singletonList(partialOrderSequences.get(0).remove(0)));
         Solution partialSolution = new Solution(partialOrderSequences, postponedOrders, unplacedOrders);
-        assertEquals(expectedSolution, insertionGreedy.repair(partialSolution));
+
+        Parameters.parallelHeuristics = false;
+        Solution seqSolution = insertionGreedy.repair(partialSolution);
+        Parameters.parallelHeuristics = true;
+        Solution parSolution = insertionGreedy.repair(partialSolution);
+
+        assertEquals(expectedSolution, seqSolution);
+        assertEquals(expectedSolution, parSolution);
+        assertEquals(seqSolution, parSolution);
     }
 
     private void testTripleInsertion(InsertionGreedy insertionGreedy) {
@@ -39,11 +48,18 @@ public class InsertionGreedyTest {
         Order removedOrderOne = partialOrderSequences.get(0).remove(0);
         Order removedOrderTwo = partialOrderSequences.get(0).remove(1);
         Order removedOrderThree = partialOrderSequences.get(1).remove(3);
-
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(removedOrderOne, removedOrderTwo, removedOrderThree));
         Solution partialSolution = new Solution(partialOrderSequences, new HashSet<>(), unplacedOrders);
         Solution expectedSolution = createExpectedSolutionTripleInsertion();
-        assertEquals(expectedSolution, insertionGreedy.repair(partialSolution));
+
+        Parameters.parallelHeuristics = false;
+        Solution seqSolution = insertionGreedy.repair(partialSolution);
+        Parameters.parallelHeuristics = true;
+        Solution parSolution = insertionGreedy.repair(partialSolution);
+
+        assertEquals(expectedSolution, seqSolution);
+        assertEquals(expectedSolution, parSolution);
+        assertEquals(seqSolution, parSolution);
     }
 
     private void testPostponementInsertion(InsertionGreedy insertionGreedy) {
@@ -51,12 +67,19 @@ public class InsertionGreedyTest {
         Solution expectedSolution = Helpers.deepCopySolution(originalSolution);
         Order removedOrder = expectedSolution.getOrderSequences().get(0).remove(2);
         expectedSolution.getPostponedOrders().add(removedOrder);
-
         Solution partialSolution = Helpers.deepCopySolution(originalSolution);
         partialSolution.getOrderSequences().get(0).remove(2);
         removedOrder.setPostponementPenalty(50.0);  // Very low penalty, will be best option
         partialSolution.getUnplacedOrders().add(removedOrder);
-        assertEquals(expectedSolution, insertionGreedy.repair(partialSolution));
+
+        Parameters.parallelHeuristics = false;
+        Solution seqSolution = insertionGreedy.repair(partialSolution);
+        Parameters.parallelHeuristics = true;
+        Solution parSolution = insertionGreedy.repair(partialSolution);
+
+        assertEquals(expectedSolution, seqSolution);
+        assertEquals(expectedSolution, parSolution);
+        assertEquals(seqSolution, parSolution);
     }
 
     private Solution createExpectedSolutionTripleInsertion() {
