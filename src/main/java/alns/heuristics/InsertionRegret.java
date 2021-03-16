@@ -41,8 +41,8 @@ public class InsertionRegret extends Heuristic implements Repairer {
         while (!solutionCopy.getUnplacedOrders().isEmpty()) {
             Order orderToPlace = Collections.max(orderToRegret.entrySet(), Map.Entry.comparingByValue()).getKey();
             orderToRegret.remove(orderToPlace);
-            solutionCopy.getUnplacedOrders().remove(orderToPlace);
-            solutionCopy = InsertionGreedy.getGreedyInsertion(solutionCopy, orderToPlace);
+            InsertionGreedy insertionGreedy = new InsertionGreedy("greedy insertion", false, true);
+            solutionCopy = insertionGreedy.getGreedyInsertion(solutionCopy, false);
         }
         return solutionCopy;
     }

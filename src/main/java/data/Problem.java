@@ -94,6 +94,14 @@ public class Problem {
         return Problem.orders.stream().filter(o -> o.getInstallationId() == installation.getId()).collect(Collectors.toList());
     }
 
+    public static Order getMandatoryOrder(Order optionalOrder) {
+        List<Order> orders = getOrdersFromInstallation(getInstallation(optionalOrder));
+        for (Order order : orders) {
+            if (order.isMandatory()) return order;
+        }
+        return null;
+    }
+
     public static int getNumberOfOrders() {
         return Problem.orders.size();
     }

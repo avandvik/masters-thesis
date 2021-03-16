@@ -16,7 +16,7 @@ public class ObjectiveTest {
     public void runMultipleSPsTest() {
         Problem.setUpProblem("example_8.json", false, 10);
         Map<Integer, List<List<Order>>> vesselToOrderSequences = createVesselToOrderSequences();
-        Map<Integer, List<Double>> results = Objective.runMultipleSPs(vesselToOrderSequences);
+        // Map<Integer, List<Double>> results = Objective.runMultipleSPs(vesselToOrderSequences);
         // assertEquals(createExpectedResults(), results);
     }
 
