@@ -126,8 +126,8 @@ public class Problem {
         return Problem.vessels.size();
     }
 
-    public static boolean isSpotVessel(Vessel vessel) {
-        return Problem.vessels.indexOf(vessel) == Problem.getNumberOfVessels() - 1;
+    public static boolean isSpotVessel(int vesselIdx) {
+        return vesselIdx == Problem.getNumberOfVessels() - 1;
     }
 
     public static Vessel getVessel(int vesselNumber) {
