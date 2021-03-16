@@ -1,5 +1,6 @@
 package alns.heuristics;
 
+import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
 import alns.heuristics.protocols.Repairer;
@@ -22,15 +23,21 @@ public class InsertionGreedy extends Heuristic implements Repairer {
     private List<Integer> bestInsertion;
     private Order bestOrder;
 
-    public Solution getGreedyInsertionParallel(Solution partialSolution, Set<Order> ordersToPlace) {
+    public Solution getGreedyInsertion2(Solution partialSolution, boolean parallel) {
+        /* Finds and inserts the order in ordersToPlace that increases the objective the least */
 
         Solution newSolution = Helpers.deepCopySolution(partialSolution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
+        Set<Order> ordersToPlace = newSolution.getUnplacedOrders();
 
-        Objective.runMultipleSPInsertion(orderSequences, ordersToPlace);
-        Objective.runMultipleSPEvaluate(orderSequences);
+        if (parallel) {
+            Objective.runMultipleSPInsertion(orderSequences, ordersToPlace);
+            Objective.runMultipleSPEvaluate(orderSequences);
+            this.findBestInsertionOrderSequencesPar(ordersToPlace);
+        } else {
+            this.findBestInsertionOrderSequencesSeq(orderSequences, ordersToPlace);
+        }
 
-        this.findBestInsertionOrderSequences(ordersToPlace);
         boolean postponement = this.findBestInsertionPostponedOrders(ordersToPlace);
 
         if (postponement) {
@@ -46,7 +53,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         return newSolution;
     }
 
-    private void findBestInsertionOrderSequences(Set<Order> ordersToPlace) {
+    private void findBestInsertionOrderSequencesPar(Set<Order> ordersToPlace) {
         this.leastIncrease = Double.POSITIVE_INFINITY;
         this.bestInsertion = null;
         this.bestOrder = null;
@@ -64,10 +71,33 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         }
     }
 
+    private void findBestInsertionOrderSequencesSeq(List<List<Order>> orderSequences, Set<Order> ordersToPlace) {
+        this.leastIncrease = Double.POSITIVE_INFINITY;
+        this.bestInsertion = null;
+        this.bestOrder = null;
+        for (Order order : ordersToPlace) {
+            Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
+            for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+                List<Order> orderSequence = orderSequences.get(vesselIdx);
+                double currentObjective = Objective.runSPLean(orderSequence, vesselIdx);
+                for (int insertionIdx : insertions.get(vesselIdx)) {
+                    List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
+                    orderSequenceCopy.add(insertionIdx, order);
+                    double increase = Objective.runSPLean(orderSequenceCopy, vesselIdx) - currentObjective;
+                    if (increase < this.leastIncrease) {
+                        this.leastIncrease = increase;
+                        this.bestInsertion = new ArrayList<>(Arrays.asList(vesselIdx, insertionIdx));
+                        this.bestOrder = order;
+                    }
+                }
+            }
+        }
+    }
+
     private boolean findBestInsertionPostponedOrders(Set<Order> ordersToPlace) {
         for (Order order : ordersToPlace) {
             double increase = order.getPostponementPenalty();
-            if (!order.isMandatory() && (increase < this.leastIncrease || this.bestInsertion == null)) {
+            if (!order.isMandatory() && (increase < this.leastIncrease || this.bestOrder == null)) {
                 this.leastIncrease = increase;
                 this.bestOrder = order;
                 return true;
@@ -115,9 +145,19 @@ public class InsertionGreedy extends Heuristic implements Repairer {
 
     @Override
     public Solution repair(Solution partialSolution) {
+        Solution solution = partialSolution;
+        while (!solution.getUnplacedOrders().isEmpty()) {
+            solution = getGreedyInsertion2(solution, false);
+        }
+        Objective.setObjValAndSchedule(solution);
+        if (!Evaluator.isSolutionFeasible(solution)) throw new IllegalStateException(Messages.solutionInfeasible);
+        return solution;
+        /*
         List<Order> sortedUnplacedOrders = Helpers.sortUnplacedOrders(partialSolution.getUnplacedOrders());
         Solution solution = partialSolution;
         for (Order order : sortedUnplacedOrders) solution = getGreedyInsertion(solution, order);
         return new Solution(solution.getOrderSequences(), solution.getPostponedOrders(), true);
+
+         */
     }
 }
