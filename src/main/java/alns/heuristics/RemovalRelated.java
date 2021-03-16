@@ -68,11 +68,7 @@ public class RemovalRelated extends Heuristic implements Destroyer {
             unplacedOrders.addAll(ordersToRemove);
             postponedOrders.removeAll(ordersToRemove);
             for (List<Order> orderSequence : orderSequences) {
-                for (int orderIdx = 0; orderIdx < orderSequence.size(); orderIdx++) {
-                    if (ordersToRemove.contains(orderSequence.get(orderIdx))) {
-                        orderSequence.remove(orderIdx);
-                    }
-                }
+                orderSequence.removeIf(ordersToRemove::contains);
             }
             unplacedOrdersList.addAll(ordersToRemove);
         }
