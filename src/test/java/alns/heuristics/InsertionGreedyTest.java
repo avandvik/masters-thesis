@@ -52,7 +52,8 @@ public class InsertionGreedyTest {
 
         // System.out.println(unplacedOrders);
         System.out.println(partialSolution);
-        InsertionGreedy.greedyVol2(partialSolution, unplacedOrders);
+        Solution solution = insertionGreedy.getGreedyInsertionParallel(partialSolution, unplacedOrders);
+        System.out.println(solution);
     }
 
     private void testPostponementInsertion(InsertionGreedy insertionGreedy) {
