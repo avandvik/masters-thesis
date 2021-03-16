@@ -39,6 +39,11 @@
             <version>5.7.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.gurobi</groupId>
+            <artifactId>gurobi</artifactId>
+            <version>9.1</version>
+        </dependency>
     </dependencies>
 
 
