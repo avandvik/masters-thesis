@@ -56,7 +56,7 @@ public class Evaluator {
         return true;
     }
 
-    private static double findTotalStartLoad(List<Order> orderSequence) {
+    public static double findTotalStartLoad(List<Order> orderSequence) {
         double totalStartLoad = 0.0;
         for (Order order : orderSequence) {
             if (order.isDelivery()) totalStartLoad += order.getSize();

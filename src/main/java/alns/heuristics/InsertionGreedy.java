@@ -46,7 +46,13 @@ public class InsertionGreedy extends Heuristic implements Repairer {
             return newSolution;
         }
 
-        if (bestOrder == null) throw new IllegalStateException(Messages.cannotPlaceMDOrder);
+        if (bestOrder == null) {
+            System.out.println(partialSolution);
+            List<Order> unplacedOrders = new ArrayList<>(partialSolution.getUnplacedOrders());
+            Order order = unplacedOrders.remove(0);
+            System.out.println(Construction.getAllFeasibleInsertions(partialSolution.getOrderSequences(), order));
+            throw new IllegalStateException(Messages.cannotPlaceMDOrder);
+        }
 
         newSolution.insertInOrderSequence(bestInsertion.get(0), bestInsertion.get(1), bestOrder);
         newSolution.removeUnplacedOrder(bestOrder);
@@ -57,12 +63,19 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         this.leastIncrease = Double.POSITIVE_INFINITY;
         this.bestInsertion = null;
         this.bestOrder = null;
+        outer:
         for (Order order : ordersToPlace) {
             Map<List<Integer>, Double> insertionToObj = SubProblemInsertion.orderToInsertionToObjective.get(order);
             for (List<Integer> insertion : insertionToObj.keySet()) {
                 int vesselIdx = insertion.get(0);
                 double increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
                 if (increase < this.leastIncrease) {
+
+                    if (!order.isMandatory()) {
+                        Order mandOrder = Problem.getMandatoryOrder(order);
+                        if (mandOrder != null && ordersToPlace.contains(mandOrder)) continue outer;
+                    }
+
                     this.leastIncrease = increase;
                     this.bestInsertion = insertion;
                     this.bestOrder = order;
@@ -75,6 +88,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         this.leastIncrease = Double.POSITIVE_INFINITY;
         this.bestInsertion = null;
         this.bestOrder = null;
+        outer:
         for (Order order : ordersToPlace) {
             Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
             for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
@@ -85,6 +99,12 @@ public class InsertionGreedy extends Heuristic implements Repairer {
                     orderSequenceCopy.add(insertionIdx, order);
                     double increase = Objective.runSPLean(orderSequenceCopy, vesselIdx) - currentObjective;
                     if (increase < this.leastIncrease) {
+
+                        if (!order.isMandatory()) {
+                            Order mandOrder = Problem.getMandatoryOrder(order);
+                            if (mandOrder != null && ordersToPlace.contains(mandOrder)) continue outer;
+                        }
+
                         this.leastIncrease = increase;
                         this.bestInsertion = new ArrayList<>(Arrays.asList(vesselIdx, insertionIdx));
                         this.bestOrder = order;
@@ -146,9 +166,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
     @Override
     public Solution repair(Solution partialSolution) {
         Solution solution = partialSolution;
-        while (!solution.getUnplacedOrders().isEmpty()) {
-            solution = getGreedyInsertion2(solution, false);
-        }
+        while (!solution.getUnplacedOrders().isEmpty()) solution = getGreedyInsertion2(solution, false);
         Objective.setObjValAndSchedule(solution);
         if (!Evaluator.isSolutionFeasible(solution)) throw new IllegalStateException(Messages.solutionInfeasible);
         return solution;
