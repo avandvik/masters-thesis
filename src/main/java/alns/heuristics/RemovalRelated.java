@@ -3,6 +3,7 @@ package alns.heuristics;
 import alns.Solution;
 import alns.heuristics.protocols.Destroyer;
 import data.Messages;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import utils.DistanceCalculator;
@@ -19,7 +20,6 @@ public class RemovalRelated extends Heuristic implements Destroyer {
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
         Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
         Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
-        double rand_parameter = 1;
 
         if (unplacedOrders.size() > 0) throw new IllegalStateException(Messages.unplacedOrdersNotEmpty);
 
@@ -57,7 +57,7 @@ public class RemovalRelated extends Heuristic implements Destroyer {
 
             Iterator iterator = distanceToRemovalOrder.entrySet().iterator();
             while (iterator.hasNext()) {
-                if (Problem.random.nextDouble() > (1 - rand_parameter)) {
+                if (Problem.random.nextDouble() > (1 - Parameters.randomParameter)) {
                     Map.Entry distanceToRemovalPair = (Map.Entry) iterator.next();
                     orderToRemove = (Order) distanceToRemovalPair.getKey();
                     break;

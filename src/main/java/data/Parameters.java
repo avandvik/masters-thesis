@@ -18,6 +18,9 @@ public class Parameters {
     public static double startTemperature;
     public static double coolingRate;
 
+    // Random parameter removal methods
+    public static double randomParameter = 0.5;
+
     // Iterations
     public static int totalIterations = 1000;
     public static int maxIterSolution = 20;

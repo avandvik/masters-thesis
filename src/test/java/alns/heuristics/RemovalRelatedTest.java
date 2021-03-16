@@ -2,6 +2,7 @@ package alns.heuristics;
 
 import alns.Solution;
 import alns.SolutionGenerator;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -18,8 +19,8 @@ public class RemovalRelatedTest {
     @DisplayName("test RemovalRelated")
     public void removalRelatedTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        Parameters.randomParameter = 1;
         RemovalRelated removalRelated = new RemovalRelated("related removal", true, false);
-        // Setup with randomization parameter equal to 1
 
         Solution solution = createInitialSolution();
         testNumberOfRemovals(removalRelated, solution);
