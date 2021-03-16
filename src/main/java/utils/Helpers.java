@@ -112,7 +112,7 @@ public class Helpers {
         return sortUnplacedOrders(new ArrayList<>(unplacedOrders));  // Convert Set to ArrayList for predictability
     }
 
-    public static int generateSubProblemHash(List<Order> orderSequence, boolean isSpotVessel) {
+    public static int generateSPHash(List<Order> orderSequence, boolean isSpotVessel) {
         Map<List<Order>, Boolean> hashStructure = new HashMap<>();
         hashStructure.put(orderSequence, isSpotVessel);
         return hashStructure.hashCode();

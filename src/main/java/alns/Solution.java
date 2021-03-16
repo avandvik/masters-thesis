@@ -43,12 +43,24 @@ public class Solution {
         return this.orderSequences.get(vesselNumber);
     }
 
+    public void insertInOrderSequence(int vesselIdx, int insertionIdx, Order order) {
+        this.orderSequences.get(vesselIdx).add(insertionIdx, order);
+    }
+
     public Set<Order> getPostponedOrders() {
         return postponedOrders;
     }
 
+    public void addPostponedOrder(Order order) {
+        this.postponedOrders.add(order);
+    }
+
     public Set<Order> getUnplacedOrders() {
         return unplacedOrders;
+    }
+
+    public void removeUnplacedOrder(Order order) {
+        this.unplacedOrders.remove(order);
     }
 
     public List<List<Node>> getShortestPaths() {

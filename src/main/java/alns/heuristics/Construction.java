@@ -13,17 +13,17 @@ public class Construction {
     public static Map<Integer, List<Integer>> getAllFeasibleInsertions(List<List<Order>> orderSequences, Order order) {
         List<List<Order>> orderSequencesCopy = Helpers.deepCopy2DList(orderSequences);
         Map<Integer, List<Integer>> insertionIndices = new HashMap<>();
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Integer> vesselIndices = new ArrayList<>();
-            List<Order> orderSequence = orderSequencesCopy.get(vesselNumber);
-            for (int orderIdx = 0; orderIdx <= orderSequence.size(); orderIdx++) {
+            List<Order> orderSequence = orderSequencesCopy.get(vesselIdx);
+            for (int insertionIdx = 0; insertionIdx <= orderSequence.size(); insertionIdx++) {
                 List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
-                orderSequenceCopy.add(orderIdx, order);
+                orderSequenceCopy.add(insertionIdx, order);
                 List<List<Order>> solutionOrderSequences = Helpers.deepCopy2DList(orderSequencesCopy);
-                solutionOrderSequences.set(vesselNumber, orderSequenceCopy);
-                if (Evaluator.isOrderSequencesFeasible(solutionOrderSequences)) vesselIndices.add(orderIdx);
+                solutionOrderSequences.set(vesselIdx, orderSequenceCopy);
+                if (Evaluator.isOrderSequencesFeasible(solutionOrderSequences)) vesselIndices.add(insertionIdx);
             }
-            insertionIndices.put(vesselNumber, vesselIndices);
+            insertionIndices.put(vesselIdx, vesselIndices);
         }
         return insertionIndices;
     }
