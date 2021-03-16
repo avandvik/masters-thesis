@@ -19,7 +19,7 @@ public class RemovalRelatedTest {
     @DisplayName("test RemovalRelated")
     public void removalRelatedTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Parameters.randomParameter = 1;
+        Parameters.randomParameter = 0;
         RemovalRelated removalRelated = new RemovalRelated("related removal", true, false);
 
         Solution solution = createInitialSolution();

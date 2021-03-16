@@ -17,18 +17,21 @@ public class RemovalRelated extends Heuristic implements Destroyer {
 
     @Override
     public Solution destroy(Solution solution, int numberOfOrders) {
+
+        // Copying order sequences and sets for manipulation
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
         Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
         Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
 
         if (unplacedOrders.size() > 0) throw new IllegalStateException(Messages.unplacedOrdersNotEmpty);
+        if (numberOfOrders == 0) return solution;
 
+        // Getting random order and removing other orders to same inst.
         while (unplacedOrders.size() == 0) {
-
-            if (unplacedOrders.size() == numberOfOrders) break;
 
             int rnSequenceIdx = Problem.random.nextInt(orderSequences.size() + 1);
 
+            // If we are in postponed orders set and there are postponed orders
             if (rnSequenceIdx == orderSequences.size() && postponedOrders.size() > 0) {
                 Order orderToRemove = Helpers.removeRandomElementFromSet(postponedOrders);
                 List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
@@ -38,6 +41,7 @@ public class RemovalRelated extends Heuristic implements Destroyer {
                 continue;
             }
 
+            // If we are inn postponed orders set but there are no orders
             if (rnSequenceIdx == orderSequences.size() || orderSequences.get(rnSequenceIdx).size() == 0) continue;
 
             int randomOrderNumber = Problem.random.nextInt(orderSequences.get(rnSequenceIdx).size());
@@ -50,26 +54,28 @@ public class RemovalRelated extends Heuristic implements Destroyer {
 
         List<Order> unplacedOrdersList = new ArrayList<>(unplacedOrders);
 
+        // Finding related removals and choosing order to remove
         while (unplacedOrders.size() < numberOfOrders) {
             Order order = unplacedOrdersList.get(unplacedOrdersList.size() - 1);
             Order orderToRemove = null;
             Map<Order, Double> distanceToRemovalOrder = findRelatedRemovals(orderSequences, postponedOrders, order);
 
-            Iterator iterator = distanceToRemovalOrder.entrySet().iterator();
+            // Choosing order to remove with randomization
+            Iterator<Map.Entry<Order, Double>> iterator = distanceToRemovalOrder.entrySet().iterator();
             while (iterator.hasNext()) {
-                if (Problem.random.nextDouble() > (1 - Parameters.randomParameter)) {
-                    Map.Entry distanceToRemovalPair = (Map.Entry) iterator.next();
-                    orderToRemove = (Order) distanceToRemovalPair.getKey();
+                if (Problem.random.nextDouble() > Parameters.randomParameter) {
+                    Map.Entry<Order, Double> distanceToRemovalPair = iterator.next();
+                    orderToRemove = distanceToRemovalPair.getKey();
                     break;
                 }
                 iterator.remove();
             }
+
+            // Updating sequences and sets
             List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
             unplacedOrders.addAll(ordersToRemove);
             postponedOrders.removeAll(ordersToRemove);
-            for (List<Order> orderSequence : orderSequences) {
-                orderSequence.removeIf(ordersToRemove::contains);
-            }
+            for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
             unplacedOrdersList.addAll(ordersToRemove);
         }
 
@@ -78,25 +84,26 @@ public class RemovalRelated extends Heuristic implements Destroyer {
 
     private Map<Order, Double> findRelatedRemovals(List<List<Order>> orderSequences, Set<Order> postponedOrders, Order order) {
         Map<Order, Double> distanceToRemovalOrder = new HashMap<>();
+
+        // Creating hashmap with related orders and distances
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             List<Order> orderSequence = orderSequences.get(vesselNumber);
-            List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
-            for (Order orderToRelate : orderSequenceCopy)
+            for (Order orderToRelate : orderSequence)
                 if (orderToRelate != order) {
                     double distance = DistanceCalculator.distance(order, orderToRelate, "N");
                     distanceToRemovalOrder.put(orderToRelate, distance);
                 }
         }
 
-        Set<Order> copyOfPostponedOrders = Helpers.deepCopySet(postponedOrders);
-        for (Order orderToRelate : copyOfPostponedOrders) {
+        for (Order orderToRelate : postponedOrders) {
             if (orderToRelate != order) {
                 double distance = DistanceCalculator.distance(order, orderToRelate, "N");
                 distanceToRemovalOrder.put(orderToRelate, distance);
             }
         }
 
-        LinkedHashMap<Order, Double> sortedDistanceToRemovalOrder = new LinkedHashMap<>();
+        // Sorting orders by ascending distance
+        Map<Order, Double> sortedDistanceToRemovalOrder = new LinkedHashMap<>();
         distanceToRemovalOrder.entrySet().stream().sorted(Map.Entry.comparingByValue()).
                 forEachOrdered(entryOrder -> sortedDistanceToRemovalOrder.put(entryOrder.getKey(), entryOrder.getValue()));
 
