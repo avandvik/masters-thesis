@@ -43,6 +43,7 @@
             <groupId>com.gurobi</groupId>
             <artifactId>gurobi</artifactId>
             <version>9.1</version>
+            <scope>system</scope>
         </dependency>
     </dependencies>
 
