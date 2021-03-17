@@ -16,15 +16,14 @@ import java.util.*;
 
 public class RemovalWorst extends Heuristic implements Destroyer {
 
-    private double greatestDecrease;
-    private List<Integer> worstRemovalIndices;
-    private Order postponedOrder;
+    private Map<Order, Double> orderToDecrease;
 
     public RemovalWorst(String name, boolean destroy, boolean repair) {
         super(name, destroy, repair);
     }
 
-    public Solution newDestroy(Solution solution, int numberOfOrders) {
+    @Override
+    public Solution destroy(Solution solution, int numberOfOrders) {
         Solution newSolution = solution;
         while (newSolution.getUnplacedOrders().size() < numberOfOrders) newSolution = getWorstRemoval(newSolution);
         if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
@@ -36,18 +35,17 @@ public class RemovalWorst extends Heuristic implements Destroyer {
 
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
+        Set<Order> postponedOrders = newSolution.getPostponedOrders();
 
         if (Parameters.parallelHeuristics) {
             Objective.runMultipleSPRemoval(orderSequences);
             Objective.runMultipleSPEvaluate(orderSequences);
-            this.findGreatestDecreaseOrderSequencesPar();
+            this.mapOrderToDecreasePar(orderSequences, postponedOrders);
         } else {
-            this.findGreatestDecreaseOrderSequencesSeq(orderSequences);
+            this.mapOrderToDecreaseSeq(orderSequences, postponedOrders);
         }
 
-        this.findGreatestDecreasePostponement(orderSequences);
-
-        List<Order> ordersToRemove = findOrdersToRemove(orderSequences);
+        List<Order> ordersToRemove = findOrdersToRemove();
         newSolution.getUnplacedOrders().addAll(ordersToRemove);
         newSolution.getPostponedOrders().removeAll(ordersToRemove);
         for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
@@ -55,23 +53,22 @@ public class RemovalWorst extends Heuristic implements Destroyer {
         return newSolution;
     }
 
-    private void findGreatestDecreaseOrderSequencesPar() {
-        this.greatestDecrease = Double.NEGATIVE_INFINITY;
-        this.worstRemovalIndices = null;
+    private void mapOrderToDecreasePar(List<List<Order>> orderSequences, Set<Order> postponedOrders) {
+        this.orderToDecrease = new HashMap<>();
         for (List<Integer> removalIndices : SubProblemRemoval.removalToObjective.keySet()) {
             int vesselIdx = removalIndices.get(0);
+            int orderIdx = removalIndices.get(1);
             double removalObj = SubProblemRemoval.removalToObjective.get(removalIndices);
             double currentObj = SubProblem.vesselToObjective.get(vesselIdx);
             double decrease = currentObj - removalObj;
-            if (decrease > this.greatestDecrease) {
-                this.greatestDecrease = decrease;
-                this.worstRemovalIndices = removalIndices;
-            }
+            Order order = orderSequences.get(vesselIdx).get(orderIdx);
+            this.orderToDecrease.put(order, decrease);
         }
+        for (Order order : postponedOrders) this.orderToDecrease.put(order, order.getPostponementPenalty());
     }
 
-    private void findGreatestDecreaseOrderSequencesSeq(List<List<Order>> orderSequences) {
-        this.worstRemovalIndices = null;
+    private void mapOrderToDecreaseSeq(List<List<Order>> orderSequences, Set<Order> postponedOrders) {
+        this.orderToDecrease = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = orderSequences.get(vesselIdx);
             double currentObj = Objective.runSPLean(orderSequence, vesselIdx);
@@ -79,101 +76,24 @@ public class RemovalWorst extends Heuristic implements Destroyer {
                 List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
                 orderSequenceCopy.remove(orderIdx);
                 double decrease = currentObj - Objective.runSPLean(orderSequenceCopy, vesselIdx);
-                if (decrease > this.greatestDecrease) {
-                    this.greatestDecrease = decrease;
-                    worstRemovalIndices = new ArrayList<>(Arrays.asList(vesselIdx, orderIdx));
-                }
+                Order order = orderSequences.get(vesselIdx).get(orderIdx);
+                this.orderToDecrease.put(order, decrease);
             }
         }
+        for (Order order : postponedOrders) this.orderToDecrease.put(order, order.getPostponementPenalty());
     }
 
-    private void findGreatestDecreasePostponement(List<List<Order>> orderSequences) {
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = orderSequences.get(vesselIdx);
-            for (Order order : orderSequence) {
-                double decrease = order.getPostponementPenalty();
-                if (!order.isMandatory() && (decrease > this.greatestDecrease || this.worstRemovalIndices == null)) {
-                    this.greatestDecrease = decrease;
-                    this.postponedOrder = order;
-                }
-            }
-        }
-    }
+    private List<Order> findOrdersToRemove() {
 
-    private List<Order> findOrdersToRemove(List<List<Order>> orderSequences) {
-        List<Order> ordersToRemove = new ArrayList<>();
-        if (this.postponedOrder != null) {
-            ordersToRemove = getOrdersToRemove(this.postponedOrder);
-        } else if (this.worstRemovalIndices != null) {
-            int vesselIdx = this.worstRemovalIndices.get(0);
-            int orderIdx = this.worstRemovalIndices.get(1);
-            Order order = orderSequences.get(vesselIdx).get(orderIdx);
-            ordersToRemove = getOrdersToRemove(order);
-        }
-        return ordersToRemove;
-    }
+        // Sort orderToDecrease in descending order
+        List<Map.Entry<Order, Double>> ordersWithDecrease = new ArrayList<>(this.orderToDecrease.entrySet());
+        ordersWithDecrease.sort(Comparator.comparing(Map.Entry<Order, Double>::getValue));
+        Collections.reverse(ordersWithDecrease);
 
-    @Override
-    public Solution destroy(Solution solution, int numberOfOrders) {
-        List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
-        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
-        Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
+        int removeIdx = (int) Math.pow(Problem.random.nextDouble(), Parameters.rnWorst) * ordersWithDecrease.size();
 
-        if (unplacedOrders.size() > 0) throw new IllegalStateException(Messages.unplacedOrdersNotEmpty);
-
-        while (unplacedOrders.size() < numberOfOrders) {
-            this.greatestDecrease = Double.NEGATIVE_INFINITY;
-            List<Integer> orderIdxToRemove = findWorstRemovalOrderSequences(orderSequences);
-            Order postponedOrderToRemove = findWorstRemovalPostponedOrders(postponedOrders);
-
-            if (postponedOrderToRemove != null) {  // Removing the postponed order will then be best
-                List<Order> ordersToRemove = getOrdersToRemove(postponedOrderToRemove);
-                unplacedOrders.addAll(ordersToRemove);
-                postponedOrders.removeAll(ordersToRemove);
-                for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
-            } else if (orderIdxToRemove != null) {
-                int vesselIdx = orderIdxToRemove.get(0);
-                int orderIdx = orderIdxToRemove.get(1);
-                Order orderToRemove = orderSequences.get(vesselIdx).remove(orderIdx);
-                List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
-                unplacedOrders.addAll(ordersToRemove);
-                orderSequences.get(vesselIdx).removeAll(ordersToRemove);
-                postponedOrders.removeAll(ordersToRemove);
-            } else {
-                break;
-            }
-        }
-
-        return new Solution(orderSequences, postponedOrders, unplacedOrders);
-    }
-
-    private List<Integer> findWorstRemovalOrderSequences(List<List<Order>> orderSequences) {
-        List<Integer> worstRemovalIndices = null;
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            List<Order> orderSequence = orderSequences.get(vesselNumber);
-            double currentObj = Objective.runSPLean(orderSequence, vesselNumber);
-            for (int orderIdx = 0; orderIdx < orderSequence.size(); orderIdx++) {
-                List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
-                orderSequenceCopy.remove(orderSequenceCopy.get(orderIdx));
-                double decrease = currentObj - Objective.runSPLean(orderSequenceCopy, vesselNumber);
-                if (decrease > this.greatestDecrease) {
-                    this.greatestDecrease = decrease;
-                    worstRemovalIndices = new ArrayList<>(Arrays.asList(vesselNumber, orderIdx));
-                }
-            }
-        }
-        return worstRemovalIndices;
-    }
-
-    private Order findWorstRemovalPostponedOrders(Set<Order> postponedOrders) {
-        Order worstRemovalPostponedOrder = null;
-        for (Order postponedOrder : postponedOrders) {
-            double decrease = postponedOrder.getPostponementPenalty();
-            if (decrease > this.greatestDecrease) {
-                this.greatestDecrease = decrease;
-                worstRemovalPostponedOrder = postponedOrder;
-            }
-        }
-        return worstRemovalPostponedOrder;
+        // Find order to remove and other orders that must be removed with it
+        Order worstRemovalOrder = ordersWithDecrease.get(removeIdx).getKey();
+        return getOrdersToRemove(worstRemovalOrder);
     }
 }

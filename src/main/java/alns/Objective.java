@@ -9,10 +9,7 @@ import subproblem.SubProblemInsertion;
 import subproblem.SubProblemRemoval;
 import utils.Helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Objective {
 
@@ -90,13 +87,14 @@ public class Objective {
         List<Thread> threads = new ArrayList<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = orderSequences.get(vesselIdx);
-            if (orderSequence.isEmpty()) {
-                SubProblem.vesselToObjective.put(vesselIdx, 0.0);
-                continue;
-            }
             for (int removalIdx = 0; removalIdx < orderSequence.size(); removalIdx++) {
                 List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
                 orderSequenceCopy.remove(removalIdx);
+                if (orderSequenceCopy.isEmpty()) {
+                    List<Integer> key = new ArrayList<>(Arrays.asList(vesselIdx, removalIdx));
+                    SubProblemRemoval.removalToObjective.put(key, 0.0);
+                    continue;
+                }
                 Thread thread = new Thread(new SubProblemRemoval(orderSequenceCopy, vesselIdx, removalIdx));
                 threads.add(thread);
                 thread.start();
