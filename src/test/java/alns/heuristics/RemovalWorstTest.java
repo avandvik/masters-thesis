@@ -88,7 +88,8 @@ public class RemovalWorstTest {
                 }
             }
         }
-        List<Order> postponedOrderList = new ArrayList<>(solution.getPostponedOrders());  // For predictability
+        List<Order> postponedOrderList = new ArrayList<>(solution.getPostponedOrders());
+        Collections.sort(postponedOrderList);  // For predictability
         for (Order order : postponedOrderList) {
             if (isMax) {
                 order.setPostponementPenalty(10000000.0 + Problem.random.nextDouble());
