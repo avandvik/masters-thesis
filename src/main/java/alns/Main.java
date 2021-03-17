@@ -25,7 +25,7 @@ public class Main {
     private static int iterationsCurrentSolution;
     private static double currentTemperature;
 
-    private static Map<Integer, Map<List<Order>, Double>> vesselToSequenceToCost;
+    public static Map<Integer, Map<List<Order>, Double>> vesselToSequenceToCost;
 
     public static void run() {
 

@@ -48,6 +48,12 @@ public class MainTest {
         Main.setCurrentSolution(solutionOne);
         Main.setBestSolution(solutionOne);
 
+        // Initialize route saving
+        Main.vesselToSequenceToCost = new HashMap<>();
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            Main.vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
+        }
+
         double rewardOne = Main.acceptSolution(solutionTwo);
 
         assertEquals(solutionTwo, Main.getBestSolution());
