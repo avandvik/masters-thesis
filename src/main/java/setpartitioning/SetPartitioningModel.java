@@ -10,7 +10,6 @@ public class SetPartitioningModel {
 
     public static void main(String[] args) {
         try {
-
             String[] Vessels =
                     new String[] {"Vessel 1", "Vessel 2", "Vessel 3"};
 
@@ -19,7 +18,7 @@ public class SetPartitioningModel {
 
             double[][] costOfRouteForVessel = new double[][] {{10.0, 20.0, 30.0}, {10.0, 20.0, 30.0}, {10.0, 20.0, 30.0}};
             double[] costOfPostponingOrder = new double[] {100.0, 200.0, 300.0, 200.0, 100.0};
-            int[][][] orderInVesselRoute = new int[][][] {{{1, 0, 1},{0, 1, 0},{0, 0, 0}},{{1, 0, 1},
+            int[][][] orderInVesselRoute = new int[][][] {{{1, 0, 1},{0, 1, 0},{0, 0, 0}},{{0, 0, 1},
                     {0, 1, 0},{0, 0, 0}},{{1, 0, 1},{0, 1, 0},{0, 0, 0}},{{1, 0, 1},{0, 1, 0},{0, 0, 0}},
                     {{1, 0, 1},{0, 1, 0},{0, 0, 0}}};
 
@@ -44,7 +43,6 @@ public class SetPartitioningModel {
             }
 
             // Objective
-
             GRBLinExpr objective = new GRBLinExpr();
 
             for (int v = 0; v < numberOfVessels; v++) {
@@ -60,7 +58,6 @@ public class SetPartitioningModel {
             model.setObjective(objective, GRB.MINIMIZE);
 
             // Constraints
-
             for (int v = 0; v < numberOfVessels; v++) {
                 GRBLinExpr lhs = new GRBLinExpr();
                 for (int r = 0; r < numberOfRoutes; r++) {
