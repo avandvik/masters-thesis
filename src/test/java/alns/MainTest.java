@@ -21,18 +21,6 @@ public class MainTest {
         Parameters.maxIterSolution = 20;
         Parameters.noiseRate = 0.5;
 
-        List<List<Order>> orderSequences = new ArrayList<>();
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2), Problem.getOrder(5),
-                Problem.getOrder(0), Problem.getOrder(1), Problem.getOrder(6),
-                Problem.getOrder(7), Problem.getOrder(3), Problem.getOrder(4))));
-
-        orderSequences.add(new LinkedList<>());
-        orderSequences.add(new LinkedList<>());
-
-        System.out.println(Evaluator.isOrderSequencesFeasible(orderSequences));
-        System.out.println(Evaluator.isFeasibleLoad(orderSequences));
-        System.out.println(Evaluator.findTotalStartLoad(orderSequences.get(0)));
-
         Main.run();
     }
 
@@ -59,6 +47,12 @@ public class MainTest {
 
         Main.setCurrentSolution(solutionOne);
         Main.setBestSolution(solutionOne);
+
+        // Initialize route saving
+        Main.vesselToSequenceToCost = new HashMap<>();
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            Main.vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
+        }
 
         double rewardOne = Main.acceptSolution(solutionTwo);
 

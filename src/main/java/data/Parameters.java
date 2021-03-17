@@ -21,8 +21,14 @@ public class Parameters {
     // Random parameter removal methods
     public static double randomParameter = 0.5;
 
+    // Regret parameter for regret insertion
+    public static int regretParameter = 4;
+
+    // Concurrency
+    public static boolean parallelHeuristics = false;
+
     // Iterations
-    public static int totalIterations = 1000;
+    public static int totalIterations = 100;
     public static int maxIterSolution = 20;
 
     // Verbose

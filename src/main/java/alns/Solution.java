@@ -3,10 +3,8 @@ package alns;
 import data.Messages;
 import data.Parameters;
 import data.Problem;
-import objects.Installation;
 import objects.Order;
 import subproblem.Node;
-import utils.DistanceCalculator;
 import utils.Helpers;
 
 import java.util.*;
@@ -39,8 +37,8 @@ public class Solution {
         return orderSequences;
     }
 
-    public List<Order> getOrderSequence(int vesselNumber) {
-        return this.orderSequences.get(vesselNumber);
+    public List<Order> getOrderSequence(int vesselIdx) {
+        return this.orderSequences.get(vesselIdx);
     }
 
     public void insertInOrderSequence(int vesselIdx, int insertionIdx, Order order) {
