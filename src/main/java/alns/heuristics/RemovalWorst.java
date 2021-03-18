@@ -90,7 +90,7 @@ public class RemovalWorst extends Heuristic implements Destroyer {
         ordersWithDecrease.sort(Comparator.comparing(Map.Entry<Order, Double>::getValue));
         Collections.reverse(ordersWithDecrease);
 
-        int removeIdx = (int) Math.pow(Problem.random.nextDouble(), Parameters.rnWorst) * ordersWithDecrease.size();
+        int removeIdx = (int) (Math.pow(Problem.random.nextDouble(), Parameters.rnWorst) * ordersWithDecrease.size());
 
         // Find order to remove and other orders that must be removed with it
         Order worstRemovalOrder = ordersWithDecrease.get(removeIdx).getKey();

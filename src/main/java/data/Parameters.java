@@ -19,7 +19,7 @@ public class Parameters {
     public static double coolingRate;
 
     // Random parameter removal methods
-    public static double rnRelated = 0.5;
+    public static double rnRelated = 10;
     public static double rnWorst = 10;
 
 

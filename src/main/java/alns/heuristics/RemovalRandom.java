@@ -30,8 +30,7 @@ public class RemovalRandom extends Heuristic implements Destroyer {
         Set<Order> postponedOrders = newSolution.getPostponedOrders();
         Set<Order> unplacedOrders = newSolution.getUnplacedOrders();
 
-        List<Order> ordersToRemove = findOrdersToRemove(orderSequences, postponedOrders);
-        if (ordersToRemove == null) return newSolution;
+        List<Order> ordersToRemove = findRandomOrdersToRemove(orderSequences, postponedOrders);
 
         unplacedOrders.addAll(ordersToRemove);
         postponedOrders.removeAll(ordersToRemove);
@@ -39,21 +38,19 @@ public class RemovalRandom extends Heuristic implements Destroyer {
         return newSolution;
     }
 
-    private List<Order> findOrdersToRemove(List<List<Order>> orderSequences, Set<Order> postponedOrders) {
-        List<Order> ordersToRemove;
-        int rnSequenceIdx = Problem.random.nextInt(orderSequences.size() + 1);
-        if (rnSequenceIdx == orderSequences.size()) {
-            if (postponedOrders.size() > 0) {
-                ordersToRemove = getOrdersToRemove(Helpers.getRandomElementFromSet(postponedOrders));
+    public static List<Order> findRandomOrdersToRemove(List<List<Order>> orderSequences, Set<Order> postponedOrders) {
+        List<Order> ordersToRemove = new ArrayList<>();
+        while (ordersToRemove.isEmpty()) {
+            int rnSequenceIdx = Problem.random.nextInt(orderSequences.size() + 1);
+            if (rnSequenceIdx == orderSequences.size()) {
+                if (postponedOrders.size() > 0) {
+                    ordersToRemove = getOrdersToRemove(Helpers.getRandomElementFromSet(postponedOrders));
+                }
             } else {
-                return null;
-            }
-        } else {
-            if (orderSequences.get(rnSequenceIdx).size() > 0) {
-                int rnOrderIdx = Problem.random.nextInt(orderSequences.get(rnSequenceIdx).size());
-                ordersToRemove = getOrdersToRemove(orderSequences.get(rnSequenceIdx).get(rnOrderIdx));
-            } else {
-                return null;
+                if (orderSequences.get(rnSequenceIdx).size() > 0) {
+                    int rnOrderIdx = Problem.random.nextInt(orderSequences.get(rnSequenceIdx).size());
+                    ordersToRemove = getOrdersToRemove(orderSequences.get(rnSequenceIdx).get(rnOrderIdx));
+                }
             }
         }
         return ordersToRemove;
