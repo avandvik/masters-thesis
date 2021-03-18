@@ -5,7 +5,7 @@ import objects.Order;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SubProblemInsertion extends SubProblem implements Runnable{
+public class SubProblemInsertion extends SubProblem implements Runnable {
 
     private final int insertionIdx;
     private final Order orderToPlace;
@@ -13,7 +13,7 @@ public class SubProblemInsertion extends SubProblem implements Runnable{
     // orderToPlace -> (vesselIdx, insertionIdx) -> objective
     public static Map<Order, Map<List<Integer>, Double>> orderToInsertionToObjective;
 
-    public SubProblemInsertion(List<Order> orderSequence, int vesselIdx, int insertionIdx, Order orderToPlace) {
+    public SubProblemInsertion(List<Order> orderSequence, int vesselIdx, int insertionIdx, Order orderToPlace) throws IllegalArgumentException {
         super(orderSequence, vesselIdx);
         this.insertionIdx = insertionIdx;
         this.orderToPlace = orderToPlace;
@@ -25,15 +25,7 @@ public class SubProblemInsertion extends SubProblem implements Runnable{
 
     @Override
     public void run() {
-        boolean cachedSolution = super.checkCache(this.hashCode());
-        if (!cachedSolution) {
-            Tree tree = new Tree();
-            tree.generateTree(super.getOrderSequence(), super.isSpotVessel());
-            super.setShortestPath(tree.findShortestPath());
-            hashToShortestPath.put(this.hashCode(), super.getShortestPath());
-            super.setShortestPathCost(tree.getGlobalBestCost());
-            hashToCost.put(this.hashCode(), super.getShortestPathCost());
-        }
+        super.solveSubProblem();
         List<Integer> insertionKey = new ArrayList<>(Arrays.asList(super.getVesselIdx(), this.insertionIdx));
         if (!orderToInsertionToObjective.containsKey(this.orderToPlace)) {
             orderToInsertionToObjective.put(this.orderToPlace, new HashMap<>());
