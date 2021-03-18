@@ -1,84 +1,90 @@
 package setpartitioning;
 
 import gurobi.*;
-import objects.Order;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SetPartitioningModel {
 
     public static void main(String[] args) {
         try {
-            String[] Vessels =
-                    new String[] {"Vessel 1", "Vessel 2", "Vessel 3"};
 
-            String[] Orders =
-                    new String[] {"Order 1", "Order 2", "Order 3", "Order 4", "Order 5"};
+            // Setting up parameters
+            SetPartitioningParameters.makeParameters();
+            List<List<Double>> costOfRouteForVessel = SetPartitioningParameters.costOfRouteForVessel;
+            List<Double> costOfPostponedOrders = SetPartitioningParameters.costOfPostponedOrders;
+            List<List<List<Double>>> orderInRouteForVessel = SetPartitioningParameters.orderInRouteForVessel;
 
-            double[][] costOfRouteForVessel = new double[][] {{10.0, 20.0, 30.0}, {10.0, 20.0, 30.0}, {10.0, 20.0, 30.0}};
-            double[] costOfPostponingOrder = new double[] {100.0, 200.0, 300.0, 200.0, 100.0};
-            int[][][] orderInVesselRoute = new int[][][] {{{1, 0, 1},{0, 1, 0},{0, 0, 0}},{{0, 0, 1},
-                    {0, 1, 0},{0, 0, 0}},{{1, 0, 1},{0, 1, 0},{0, 0, 0}},{{1, 0, 1},{0, 1, 0},{0, 0, 0}},
-                    {{1, 0, 1},{0, 1, 0},{0, 0, 0}}};
-
-            int numberOfRoutes = 3;
-            int numberOfVessels = 3;
-            int numberOfOrders = 5;
-
-            GRBEnv env = new GRBEnv();
-            GRBModel model = new GRBModel(env);
-            model.set(GRB.StringAttr.ModelName, "FirstSetPartModel");
-
-            GRBVar[][] lambda = new GRBVar[numberOfVessels][numberOfRoutes];
-            for (int v = 0; v < numberOfVessels; v++) {
-                for (int r = 0; r < numberOfRoutes; r++) {
-                    lambda[v][r] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "lambda");
-                }
+            // Setting up dimensions
+            int numberOfOrders = SetPartitioningParameters.orders.size();
+            int numberOfVessels = orderInRouteForVessel.size();
+            Map<Integer, Integer> vesselToNumberOfRoutes = new HashMap<>();
+            for (int vesselIdx = 0; vesselIdx < numberOfVessels; vesselIdx++) {
+                vesselToNumberOfRoutes.put(vesselIdx, orderInRouteForVessel.get(vesselIdx).size());
             }
 
-            GRBVar[] y = new GRBVar[numberOfOrders];
-            for (int o = 0; o < numberOfOrders; o++) {
-                y[o] = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "y");
+            // Setting up Gurobi environment
+            GRBEnv env = new GRBEnv();
+            GRBModel model = new GRBModel(env);
+            model.set(GRB.StringAttr.ModelName, "SetPartitioningModel");
+
+            // Variables
+            List<List<GRBVar>> lambda = new ArrayList<>();
+            for (int vesselIdx = 0; vesselIdx < numberOfVessels; vesselIdx++) {
+                lambda.add(new ArrayList<>());
+                for (int routeIdx = 0; routeIdx < vesselToNumberOfRoutes.get(vesselIdx); routeIdx++) {
+                    String name = "lambda_" + vesselIdx + "_" + routeIdx;
+                    lambda.get(vesselIdx).add(model.addVar(0, 1, 0, GRB.BINARY, name));
+                }
+            }
+            List<GRBVar> y = new ArrayList<>();
+            for (int orderIdx = 0; orderIdx < numberOfOrders; orderIdx++) {
+                String name = "y_" + orderIdx;
+                y.add(model.addVar(0, 1, 0, GRB.BINARY, name));
             }
 
             // Objective
             GRBLinExpr objective = new GRBLinExpr();
 
-            for (int v = 0; v < numberOfVessels; v++) {
-                for (int r = 0; r < numberOfRoutes; r++) {
-                    objective.addTerm(costOfRouteForVessel[v][r], lambda[v][r]);
+            for (int vesselIdx = 0; vesselIdx < numberOfVessels; vesselIdx++) {
+                for (int routeIdx = 0; routeIdx < vesselToNumberOfRoutes.get(vesselIdx); routeIdx++) {
+                    double routeCost = costOfRouteForVessel.get(vesselIdx).get(routeIdx);
+                    objective.addTerm(routeCost, lambda.get(vesselIdx).get(routeIdx));
                 }
             }
 
-            for (int o = 0; o < numberOfOrders; o++) {
-                objective.addTerm(costOfPostponingOrder[o], y[o]);
+            for (int orderIdx = 0; orderIdx < numberOfOrders; orderIdx++) {
+                double postponeCost = costOfPostponedOrders.get(orderIdx);
+                objective.addTerm(postponeCost, y.get(orderIdx));
             }
 
             model.setObjective(objective, GRB.MINIMIZE);
 
             // Constraints
-            for (int v = 0; v < numberOfVessels; v++) {
+            for (int vesselIdx = 0; vesselIdx < numberOfVessels; vesselIdx++) {
                 GRBLinExpr lhs = new GRBLinExpr();
-                for (int r = 0; r < numberOfRoutes; r++) {
-                    lhs.addTerm(1.0, lambda[v][r]);
+                for (int routeIdx = 0; routeIdx < vesselToNumberOfRoutes.get(vesselIdx); routeIdx++) {
+                    lhs.addTerm(1, lambda.get(vesselIdx).get(routeIdx));
                 }
-                model.addConstr(lhs, GRB.LESS_EQUAL, 1.0, Vessels[v]);
+                model.addConstr(lhs, GRB.LESS_EQUAL, 1, "Vessel " + (vesselIdx + 1));
             }
 
-            for (int o = 0; o < numberOfOrders; o++) {
+            for (int orderIdx = 0; orderIdx < numberOfOrders; orderIdx++) {
                 GRBLinExpr lhs = new GRBLinExpr();
-                for (int v = 0; v < numberOfVessels; v++) {
-                    for (int r = 0; r < numberOfRoutes; r++) {
-                        lhs.addTerm(orderInVesselRoute[o][v][r], lambda[v][r]);
-                        lhs.addTerm(1.0, y[o]);
+                for (int vesselIdx = 0; vesselIdx < numberOfVessels; vesselIdx++) {
+                    for (int routeIdx = 0; routeIdx < vesselToNumberOfRoutes.get(vesselIdx); routeIdx++) {
+                        double isOrderInVesselRoute = orderInRouteForVessel.get(vesselIdx).get(routeIdx).get(orderIdx);
+                        lhs.addTerm(isOrderInVesselRoute, lambda.get(vesselIdx).get(routeIdx));
                     }
                 }
-                model.addConstr(lhs, GRB.EQUAL, 1.0, Orders[o]);
+
+                lhs.addTerm(1, y.get(orderIdx));
+                model.addConstr(lhs, GRB.EQUAL, 1, "Order " + orderIdx);
             }
 
             // Optimize
             model.optimize();
+
             int status = model.get(GRB.IntAttr.Status);
             if (status == GRB.Status.UNBOUNDED) {
                 System.out.println("The model cannot be solved "
@@ -95,6 +101,7 @@ public class SetPartitioningModel {
                 System.out.println("Optimization was stopped with status " + status);
                 return;
             }
+
 
             // Compute IIS
             System.out.println("The model is infeasible; computing IIS");
