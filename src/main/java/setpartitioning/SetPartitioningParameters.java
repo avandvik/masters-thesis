@@ -22,8 +22,8 @@ public class SetPartitioningParameters {
         makeOrders(vesselToRouteToCost);
         makeCostOfRouteForVessel(vesselToRouteToCost);
         makePostponedOrderCosts();
-        makeOrderInRouteForVessel(vesselToRouteToCost);
-        System.out.println(orderInRouteForVessel);
+        // makeOrderInRouteForVessel(vesselToRouteToCost);
+        // System.out.println(orderInRouteForVessel);
     }
 
     private static void makeOrders(Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost) {
