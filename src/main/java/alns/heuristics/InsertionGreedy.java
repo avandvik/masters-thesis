@@ -33,7 +33,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         return solution;
     }
 
-    public Solution getGreedyInsertion(Solution partialSolution) {
+    private Solution getGreedyInsertion(Solution partialSolution) {
         /* Finds and inserts the order in partialSolution's unplacedOrders that increases the objective the least */
 
         Solution newSolution = Helpers.deepCopySolution(partialSolution);
@@ -116,15 +116,16 @@ public class InsertionGreedy extends Heuristic implements Repairer {
     }
 
     private boolean findLeastIncreaseInsertionPostponedOrders(Set<Order> ordersToPlace) {
+        boolean postponedOrder = false;
         for (Order order : ordersToPlace) {
             double increase = order.getPostponementPenalty();
             if (!order.isMandatory() && (increase < this.leastIncrease || this.bestOrder == null)) {
                 this.leastIncrease = increase;
                 this.bestOrder = order;
-                return true;
+                postponedOrder = true;
             }
         }
-        return false;
+        return postponedOrder;
     }
 
     public static Solution insertGreedilyInSolution(Solution partialSolution, Order order) {

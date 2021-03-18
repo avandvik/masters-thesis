@@ -63,7 +63,7 @@ public class RemovalRelated extends Heuristic implements Destroyer {
             // Choosing order to remove with randomization
             Iterator<Map.Entry<Order, Double>> iterator = distanceToRemovalOrder.entrySet().iterator();
             while (iterator.hasNext()) {
-                if (Problem.random.nextDouble() > Parameters.randomParameter) {
+                if (Problem.random.nextDouble() > Parameters.rnRelated) {
                     Map.Entry<Order, Double> distanceToRemovalPair = iterator.next();
                     orderToRemove = distanceToRemovalPair.getKey();
                     break;

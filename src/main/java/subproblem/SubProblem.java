@@ -36,6 +36,11 @@ public class SubProblem implements Runnable {
 
     @Override
     public void run() {
+        this.solveSubProblem();
+        vesselToObjective.put(vesselIdx, this.shortestPathCost);
+    }
+
+    public void solveSubProblem() {
         boolean cachedSolution = checkCache(this.hashCode());
         if (!cachedSolution) {
             Tree tree = new Tree();
@@ -45,10 +50,9 @@ public class SubProblem implements Runnable {
             this.shortestPathCost = tree.getGlobalBestCost();
             hashToCost.put(this.hashCode(), this.shortestPathCost);
         }
-        vesselToObjective.put(vesselIdx, this.shortestPathCost);
     }
 
-    public boolean checkCache(int hash) {
+    private boolean checkCache(int hash) {
         if (hashToCost.containsKey(hash)) {
             this.shortestPath = hashToShortestPath.get(hash);
             this.shortestPathCost = hashToCost.get(hash);
