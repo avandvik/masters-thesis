@@ -1,7 +1,10 @@
 package setpartitioning;
 
 import alns.Main;
+import data.Parameters;
+import data.Problem;
 import gurobi.*;
+import objects.Order;
 
 import java.util.*;
 
@@ -83,6 +86,15 @@ public class SetPartitioningModel {
                 model.addConstr(lhs, GRB.EQUAL, 1, "Order " + orderIdx);
             }
 
+            for (int orderIdx = 0; orderIdx < numberOfOrders; orderIdx++) {
+                Order order = SetPartitioningParameters.orders.get(orderIdx);
+                if (order.isMandatory()) {
+                    GRBLinExpr lhs = new GRBLinExpr();
+                    lhs.addTerm(1, y.get(orderIdx));
+                    model.addConstr(lhs, GRB.EQUAL, 0, "Mand order " + orderIdx);
+                }
+            }
+
             // Optimize
             model.optimize();
 
@@ -91,8 +103,10 @@ public class SetPartitioningModel {
                 for (int routeIdx = 0; routeIdx < lambda.get(vesselIdx).size(); routeIdx++) {
                     GRBVar routeByVessel = lambda.get(vesselIdx).get(routeIdx);
                     int value = (int) routeByVessel.get(GRB.DoubleAttr.X);
-                    System.out.println(routeByVessel.get(GRB.StringAttr.VarName) + ": " + value);
-                    System.out.println("Route: " + SetPartitioningParameters.routeArray.get(vesselIdx).get(routeIdx));
+                    if (value == 1) {
+                        System.out.println("Sailing route: " + SetPartitioningParameters.routeArray.get(vesselIdx).get(routeIdx));
+
+                    }
                 }
             }
 
@@ -100,7 +114,9 @@ public class SetPartitioningModel {
             for (int orderIdx = 0; orderIdx < y.size(); orderIdx++) {
                 GRBVar postponeOrder = y.get(orderIdx);
                 int value = (int) postponeOrder.get(GRB.DoubleAttr.X);
-                System.out.println(postponeOrder.get(GRB.StringAttr.VarName) + ": " + value);
+                if (value == 1) {
+                    System.out.println("Postponing order: " + SetPartitioningParameters.orders.get(orderIdx));
+                }
             }
 
             int status = model.get(GRB.IntAttr.Status);
@@ -136,5 +152,15 @@ public class SetPartitioningModel {
             System.out.println("Error code: " + e.getErrorCode() + ". " +
                     e.getMessage());
         }
+    }
+
+    public static void main(String[] args) {
+        Problem.setUpProblem("basicTestData.json", true, 10);
+        Parameters.verbose = false;
+        Parameters.totalIterations = 65;
+        Parameters.maxIterSolution = 20;
+        Parameters.noiseRate = 0.5;
+        Main.run();
+        SetPartitioningModel.run();
     }
 }

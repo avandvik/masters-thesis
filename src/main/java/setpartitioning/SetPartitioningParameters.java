@@ -4,10 +4,7 @@ import alns.Main;
 import data.Problem;
 import objects.Order;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SetPartitioningParameters {
 
@@ -63,6 +60,7 @@ public class SetPartitioningParameters {
                 }
             }
         }
+        orders.sort(Comparator.comparingInt(Order::getOrderId));
     }
 
     private static void makeCostOfRouteForVessel(Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost) {
