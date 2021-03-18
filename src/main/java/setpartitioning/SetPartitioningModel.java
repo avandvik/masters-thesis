@@ -6,7 +6,7 @@ import java.util.*;
 
 public class SetPartitioningModel {
 
-    public static void main(String[] args) {
+    public static void run() {
         try {
 
             // Setting up parameters
@@ -85,6 +85,15 @@ public class SetPartitioningModel {
             // Optimize
             model.optimize();
 
+            // lambda - route
+            for (List<GRBVar> vessel : lambda) {
+                for (GRBVar route : vessel) {
+                    System.out.println(route.get(GRB.DoubleAttr.X));
+                }
+            }
+
+            // y - postpone
+
             int status = model.get(GRB.IntAttr.Status);
             if (status == GRB.Status.UNBOUNDED) {
                 System.out.println("The model cannot be solved "
@@ -119,5 +128,4 @@ public class SetPartitioningModel {
                     e.getMessage());
         }
     }
-
 }
