@@ -1,5 +1,6 @@
 package alns.heuristics;
 
+import alns.Evaluator;
 import alns.Solution;
 import alns.heuristics.protocols.Destroyer;
 import data.Messages;
@@ -13,101 +14,82 @@ import java.util.*;
 
 public class RemovalRelated extends Heuristic implements Destroyer {
 
-    public RemovalRelated(String name, boolean destroy, boolean repair) { super(name, destroy, repair); }
+    private Map<Order, Double> orderToRelatedness;
+    private int numberOfOrders;
+
+    public RemovalRelated(String name, boolean destroy, boolean repair) {
+        super(name, destroy, repair);
+    }
 
     @Override
     public Solution destroy(Solution solution, int numberOfOrders) {
-
-        // Copying order sequences and sets for manipulation
-        List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
-        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
-        Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
-
-        if (unplacedOrders.size() > 0) throw new IllegalStateException(Messages.unplacedOrdersNotEmpty);
-        if (numberOfOrders == 0) return solution;
-
-        // Getting random order and removing other orders to same inst.
-        while (unplacedOrders.size() == 0) {
-
-            int rnSequenceIdx = Problem.random.nextInt(orderSequences.size() + 1);
-
-            // If we are in postponed orders set and there are postponed orders
-            if (rnSequenceIdx == orderSequences.size() && postponedOrders.size() > 0) {
-                Order orderToRemove = Helpers.removeRandomElementFromSet(postponedOrders);
-                List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
-                unplacedOrders.addAll(ordersToRemove);
-                postponedOrders.removeAll(ordersToRemove);
-                for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
-                continue;
-            }
-
-            // If we are inn postponed orders set but there are no orders
-            if (rnSequenceIdx == orderSequences.size() || orderSequences.get(rnSequenceIdx).size() == 0) continue;
-
-            int randomOrderNumber = Problem.random.nextInt(orderSequences.get(rnSequenceIdx).size());
-            Order orderToRemove = orderSequences.get(rnSequenceIdx).remove(randomOrderNumber);
-            List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
-            unplacedOrders.addAll(ordersToRemove);
-            orderSequences.get(rnSequenceIdx).removeAll(ordersToRemove);
-            postponedOrders.removeAll(ordersToRemove);
-        }
-
-        List<Order> unplacedOrdersList = new ArrayList<>(unplacedOrders);
-
-        // Finding related removals and choosing order to remove
-        while (unplacedOrders.size() < numberOfOrders) {
-            Order order = unplacedOrdersList.get(unplacedOrdersList.size() - 1);
-            Order orderToRemove = null;
-            Map<Order, Double> distanceToRemovalOrder = findRelatedRemovals(orderSequences, postponedOrders, order);
-
-            // Choosing order to remove with randomization
-            Iterator<Map.Entry<Order, Double>> iterator = distanceToRemovalOrder.entrySet().iterator();
-            while (iterator.hasNext()) {
-                if (Problem.random.nextDouble() > Parameters.rnRelated) {
-                    Map.Entry<Order, Double> distanceToRemovalPair = iterator.next();
-                    orderToRemove = distanceToRemovalPair.getKey();
-                    break;
-                }
-                iterator.remove();
-            }
-
-            // Updating sequences and sets
-            List<Order> ordersToRemove = getOrdersToRemove(orderToRemove);
-            unplacedOrders.addAll(ordersToRemove);
-            postponedOrders.removeAll(ordersToRemove);
-            for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
-            unplacedOrdersList.addAll(ordersToRemove);
-        }
-
-        return new Solution(orderSequences, postponedOrders, unplacedOrders);
+        this.numberOfOrders = numberOfOrders;
+        Solution newSolution = solution;
+        while (newSolution.getUnplacedOrders().size() < numberOfOrders) newSolution = getRelatedRemoval(newSolution);
+        if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
+        return newSolution;
     }
 
-    private Map<Order, Double> findRelatedRemovals(List<List<Order>> orderSequences, Set<Order> postponedOrders, Order order) {
-        Map<Order, Double> distanceToRemovalOrder = new HashMap<>();
+    private Solution getRelatedRemoval(Solution solution) {
+        /*  */
 
-        // Creating hashmap with related orders and distances
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            List<Order> orderSequence = orderSequences.get(vesselNumber);
-            for (Order orderToRelate : orderSequence)
-                if (orderToRelate != order) {
-                    double distance = DistanceCalculator.distance(order, orderToRelate, "N");
-                    distanceToRemovalOrder.put(orderToRelate, distance);
-                }
+        Solution newSolution = Helpers.deepCopySolution(solution);
+        List<List<Order>> orderSequences = newSolution.getOrderSequences();
+        Set<Order> postponedOrders = newSolution.getPostponedOrders();
+
+        // Choose a random order or more
+        List<Order> ordersToRemove = RemovalRandom.findRandomOrdersToRemove(orderSequences, postponedOrders);
+        Order baseOrder = ordersToRemove.get(ordersToRemove.size() - 1);
+
+        if (newSolution.getUnplacedOrders().size() + ordersToRemove.size() >= numberOfOrders) {
+            updateSolution(newSolution, ordersToRemove);
+            return newSolution;
         }
 
-        for (Order orderToRelate : postponedOrders) {
-            if (orderToRelate != order) {
-                double distance = DistanceCalculator.distance(order, orderToRelate, "N");
-                distanceToRemovalOrder.put(orderToRelate, distance);
+
+        // Find relatedness to other orders
+        this.mapOrderToRelatedness(orderSequences, postponedOrders, ordersToRemove, baseOrder);
+
+        // Find related orders to remove
+        List<Order> relatedOrdersToRemove = this.findRelatedOrdersToRemove();
+        ordersToRemove.addAll(relatedOrdersToRemove);
+        updateSolution(newSolution, ordersToRemove);
+        return newSolution;
+    }
+
+    private void updateSolution(Solution solution, List<Order> ordersToRemove) {
+        solution.getUnplacedOrders().addAll(ordersToRemove);
+        solution.getPostponedOrders().removeAll(ordersToRemove);
+        for (List<Order> orderSequence : solution.getOrderSequences()) orderSequence.removeAll(ordersToRemove);
+    }
+
+    private void mapOrderToRelatedness(List<List<Order>> orderSequences, Set<Order> postponedOrders,
+                                       List<Order> ordersToRemove, Order baseOrder) {
+        this.orderToRelatedness = new HashMap<>();
+
+        // Orders in orderSequences
+        for (List<Order> orderSequence : orderSequences) {
+            for (Order compareOrder : orderSequence) {
+                if (ordersToRemove.contains(compareOrder)) continue;
+                this.orderToRelatedness.put(compareOrder, DistanceCalculator.distance(baseOrder, compareOrder, "N"));
             }
         }
 
-        // Sorting orders by ascending distance
-        Map<Order, Double> sortedDistanceToRemovalOrder = new LinkedHashMap<>();
-        distanceToRemovalOrder.entrySet().stream().sorted(Map.Entry.comparingByValue()).
-                forEachOrdered(entryOrder -> sortedDistanceToRemovalOrder.put(entryOrder.getKey(), entryOrder.getValue()));
-
-        return sortedDistanceToRemovalOrder;
+        // Orders in postponedOrders
+        for (Order compareOrder : postponedOrders) {
+            if (ordersToRemove.contains(compareOrder)) continue;
+            this.orderToRelatedness.put(compareOrder, DistanceCalculator.distance(baseOrder, compareOrder, "N"));
+        }
     }
 
+    private List<Order> findRelatedOrdersToRemove() {
+
+        List<Map.Entry<Order, Double>> ordersRelatedness = new ArrayList<>(this.orderToRelatedness.entrySet());
+        ordersRelatedness.sort(Comparator.comparing(Map.Entry<Order, Double>::getValue));
+
+        int removeIdx = (int) (Math.pow(Problem.random.nextDouble(), Parameters.rnRelated) * ordersRelatedness.size());
+
+        Order relatedOrder = ordersRelatedness.get(removeIdx).getKey();
+        return getOrdersToRemove(relatedOrder);
+    }
 }
