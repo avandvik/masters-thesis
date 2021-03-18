@@ -19,9 +19,9 @@ public class SetPartitioningParameters {
         Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost = Main.vesselToSequenceToCost;
         if (vesselToRouteToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
 
-        getOrders(vesselToRouteToCost);
+        makeOrders(vesselToRouteToCost);
         makeCostOfRouteForVessel(vesselToRouteToCost);
-        makePostponedOrderCosts(vesselToRouteToCost);
+        makePostponedOrderCosts();
         makeOrderInRouteForVessel(vesselToRouteToCost);
     }
 
@@ -38,7 +38,7 @@ public class SetPartitioningParameters {
         }
     }
 
-    private static void makePostponedOrderCosts(Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost) {
+    private static void makePostponedOrderCosts() {
         costOfPostponedOrders = new ArrayList<>();
         for (Order postponeOrder : SetPartitioningParameters.orders) {
             costOfPostponedOrders.add(postponeOrder.getPostponementPenalty());
@@ -65,7 +65,7 @@ public class SetPartitioningParameters {
         }
     }
 
-    private static void getOrders(Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost ) {
+    private static void makeOrders(Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost ) {
         orders = new ArrayList<>();
         List<List<Double>> costOfRouteForVessel = new ArrayList<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
