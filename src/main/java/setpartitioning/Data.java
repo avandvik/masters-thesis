@@ -6,7 +6,7 @@ import objects.Order;
 
 import java.util.*;
 
-public class SetPartitioningParameters {
+public class Data {
 
     public static List<Order> orders;
     public static List<List<Double>> costOfRouteForVessel;
@@ -15,7 +15,7 @@ public class SetPartitioningParameters {
 
     public static List<List<List<Order>>> routeArray;
 
-    public static void makeParameters() {
+    public static void makeArrays() {
         Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost = Main.vesselToSequenceToCost;
         if (vesselToRouteToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
 
@@ -78,7 +78,7 @@ public class SetPartitioningParameters {
 
     private static void makePostponedOrderCosts() {
         costOfPostponedOrders = new ArrayList<>();
-        for (Order postponeOrder : SetPartitioningParameters.orders) {
+        for (Order postponeOrder : Data.orders) {
             costOfPostponedOrders.add(postponeOrder.getPostponementPenalty());
         }
     }
@@ -92,7 +92,7 @@ public class SetPartitioningParameters {
             for (int routeIdx = 0; routeIdx < routes.size(); routeIdx++) {
                 List<Order> route = routes.get(routeIdx);
                 orderInRouteForVessel.get(vesselIdx).add(new ArrayList<>(Collections.nCopies(orders.size(), 0.0)));
-                for (Order order : SetPartitioningParameters.orders) {
+                for (Order order : Data.orders) {
                     if (route.contains(order)) {
                         int idx = order.getOrderId();
                         orderInRouteForVessel.get(vesselIdx).get(routeIdx).set(idx, 1.0);
