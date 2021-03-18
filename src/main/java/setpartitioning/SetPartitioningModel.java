@@ -1,5 +1,6 @@
 package setpartitioning;
 
+import alns.Main;
 import gurobi.*;
 
 import java.util.*;
@@ -86,13 +87,21 @@ public class SetPartitioningModel {
             model.optimize();
 
             // lambda - route
-            for (List<GRBVar> vessel : lambda) {
-                for (GRBVar route : vessel) {
-                    System.out.println(route.get(GRB.DoubleAttr.X));
+            for (int vesselIdx = 0; vesselIdx < lambda.size(); vesselIdx++) {
+                for (int routeIdx = 0; routeIdx < lambda.get(vesselIdx).size(); routeIdx++) {
+                    GRBVar routeByVessel = lambda.get(vesselIdx).get(routeIdx);
+                    int value = (int) routeByVessel.get(GRB.DoubleAttr.X);
+                    System.out.println(routeByVessel.get(GRB.StringAttr.VarName) + ": " + value);
+                    System.out.println("Route: " + SetPartitioningParameters.routeArray.get(vesselIdx).get(routeIdx));
                 }
             }
 
             // y - postpone
+            for (int orderIdx = 0; orderIdx < y.size(); orderIdx++) {
+                GRBVar postponeOrder = y.get(orderIdx);
+                int value = (int) postponeOrder.get(GRB.DoubleAttr.X);
+                System.out.println(postponeOrder.get(GRB.StringAttr.VarName) + ": " + value);
+            }
 
             int status = model.get(GRB.IntAttr.Status);
             if (status == GRB.Status.UNBOUNDED) {

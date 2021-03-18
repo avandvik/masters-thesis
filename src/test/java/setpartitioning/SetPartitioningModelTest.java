@@ -15,8 +15,6 @@ public class SetPartitioningModelTest {
         Parameters.maxIterSolution = 20;
         Parameters.noiseRate = 0.5;
         Main.run();
-        System.out.println(Main.vesselToSequenceToCost);
-        SetPartitioningParameters.makeParameters();
-
+        SetPartitioningModel.run();
     }
 }

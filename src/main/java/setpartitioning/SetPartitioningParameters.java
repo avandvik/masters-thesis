@@ -5,6 +5,7 @@ import data.Problem;
 import objects.Order;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -15,15 +16,33 @@ public class SetPartitioningParameters {
     public static List<Double> costOfPostponedOrders;
     public static List<List<List<Double>>> orderInRouteForVessel;
 
+    public static List<List<List<Order>>> routeArray;
+
     public static void makeParameters() {
         Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost = Main.vesselToSequenceToCost;
         if (vesselToRouteToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
 
+        makeRouteArray();
+
         makeOrders(vesselToRouteToCost);
         makeCostOfRouteForVessel(vesselToRouteToCost);
         makePostponedOrderCosts();
-        // makeOrderInRouteForVessel(vesselToRouteToCost);
-        // System.out.println(orderInRouteForVessel);
+        makeOrderInRouteForVessel(vesselToRouteToCost);
+    }
+
+    private static void makeRouteArray() {
+        routeArray = new ArrayList<>();
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            routeArray.add(new ArrayList<>());
+            int routeIdx = 0;
+            for (List<Order> route : Main.vesselToSequenceToCost.get(vesselIdx).keySet()) {
+                routeArray.get(vesselIdx).add(new ArrayList<>());
+                for (Order order : route) {
+                    routeArray.get(vesselIdx).get(routeIdx).add(order);
+                }
+                routeIdx++;
+            }
+        }
     }
 
     private static void makeOrders(Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost) {
@@ -71,17 +90,14 @@ public class SetPartitioningParameters {
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             orderInRouteForVessel.add(new ArrayList<>());
             Map<List<Order>, Double> routeToCost = vesselToRouteToCost.get(vesselIdx);
-            // TODO: Double check order of the routes
             List<List<Order>> routes = new ArrayList<>(routeToCost.keySet());
             for (int routeIdx = 0; routeIdx < routes.size(); routeIdx++) {
-                orderInRouteForVessel.add(new ArrayList<>());
                 List<Order> route = routes.get(routeIdx);
-
+                orderInRouteForVessel.get(vesselIdx).add(new ArrayList<>(Collections.nCopies(orders.size(), 0.0)));
                 for (Order order : SetPartitioningParameters.orders) {
                     if (route.contains(order)) {
-                        orderInRouteForVessel.get(vesselIdx).get(routeIdx).add(1.0);
-                    } else {
-                        orderInRouteForVessel.get(vesselIdx).get(routeIdx).add(0.0);
+                        int idx = order.getOrderId();
+                        orderInRouteForVessel.get(vesselIdx).get(routeIdx).set(idx, 1.0);
                     }
                 }
             }
