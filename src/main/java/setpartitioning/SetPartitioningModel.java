@@ -74,9 +74,6 @@ public class SetPartitioningModel {
                 for (int vesselIdx = 0; vesselIdx < numberOfVessels; vesselIdx++) {
                     for (int routeIdx = 0; routeIdx < vesselToNumberOfRoutes.get(vesselIdx); routeIdx++) {
                         double isOrderInVesselRoute = orderInRouteForVessel.get(vesselIdx).get(routeIdx).get(orderIdx);
-                        System.out.println("Order " + orderIdx + ", vessel: "
-                                + vesselIdx + ", route: " + routeIdx + ": " + isOrderInVesselRoute + " * " +
-                                lambda.get(vesselIdx).get(routeIdx) + " + " + y.get(orderIdx) + " = 1");
                         lhs.addTerm(isOrderInVesselRoute, lambda.get(vesselIdx).get(routeIdx));
                     }
                 }
