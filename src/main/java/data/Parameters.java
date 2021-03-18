@@ -19,7 +19,9 @@ public class Parameters {
     public static double coolingRate;
 
     // Random parameter removal methods
-    public static double randomParameter = 0.5;
+    public static double rnRelated = 0.5;
+    public static double rnWorst = 10;
+
 
     // Regret parameter for regret insertion
     public static int regretParameter = 4;
