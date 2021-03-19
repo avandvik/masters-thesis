@@ -2,6 +2,9 @@ package setpartitioning;
 
 import alns.Main;
 import data.Problem;
+import gurobi.GRB;
+import gurobi.GRBEnv;
+import gurobi.GRBException;
 import objects.Order;
 import utils.Helpers;
 
@@ -9,12 +12,24 @@ import java.util.*;
 
 public class Data {
 
+    public static GRBEnv gurobiEnv;
+
     public static List<Order> orders = Helpers.deepCopyList(Problem.orders, false);
     public static List<List<Double>> costOfRouteForVessel;
     public static List<Double> costOfPostponedOrders;
     public static List<List<List<Double>>> orderInRouteForVessel;
 
     public static List<List<List<Order>>> routeArray;
+
+    public static void initializeGurobiEnv() {
+        try {
+            gurobiEnv = new GRBEnv();
+            gurobiEnv.set(GRB.IntParam.OutputFlag, 0);
+        } catch (GRBException e) {
+            System.out.println("Error code: " + e.getErrorCode() + ". " +
+                    e.getMessage());
+        }
+    }
 
     public static void makeArrays() {
         if (Main.vesselToSequenceToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
@@ -31,7 +46,7 @@ public class Data {
             routeArray.add(new ArrayList<>());
             List<List<Order>> routes = new ArrayList<>(Main.vesselToSequenceToCost.get(vesselIdx).keySet());
             for (List<Order> route : routes) {
-                routeArray.get(vesselIdx).add(new ArrayList<>(route));
+                routeArray.get(vesselIdx).add(new LinkedList<>(route));
             }
         }
     }

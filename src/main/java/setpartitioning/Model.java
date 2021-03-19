@@ -1,6 +1,7 @@
 package setpartitioning;
 
 import alns.Main;
+import alns.Solution;
 import data.Parameters;
 import data.Problem;
 import gurobi.*;
@@ -19,6 +20,12 @@ public class Model {
     private List<List<GRBVar>> lambda;
     private List<GRBVar> y;
 
+    private Solution newSolution;
+
+    public Solution getNewSolution() {
+        return this.newSolution;
+    }
+
     private void setUpProblem() {
         Data.makeArrays();
 
@@ -32,8 +39,7 @@ public class Model {
     }
 
     private void setUpEnvironment() throws GRBException {
-        GRBEnv env = new GRBEnv();
-        this.model = new GRBModel(env);
+        this.model = new GRBModel(Data.gurobiEnv);
         model.set(GRB.StringAttr.ModelName, "SetPartitioningModel");
     }
 
@@ -107,85 +113,58 @@ public class Model {
         }
     }
 
-    private void printSolution() throws GRBException {
-        printChosenRoutes();
-        printPostponedOrders();
+    private Solution postprocess() throws GRBException {
+        List<List<Order>> orderSequences = this.postprocessChosenRoutes();
+        Set<Order> postponedOrders = this.postprocessPostponedOrders();
+        return new Solution(orderSequences, postponedOrders, true);
     }
 
-    private void printChosenRoutes() throws GRBException {
+
+    private List<List<Order>> postprocessChosenRoutes() throws GRBException {
+        List<List<Order>> orderSequences = new ArrayList<>();
         for (int vesselIdx = 0; vesselIdx < this.lambda.size(); vesselIdx++) {
+            orderSequences.add(new LinkedList<>());
             for (int routeIdx = 0; routeIdx < this.lambda.get(vesselIdx).size(); routeIdx++) {
                 GRBVar routeByVessel = this.lambda.get(vesselIdx).get(routeIdx);
                 int value = (int) routeByVessel.get(GRB.DoubleAttr.X);
                 if (value == 1) {
-                    System.out.println("Sailing route: " + Data.routeArray.get(vesselIdx).get(routeIdx));
+                    List<Order> route = Data.routeArray.get(vesselIdx).get(routeIdx);
+                    if (Parameters.verbose) System.out.println("Sailing route: " + route);
+                    orderSequences.set(vesselIdx, route);
                 }
             }
         }
+        return orderSequences;
     }
 
-    private void printPostponedOrders() throws GRBException {
+    private Set<Order> postprocessPostponedOrders() throws GRBException {
+        Set<Order> postponedOrders = new HashSet<>();
         for (int orderIdx = 0; orderIdx < this.y.size(); orderIdx++) {
             GRBVar postponeOrder = this.y.get(orderIdx);
             int value = (int) postponeOrder.get(GRB.DoubleAttr.X);
             if (value == 1) {
-                System.out.println("Postponing order: " + Data.orders.get(orderIdx));
+                Order postponedOrder = Data.orders.get(orderIdx);
+                if (Parameters.verbose) System.out.println("Postponing order: " + postponedOrder);
+                postponedOrders.add(postponedOrder);
             }
         }
+        return postponedOrders;
     }
-
 
     public void run() {
         try {
-
             this.setUpProblem();
             this.setUpEnvironment();
-
-            // Variables
             this.defineLambda();
             this.defineY();
-
-            // Objective
             this.defineObjective();
-
-            // Constraints
             this.defineSetPartitioningConstr();
             this.defineOrderAssignmentConstr();
             this.defineMandOrderConstr();
 
-            // Optimize
             model.optimize();
 
-            if (Parameters.verbose) printSolution();
-
-            int status = model.get(GRB.IntAttr.Status);
-            if (status == GRB.Status.UNBOUNDED) {
-                System.out.println("The model cannot be solved "
-                        + "because it is unbounded");
-                return;
-            }
-            if (status == GRB.Status.OPTIMAL) {
-                System.out.println("The optimal objective is " +
-                        model.get(GRB.DoubleAttr.ObjVal));
-                return;
-            }
-            if (status != GRB.Status.INF_OR_UNBD &&
-                    status != GRB.Status.INFEASIBLE) {
-                System.out.println("Optimization was stopped with status " + status);
-                return;
-            }
-
-
-            // Compute IIS
-            System.out.println("The model is infeasible; computing IIS");
-            model.computeIIS();
-            System.out.println("\nThe following constraint(s) "
-                    + "cannot be satisfied:");
-            for (GRBConstr c : model.getConstrs()) {
-                if (c.get(GRB.IntAttr.IISConstr) == 1) {
-                    System.out.println(c.get(GRB.StringAttr.ConstrName));
-                }
-            }
+            this.newSolution = postprocess();
 
         } catch (GRBException e) {
             System.out.println("Error code: " + e.getErrorCode() + ". " +
