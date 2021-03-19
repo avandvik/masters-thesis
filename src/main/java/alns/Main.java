@@ -84,7 +84,7 @@ public class Main {
         }
 
         // Initialize Gurobi env
-        Data.initializeGurobiEnv();
+        if (Parameters.local) Data.initializeGurobiEnv();
     }
 
     private static List<Heuristic> chooseHeuristics() {
