@@ -1,4 +1,4 @@
-package setpacking;
+package setpartitioning;
 
 import alns.Main;
 import data.Problem;
