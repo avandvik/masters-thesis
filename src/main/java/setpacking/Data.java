@@ -1,14 +1,15 @@
-package setpartitioning;
+package setpacking;
 
 import alns.Main;
 import data.Problem;
 import objects.Order;
+import utils.Helpers;
 
 import java.util.*;
 
 public class Data {
 
-    public static List<Order> orders;
+    public static List<Order> orders = Helpers.deepCopyList(Problem.orders, false);
     public static List<List<Double>> costOfRouteForVessel;
     public static List<Double> costOfPostponedOrders;
     public static List<List<List<Double>>> orderInRouteForVessel;
@@ -16,58 +17,30 @@ public class Data {
     public static List<List<List<Order>>> routeArray;
 
     public static void makeArrays() {
-        Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost = Main.vesselToSequenceToCost;
-        if (vesselToRouteToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
+        if (Main.vesselToSequenceToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
 
         makeRouteArray();
-
-        makeOrders(vesselToRouteToCost);
-        makeCostOfRouteForVessel(vesselToRouteToCost);
+        makeCostOfRouteForVessel();
         makePostponedOrderCosts();
-        makeOrderInRouteForVessel(vesselToRouteToCost);
+        makeOrderInRouteForVessel();
     }
 
     private static void makeRouteArray() {
         routeArray = new ArrayList<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             routeArray.add(new ArrayList<>());
-            int routeIdx = 0;
-            for (List<Order> route : Main.vesselToSequenceToCost.get(vesselIdx).keySet()) {
-                routeArray.get(vesselIdx).add(new ArrayList<>());
-                for (Order order : route) {
-                    routeArray.get(vesselIdx).get(routeIdx).add(order);
-                }
-                routeIdx++;
-            }
-        }
-    }
-
-    private static void makeOrders(Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost) {
-        orders = new ArrayList<>();
-        List<List<Double>> costOfRouteForVessel = new ArrayList<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            costOfRouteForVessel.add(new ArrayList<>());
-            Map<List<Order>, Double> routeToCost = vesselToRouteToCost.get(vesselIdx);
-            List<List<Order>> routes = new ArrayList<>(routeToCost.keySet());
+            List<List<Order>> routes = new ArrayList<>(Main.vesselToSequenceToCost.get(vesselIdx).keySet());
             for (List<Order> route : routes) {
-                double cost = routeToCost.get(route);
-                costOfRouteForVessel.get(vesselIdx).add(cost);
-                // Making list of all orders in the problem
-                for (Order order : route) {
-                    if (!orders.contains(order)) {
-                        orders.add(order);
-                    }
-                }
+                routeArray.get(vesselIdx).add(new ArrayList<>(route));
             }
         }
-        orders.sort(Comparator.comparingInt(Order::getOrderId));
     }
 
-    private static void makeCostOfRouteForVessel(Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost) {
+    private static void makeCostOfRouteForVessel() {
         costOfRouteForVessel = new ArrayList<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             costOfRouteForVessel.add(new ArrayList<>());
-            Map<List<Order>, Double> routeToCost = vesselToRouteToCost.get(vesselIdx);
+            Map<List<Order>, Double> routeToCost = Main.vesselToSequenceToCost.get(vesselIdx);
             List<List<Order>> routes = new ArrayList<>(routeToCost.keySet());
             for (List<Order> route : routes) {
                 double cost = routeToCost.get(route);
@@ -83,11 +56,11 @@ public class Data {
         }
     }
 
-    private static void makeOrderInRouteForVessel(Map<Integer, Map<List<Order>, Double>> vesselToRouteToCost) {
+    private static void makeOrderInRouteForVessel() {
         orderInRouteForVessel = new ArrayList<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             orderInRouteForVessel.add(new ArrayList<>());
-            Map<List<Order>, Double> routeToCost = vesselToRouteToCost.get(vesselIdx);
+            Map<List<Order>, Double> routeToCost = Main.vesselToSequenceToCost.get(vesselIdx);
             List<List<Order>> routes = new ArrayList<>(routeToCost.keySet());
             for (int routeIdx = 0; routeIdx < routes.size(); routeIdx++) {
                 List<Order> route = routes.get(routeIdx);

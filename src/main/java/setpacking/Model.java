@@ -1,4 +1,4 @@
-package setpartitioning;
+package setpacking;
 
 import alns.Main;
 import data.Parameters;
@@ -34,7 +34,7 @@ public class Model {
     private void setUpEnvironment() throws GRBException {
         GRBEnv env = new GRBEnv();
         this.model = new GRBModel(env);
-        model.set(GRB.StringAttr.ModelName, "SetPartitioningModel");
+        model.set(GRB.StringAttr.ModelName, "SetPackingModel");
     }
 
     private void defineLambda() throws GRBException {
@@ -58,19 +58,16 @@ public class Model {
 
     private void defineObjective() throws GRBException {
         GRBLinExpr objective = new GRBLinExpr();
-
         for (int vesselIdx = 0; vesselIdx < numberOfVessels; vesselIdx++) {
             for (int routeIdx = 0; routeIdx < vesselToNumberOfRoutes.get(vesselIdx); routeIdx++) {
                 double routeCost = Data.costOfRouteForVessel.get(vesselIdx).get(routeIdx);
                 objective.addTerm(routeCost, this.lambda.get(vesselIdx).get(routeIdx));
             }
         }
-
         for (int orderIdx = 0; orderIdx < numberOfOrders; orderIdx++) {
             double postponeCost = Data.costOfPostponedOrders.get(orderIdx);
             objective.addTerm(postponeCost, this.y.get(orderIdx));
         }
-
         this.model.setObjective(objective, GRB.MINIMIZE);
     }
 
