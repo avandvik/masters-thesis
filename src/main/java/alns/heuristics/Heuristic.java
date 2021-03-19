@@ -72,7 +72,7 @@ public abstract class Heuristic {
         this.weight = 0.8 * this.weight + 0.2 * (this.score / this.selections);
     }
 
-    List<Order> getOrdersToRemove(Order orderToRemove) {
+    static List<Order> getOrdersToRemove(Order orderToRemove) {
         Installation instWithOrder = Problem.getInstallation(orderToRemove);
         return new ArrayList<>(Problem.getOrdersFromInstallation(instWithOrder));
     }

@@ -22,24 +22,22 @@ public class RemovalWorstTest {
         Parameters.parallelHeuristics = false;
 
         Solution solution = createInitialSolution();
+        testRemovalsWithRandomness(removalWorst, solution);
         setPostponementPenaltyMaxOrMin(solution, true);
-        testNumberOfRemovals(removalWorst, solution);
         testNoRemovals(removalWorst, solution);
         testRemovalsAsExpectedHighPenalty(removalWorst, solution);
         setPostponementPenaltyMaxOrMin(solution, false);
         testRemovalsAsExpectedLowPenalty(removalWorst, solution);
     }
 
-    private void testNumberOfRemovals(RemovalWorst removalWorst, Solution solution) {
-        Parameters.rnWorst = 5;
+    private void testRemovalsWithRandomness(RemovalWorst removalWorst, Solution solution) {
+        Parameters.rnWorst = 1;
         int ordersToRemove = 3;
 
         Parameters.parallelHeuristics = false;
         Solution seqSolution = removalWorst.destroy(solution, ordersToRemove);
-        Parameters.parallelHeuristics = true;
-        Solution parSolution = removalWorst.destroy(solution, ordersToRemove);
-        assertEquals(3, seqSolution.getUnplacedOrders().size());
-        assertEquals(3, parSolution.getUnplacedOrders().size());
+
+        assertEquals(createExpectedSolutionRandomness(), seqSolution);
     }
 
     private void testNoRemovals(RemovalWorst removalWorst, Solution solution) {
@@ -48,7 +46,7 @@ public class RemovalWorstTest {
     }
 
     private void testRemovalsAsExpectedHighPenalty(RemovalWorst removalWorst, Solution solution) {
-        Parameters.rnWorst = 5;
+        Parameters.rnWorst = 100;
         int ordersToRemove = 3;
 
         Solution expectedSolution = createExpectedSolutionHighPenalty();
@@ -106,14 +104,26 @@ public class RemovalWorstTest {
         return solution;
     }
 
+    private Solution createExpectedSolutionRandomness() {
+        List<List<Order>> orderSequences = new ArrayList<>();
+        orderSequences.add(new LinkedList<>());
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(5),
+                Problem.getOrder(6))));
+        orderSequences.add(new LinkedList<>());
+        Set<Order> postponedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(4), Problem.getOrder(7)));
+        Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(1), Problem.getOrder(2),
+                Problem.getOrder(0)));
+        return new Solution(orderSequences, postponedOrders, unplacedOrders);
+    }
+
     private Solution createExpectedSolutionHighPenalty() {
         List<List<Order>> orderSequences = new ArrayList<>();
         orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(1))));
         orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(5), Problem.getOrder(6))));
         orderSequences.add(new LinkedList<>());
-        Set<Order> postponedOrders = new HashSet<>(Collections.singletonList(Problem.getOrder(2)));
+        Set<Order> postponedOrders = new HashSet<>();
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(4), Problem.getOrder(3),
-                Problem.getOrder(7)));
+                Problem.getOrder(7), Problem.getOrder(2)));
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
 
