@@ -8,6 +8,8 @@ import data.Messages;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
+import setpartitioning.Data;
+import setpartitioning.Model;
 import subproblem.SubProblem;
 
 import java.util.*;
@@ -42,6 +44,8 @@ public class Main {
             if (Parameters.verbose) printIterationInfo(iteration, candidateSolution);
 
             double reward = acceptSolution(candidateSolution);
+
+            if (iteration > 0 && iteration % Parameters.setPartitioningIterations == 0) runSetPartitioningModel();
 
             currentTemperature *= Parameters.coolingRate;
             updateScores(reward, heuristics);
@@ -78,6 +82,9 @@ public class Main {
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
         }
+
+        // Initialize Gurobi env
+        if (Parameters.local) Data.initializeGurobiEnv();
     }
 
     private static List<Heuristic> chooseHeuristics() {
@@ -149,6 +156,13 @@ public class Main {
             }
         }
         return 0.0;  // No reward if solution has been visited before, but current solution is updated
+    }
+
+    private static void runSetPartitioningModel() {
+        Model model = new Model();
+        model.run();
+        Solution candidateSolution = model.getNewSolution();
+        acceptSolution(candidateSolution);  // Reward is ignored
     }
 
     private static void saveVoyages(Solution solution) {

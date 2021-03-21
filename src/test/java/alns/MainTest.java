@@ -20,7 +20,8 @@ public class MainTest {
         Parameters.totalIterations = 65;
         Parameters.maxIterSolution = 20;
         Parameters.noiseRate = 0.5;
-
+        Parameters.setPartitioningIterations = Parameters.totalIterations * 2;
+        Parameters.local = false;
         Main.run();
     }
 

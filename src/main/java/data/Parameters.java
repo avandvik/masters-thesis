@@ -32,9 +32,13 @@ public class Parameters {
     // Iterations
     public static int totalIterations = 100;
     public static int maxIterSolution = 20;
+    public static int setPartitioningIterations = 50;
 
     // Verbose
-    public static boolean verbose = true;
+    public static boolean verbose = false;
+
+    // Local or external
+    public static boolean local = true;
 
     public static void setTemperatureAndCooling(double currentFitness) {
         double candidateFitness = currentFitness * 1.05;

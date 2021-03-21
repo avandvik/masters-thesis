@@ -17,7 +17,8 @@ public class Evaluator {
         return isOrderSequencesFeasible(solution.getOrderSequences())
                 && isSolutionComplete(solution)
                 && noMandatoryOrdersPostponed(solution.getPostponedOrders())
-                && eachOrderOccursOnce(solution);
+                && eachOrderOccursOnce(solution)
+                && hasVoyageForEachVessel(solution);
     }
 
     public static boolean isPartFeasible(Solution partialSolution) {
