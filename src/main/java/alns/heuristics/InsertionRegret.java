@@ -43,7 +43,6 @@ public class InsertionRegret extends Heuristic implements Repairer {
         } else {
             orderToRegret = calculateRegretsSeq(orderSequences, unplacedOrders);
         }
-        // Order orderMaxRegret = Collections.max(orderToRegret.entrySet(), Map.Entry.comparingByValue()).getKey();
         Order orderMaxRegret = getMaxRegretOrder(orderToRegret, unplacedOrders);
         return InsertionGreedy.insertGreedilyInSolution(newSolution, orderMaxRegret);
     }
