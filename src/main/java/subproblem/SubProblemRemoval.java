@@ -14,12 +14,12 @@ public class SubProblemRemoval extends SubProblem implements Runnable {
 
     public static Map<List<Integer>, Double> removalToObjective;
 
-    public SubProblemRemoval(List<Order> orderSequence, int vesselIdx, int removalIdx) throws IllegalArgumentException {
+    public SubProblemRemoval(List<Order> orderSequence, int vesselIdx, int removalIdx) {
         super(orderSequence, vesselIdx);
         this.removalIdx = removalIdx;
     }
 
-    public static void initialize() {
+    public static void initializeResultsStructure() {
         removalToObjective = new ConcurrentHashMap<>();
     }
 

@@ -17,12 +17,14 @@ import java.util.stream.Collectors;
 
 public class Main {
 
+    private static final char[] animationChars = new char[]{'|', '/', '-', '\\'};
+
     private static List<Heuristic> destroyHeuristics;
     private static List<Heuristic> repairHeuristics;
 
     private static Solution currentSolution;
     private static Solution bestSolution;
-    private final static List<Integer> visitedSolutions = new ArrayList<>();
+    private static List<Integer> visitedSolutions;
 
     private static int iterationsCurrentSolution;
     private static double currentTemperature;
@@ -33,15 +35,13 @@ public class Main {
 
         initialize();
 
-        int segmentIterations = 0;
         for (int iteration = 0; iteration < Parameters.totalIterations; iteration++) {
-            segmentIterations++;
             iterationsCurrentSolution++;
 
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
 
-            if (Parameters.verbose) printIterationInfo(iteration, candidateSolution);
+            printIterationInfo(iteration, candidateSolution);
 
             double reward = acceptSolution(candidateSolution);
 
@@ -49,44 +49,49 @@ public class Main {
 
             currentTemperature *= Parameters.coolingRate;
             updateScores(reward, heuristics);
-            if (segmentIterations < 10) continue;
-            segmentIterations = 0;
-            resetScores();
+            if ((iteration + 1) % Parameters.segmentIterations == 0) resetScores();
         }
     }
 
     private static void initialize() {
-        // Initialize heuristics
+        if (Parameters.local) Data.initializeGurobiEnv();  // Temporary solution to make GitHub Actions run
+        SubProblem.initializeCache();
+        initializeHeuristics();
+        initializeSolutionFields();
+        initializeSimulatedAnnealing();
+        initializeSequenceSaving();
+    }
+
+    private static void initializeHeuristics() {
         destroyHeuristics = new ArrayList<>();
         repairHeuristics = new ArrayList<>();
         destroyHeuristics.add(new RemovalRandom(Constants.REMOVAL_RANDOM_NAME));
-        destroyHeuristics.add(new RemovalRandom(Constants.REMOVAL_RELATED_NAME));
+        destroyHeuristics.add(new RemovalRelated(Constants.REMOVAL_RELATED_NAME));
         destroyHeuristics.add(new RemovalWorst(Constants.REMOVAL_WORST_NAME));
         repairHeuristics.add(new InsertionGreedy(Constants.INSERTION_GREEDY_NAME));
         repairHeuristics.add(new InsertionRegret(Constants.INSERTION_REGRET_NAME));
-
-        // Initialize solution fields
-        currentSolution = Construction.constructRandomInitialSolution();
-        bestSolution = currentSolution;
-        visitedSolutions.add(currentSolution.hashCode());
-        iterationsCurrentSolution = 0;
-
-        // Initialize simulated annealing
-        Parameters.setTemperatureAndCooling(currentSolution.getFitness(false));
-        currentTemperature = Parameters.startTemperature;
-
-        // Initialize adaptive weights
         for (Heuristic heuristic : destroyHeuristics) heuristic.setWeight(Parameters.initialWeight);
         for (Heuristic heuristic : repairHeuristics) heuristic.setWeight(Parameters.initialWeight);
+    }
 
-        // Initialize route saving
+    private static void initializeSolutionFields() {
+        currentSolution = Construction.constructRandomInitialSolution();
+        bestSolution = currentSolution;
+        visitedSolutions = new ArrayList<>();
+        visitedSolutions.add(currentSolution.hashCode());
+        iterationsCurrentSolution = 0;
+    }
+
+    private static void initializeSimulatedAnnealing() {
+        Parameters.setTemperatureAndCooling(currentSolution.getFitness(false));
+        currentTemperature = Parameters.startTemperature;
+    }
+
+    private static void initializeSequenceSaving() {
         vesselToSequenceToCost = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
         }
-
-        // Initialize Gurobi env
-        if (Parameters.local) Data.initializeGurobiEnv();
     }
 
     private static List<Heuristic> chooseHeuristics() {
@@ -114,7 +119,7 @@ public class Main {
 
     public static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
         Destroyer destroyer = (Destroyer) heuristics.get(0);
-        Solution partialSolution = destroyer.destroy(solution, 2);  // No need to evaluate
+        Solution partialSolution = destroyer.destroy(solution, Parameters.nbrOrdersRemove);  // No need to evaluate
 
         if (!Evaluator.isPartFeasible(partialSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
 
@@ -208,15 +213,19 @@ public class Main {
         bestSolution = solution;
     }
 
-    public static double getCurrentTemperature() {
-        return currentTemperature;
-    }
-
     public static void setCurrentTemperature(double temperature) {
         currentTemperature = temperature;
     }
 
     private static void printIterationInfo(int iteration, Solution candidateSolution) {
+        if (Parameters.verbose) {
+            printHeavy(iteration, candidateSolution);
+        } else if (Parameters.semiVerbose) {
+            printSubtle(iteration, candidateSolution);
+        }
+    }
+
+    private static void printHeavy(int iteration, Solution candidateSolution) {
         System.out.println("_".repeat(400));
         System.out.println("Iteration: " + iteration + "\n");
         System.out.println(Constants.ANSI_GREEN + "Best solution \n" + bestSolution + "\n"
@@ -235,10 +244,38 @@ public class Main {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    private static void printSubtle(int iteration, Solution candidateSolution) {
+        int percentage = (int) (((iteration + 1) / (double) Parameters.totalIterations) * 100);
+        System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4] + "\r");
+    }
+
+    private static void runExtensively(int numberOfSeeds, int seedBound) {
+        Random rn = new Random(seedBound);
+        int seed = rn.nextInt(seedBound);
+        Problem.setUpProblem("example_10.json", false, seed);
+        for (int i = 0; i < numberOfSeeds; i++) {
+            System.out.println("Running with seed: " + seed);
+
+            double startTime = System.nanoTime();
+            Main.run();
+            double timeElapsed = (System.nanoTime() - startTime) / 1e9;
+
+            System.out.println("Best objective: " + Main.getBestSolution().getFitness(false));
+            System.out.println("Time elapsed: " + timeElapsed + "\n");
+
+            seed = rn.nextInt(seedBound);
+            Problem.setRandom(seed);
+        }
+    }
+
+    private static void runSimple() {
         Problem.setUpProblem("example_10.json", false, 10);
-        run();
-        System.out.println(Main.getBestSolution().getFitness(false));
+        Main.run();
+        System.out.println("Best fitness: " + Main.getBestSolution().getFitness(false));
         Main.getBestSolution().printSchedules();
+    }
+
+    public static void main(String[] args) {
+        runExtensively(20, 1000);
     }
 }

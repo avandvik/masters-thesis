@@ -18,24 +18,24 @@ public class Parameters {
     public static double startTemperature;
     public static double coolingRate;
 
-    // Random parameter removal methods
+    // Removal parameters
+    public static int nbrOrdersRemove = 3;
+    public static int regretParameter = 4;
     public static double rnRelated = 10;
     public static double rnWorst = 10;
 
-
-    // Regret parameter for regret insertion
-    public static int regretParameter = 4;
-
     // Concurrency
-    public static boolean parallelHeuristics = false;
+    public static boolean parallelHeuristics = true;
 
     // Iterations
-    public static int totalIterations = 100;
+    public static int totalIterations = 1000;
     public static int maxIterSolution = 20;
-    public static int setPartitioningIterations = 50;
+    public static int setPartitioningIterations = 200;
+    public static int segmentIterations = 50;
 
     // Verbose
     public static boolean verbose = false;
+    public static boolean semiVerbose = true;
 
     // Local or external
     public static boolean local = true;

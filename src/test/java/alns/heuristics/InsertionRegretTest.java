@@ -8,6 +8,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.SubProblem;
 import utils.Helpers;
 
 import java.util.Arrays;
@@ -23,6 +24,7 @@ public class InsertionRegretTest {
     @DisplayName("test InsertionRegret")
     public void insertionRegretTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        SubProblem.initializeCache();
         InsertionRegret insertionRegret = new InsertionRegret(Constants.INSERTION_REGRET_NAME);
         testRegretTwoOrders(insertionRegret);
         testRegretThreeOrders(insertionRegret);

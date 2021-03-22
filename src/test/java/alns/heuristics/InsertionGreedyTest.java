@@ -8,6 +8,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.SubProblem;
 import utils.Helpers;
 
 import java.util.*;
@@ -20,6 +21,7 @@ public class InsertionGreedyTest {
     @DisplayName("test InsertionGreedy")
     public void insertionGreedyTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        SubProblem.initializeCache();
         InsertionGreedy insertionGreedy = new InsertionGreedy(Constants.INSERTION_GREEDY_NAME);
         testSingleInsertion(insertionGreedy);
         testTripleInsertion(insertionGreedy);

@@ -6,6 +6,7 @@ import objects.Order;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public abstract class Heuristic {
 
@@ -51,6 +52,14 @@ public abstract class Heuristic {
     static List<Order> getOrdersToRemove(Order orderToRemove) {
         Installation instWithOrder = Problem.getInstallation(orderToRemove);
         return new ArrayList<>(Problem.getOrdersFromInstallation(instWithOrder));
+    }
+
+    static boolean instHasMandUnplacedOrder(Order order, Set<Order> unplacedOrders) {
+        if (!order.isMandatory()) {
+            Order mandOrder = Problem.getMandatoryOrder(order);
+            return mandOrder != null && unplacedOrders.contains(mandOrder);
+        }
+        return false;
     }
 
     @Override

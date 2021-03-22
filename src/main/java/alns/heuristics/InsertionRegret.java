@@ -43,8 +43,8 @@ public class InsertionRegret extends Heuristic implements Repairer {
         } else {
             orderToRegret = calculateRegretsSeq(orderSequences, unplacedOrders);
         }
-
-        Order orderMaxRegret = Collections.max(orderToRegret.entrySet(), Map.Entry.comparingByValue()).getKey();
+        // Order orderMaxRegret = Collections.max(orderToRegret.entrySet(), Map.Entry.comparingByValue()).getKey();
+        Order orderMaxRegret = getMaxRegretOrder(orderToRegret, unplacedOrders);
         return InsertionGreedy.insertGreedilyInSolution(newSolution, orderMaxRegret);
     }
 
@@ -53,6 +53,7 @@ public class InsertionRegret extends Heuristic implements Repairer {
         for (Order order : unplacedOrders) {
             List<Double> increases = new ArrayList<>();
             Map<List<Integer>, Double> insertionToObj = SubProblemInsertion.orderToInsertionToObjective.get(order);
+            if (insertionToObj == null) continue;
             for (List<Integer> insertion : insertionToObj.keySet()) {
                 int vesselIdx = insertion.get(0);
                 double increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
@@ -96,5 +97,15 @@ public class InsertionRegret extends Heuristic implements Repairer {
         for (int i = 0; i < Math.min(Parameters.regretParameter, increases.size()); i++)
             regret += increases.get(i) - increases.get(0);
         return regret;
+    }
+
+    private Order getMaxRegretOrder(Map<Order, Double> orderToRegret, Set<Order> unplacedOrders) {
+        Order orderMaxRegret = Collections.max(orderToRegret.entrySet(), Map.Entry.comparingByValue()).getKey();
+        orderToRegret.remove(orderMaxRegret);
+        while (instHasMandUnplacedOrder(orderMaxRegret, unplacedOrders)) {
+            orderMaxRegret = Collections.max(orderToRegret.entrySet(), Map.Entry.comparingByValue()).getKey();
+            orderToRegret.remove(orderMaxRegret);
+        }
+        return orderMaxRegret;
     }
 }
