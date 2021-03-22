@@ -16,8 +16,8 @@ import java.util.*;
 
 public class InsertionGreedy extends Heuristic implements Repairer {
 
-    public InsertionGreedy(String name, boolean destroy, boolean repair) {
-        super(name, destroy, repair);
+    public InsertionGreedy(String name) {
+        super(name);
     }
 
     private double leastIncrease;

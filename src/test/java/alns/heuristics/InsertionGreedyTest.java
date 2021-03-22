@@ -2,6 +2,7 @@ package alns.heuristics;
 
 import alns.Solution;
 import alns.SolutionGenerator;
+import data.Constants;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
@@ -19,7 +20,7 @@ public class InsertionGreedyTest {
     @DisplayName("test InsertionGreedy")
     public void insertionGreedyTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        InsertionGreedy insertionGreedy = new InsertionGreedy("greedy insertion", false, true);
+        InsertionGreedy insertionGreedy = new InsertionGreedy(Constants.INSERTION_GREEDY_NAME);
         testSingleInsertion(insertionGreedy);
         testTripleInsertion(insertionGreedy);
         testPostponementInsertion(insertionGreedy);

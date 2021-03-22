@@ -2,6 +2,7 @@ package alns.heuristics;
 
 import alns.Solution;
 import alns.SolutionGenerator;
+import data.Constants;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
@@ -22,7 +23,7 @@ public class InsertionRegretTest {
     @DisplayName("test InsertionRegret")
     public void insertionRegretTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        InsertionRegret insertionRegret = new InsertionRegret("regret insertion", false, true);
+        InsertionRegret insertionRegret = new InsertionRegret(Constants.INSERTION_REGRET_NAME);
         testRegretTwoOrders(insertionRegret);
         testRegretThreeOrders(insertionRegret);
     }

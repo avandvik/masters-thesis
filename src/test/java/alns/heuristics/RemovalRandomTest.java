@@ -2,6 +2,7 @@ package alns.heuristics;
 
 import alns.Solution;
 import alns.SolutionGenerator;
+import data.Constants;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class RemovalRandomTest {
     @DisplayName("test RemovalRandom")
     public void removalRandomTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        RemovalRandom removalRandom = new RemovalRandom("random removal", true, false);
+        RemovalRandom removalRandom = new RemovalRandom(Constants.REMOVAL_RANDOM_NAME);
         Solution solution = SolutionGenerator.createSolutionBasicTestData(3, Problem.getNumberOfOrders());
 
         testNumberOfRemovals(removalRandom, solution);

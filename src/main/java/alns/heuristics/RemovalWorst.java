@@ -18,8 +18,8 @@ public class RemovalWorst extends Heuristic implements Destroyer {
 
     private Map<Order, Double> orderToDecrease;
 
-    public RemovalWorst(String name, boolean destroy, boolean repair) {
-        super(name, destroy, repair);
+    public RemovalWorst(String name) {
+        super(name);
     }
 
     @Override

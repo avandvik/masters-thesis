@@ -17,8 +17,8 @@ public class RemovalRelated extends Heuristic implements Destroyer {
     private Map<Order, Double> orderToRelatedness;
     private int numberOfOrders;
 
-    public RemovalRelated(String name, boolean destroy, boolean repair) {
-        super(name, destroy, repair);
+    public RemovalRelated(String name) {
+        super(name);
     }
 
     @Override

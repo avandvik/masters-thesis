@@ -16,8 +16,8 @@ import java.util.*;
 
 public class InsertionRegret extends Heuristic implements Repairer {
 
-    public InsertionRegret(String name, boolean destroy, boolean repair) {
-        super(name, destroy, repair);
+    public InsertionRegret(String name) {
+        super(name);
     }
 
     @Override

@@ -9,17 +9,13 @@ import java.util.List;
 
 public abstract class Heuristic {
 
-    private String name;
-    private boolean destroy;
-    private boolean repair;
+    private final String name;
     private double weight;
     private double score;
     private int selections;
 
-    public Heuristic(String name, boolean destroy, boolean repair) {
+    public Heuristic(String name) {
         this.name = name;
-        this.destroy = destroy;
-        this.repair = repair;
     }
 
     public void setWeight(double weight) {
@@ -45,26 +41,6 @@ public abstract class Heuristic {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isDestroy() {
-        return destroy;
-    }
-
-    public void setDestroy(boolean destroy) {
-        this.destroy = destroy;
-    }
-
-    public boolean isRepair() {
-        return repair;
-    }
-
-    public void setRepair(boolean repair) {
-        this.repair = repair;
     }
 
     // TODO: Parameterize r (replace 0.8 with 1 - r and 0.2 with r)

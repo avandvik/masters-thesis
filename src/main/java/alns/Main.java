@@ -59,9 +59,11 @@ public class Main {
         // Initialize heuristics
         destroyHeuristics = new ArrayList<>();
         repairHeuristics = new ArrayList<>();
-        destroyHeuristics.add(new RemovalRandom("random removal", true, false));
-        destroyHeuristics.add(new RemovalWorst("worst removal", true, false));
-        repairHeuristics.add(new InsertionGreedy("greedy insertion", false, true));
+        destroyHeuristics.add(new RemovalRandom(Constants.REMOVAL_RANDOM_NAME));
+        destroyHeuristics.add(new RemovalRandom(Constants.REMOVAL_RELATED_NAME));
+        destroyHeuristics.add(new RemovalWorst(Constants.REMOVAL_WORST_NAME));
+        repairHeuristics.add(new InsertionGreedy(Constants.INSERTION_GREEDY_NAME));
+        repairHeuristics.add(new InsertionRegret(Constants.INSERTION_REGRET_NAME));
 
         // Initialize solution fields
         currentSolution = Construction.constructRandomInitialSolution();

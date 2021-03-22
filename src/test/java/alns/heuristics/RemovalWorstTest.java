@@ -2,6 +2,7 @@ package alns.heuristics;
 
 import alns.Solution;
 import alns.SolutionGenerator;
+import data.Constants;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
@@ -18,7 +19,7 @@ public class RemovalWorstTest {
     @DisplayName("test RemovalWorst")
     public void removalWorstTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        RemovalWorst removalWorst = new RemovalWorst("worst removal", true, false);
+        RemovalWorst removalWorst = new RemovalWorst(Constants.REMOVAL_WORST_NAME);
         Parameters.parallelHeuristics = false;
 
         Solution solution = createInitialSolution();
