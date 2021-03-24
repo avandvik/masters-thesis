@@ -19,13 +19,13 @@ public class Parameters {
     public static double coolingRate;
 
     // Removal parameters
-    public static int nbrOrdersRemove = 3;
+    public static int nbrOrdersRemove = 2;
     public static int regretParameter = 4;
     public static double rnRelated = 10;
     public static double rnWorst = 10;
 
     // Concurrency
-    public static boolean parallelHeuristics = true;
+    public static boolean parallelHeuristics = false;
 
     // Iterations
     public static int totalIterations = 1000;
