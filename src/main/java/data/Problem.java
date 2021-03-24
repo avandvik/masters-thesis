@@ -188,6 +188,10 @@ public class Problem {
         return timeDisc % (24 * Problem.discretizationParam);
     }
 
+    public static void setRandom(int seed) {
+        Problem.random = new Random(seed);
+    }
+
 
     /* =========== SETUP =========== */
 
