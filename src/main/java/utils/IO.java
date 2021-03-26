@@ -165,7 +165,8 @@ public class IO {
 
     private static JSONObject getJSONObject(String path) {
         JSONParser jsonParser = new JSONParser();
-        try (FileReader reader = new FileReader(path)) {
+        InputStream inputStream = IO.class.getResourceAsStream(path);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             return (JSONObject) jsonParser.parse(reader);
         } catch (IOException | ParseException e) {
             e.printStackTrace();
