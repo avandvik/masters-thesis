@@ -13,13 +13,13 @@ public class SubProblemInsertion extends SubProblem implements Runnable {
     // orderToPlace -> (vesselIdx, insertionIdx) -> objective
     public static Map<Order, Map<List<Integer>, Double>> orderToInsertionToObjective;
 
-    public SubProblemInsertion(List<Order> orderSequence, int vesselIdx, int insertionIdx, Order orderToPlace) throws IllegalArgumentException {
+    public SubProblemInsertion(List<Order> orderSequence, int vesselIdx, int insertionIdx, Order orderToPlace) {
         super(orderSequence, vesselIdx);
         this.insertionIdx = insertionIdx;
         this.orderToPlace = orderToPlace;
     }
 
-    public static void initialize() {
+    public static void initializeResultsStructure() {
         orderToInsertionToObjective = new ConcurrentHashMap<>();
     }
 

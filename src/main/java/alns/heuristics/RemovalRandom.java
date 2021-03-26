@@ -12,8 +12,8 @@ import java.util.*;
 
 public class RemovalRandom extends Heuristic implements Destroyer {
 
-    public RemovalRandom(String name, boolean destroy, boolean repair) {
-        super(name, destroy, repair);
+    public RemovalRandom(String name) {
+        super(name);
     }
 
     @Override

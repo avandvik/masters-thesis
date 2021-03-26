@@ -19,10 +19,10 @@ public class SubProblem implements Runnable {
     public static Map<Integer, Double> vesselToObjective;
 
     // Cache
-    public final static Map<Integer, Double> hashToCost = new HashMap<>();
-    public final static Map<Integer, List<Node>> hashToShortestPath = new HashMap<>();
+    public static Map<Integer, Double> hashToCost;
+    public static Map<Integer, List<Node>> hashToShortestPath;
 
-    public SubProblem(List<Order> orderSequence, int vesselIdx) throws IllegalArgumentException {
+    public SubProblem(List<Order> orderSequence, int vesselIdx) {
         isOrderSequenceValid(orderSequence);
         isVesselIdxValid(vesselIdx);
         this.orderSequence = orderSequence;
@@ -30,7 +30,12 @@ public class SubProblem implements Runnable {
         this.isSpotVessel = Problem.isSpotVessel(vesselIdx);
     }
 
-    public static void initialize() {
+    public static void initializeCache() {
+        hashToCost = new HashMap<>();
+        hashToShortestPath = new HashMap<>();
+    }
+
+    public static void initializeResultsStructure() {
         vesselToObjective = new ConcurrentHashMap<>();
     }
 
@@ -65,16 +70,8 @@ public class SubProblem implements Runnable {
         return shortestPath;
     }
 
-    public void setShortestPath(List<Node> shortestPath) {
-        this.shortestPath = shortestPath;
-    }
-
     public double getShortestPathCost() {
         return shortestPathCost;
-    }
-
-    public void setShortestPathCost(double shortestPathCost) {
-        this.shortestPathCost = shortestPathCost;
     }
 
     public List<Order> getOrderSequence() {
@@ -85,15 +82,11 @@ public class SubProblem implements Runnable {
         return vesselIdx;
     }
 
-    public boolean isSpotVessel() {
-        return isSpotVessel;
-    }
-
-    private void isOrderSequenceValid(List<Order> orderSequence) throws IllegalArgumentException {
+    private void isOrderSequenceValid(List<Order> orderSequence) {
         if (orderSequence.isEmpty()) throw new IllegalArgumentException(Messages.emptySequenceSP);
     }
 
-    private void isVesselIdxValid(int vesselIdx) throws IllegalArgumentException {
+    private void isVesselIdxValid(int vesselIdx) {
         if (vesselIdx < 0 || vesselIdx >= Problem.getNumberOfVessels())
             throw new IllegalArgumentException(Messages.invalidVesselIdx);
     }

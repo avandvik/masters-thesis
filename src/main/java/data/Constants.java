@@ -48,6 +48,12 @@ public class Constants {
     public static final String SPEED_IMPACT_KEY = "speed_impact";
     public static final String SERVICE_IMPACT_KEY = "service_impact";
 
+    public static final String REMOVAL_RANDOM_NAME = "random removal";
+    public static final String REMOVAL_RELATED_NAME = "related removal";
+    public static final String REMOVAL_WORST_NAME = "worst removal";
+    public static final String INSERTION_GREEDY_NAME = "greedy insertion";
+    public static final String INSERTION_REGRET_NAME = "regret insertion";
+
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";

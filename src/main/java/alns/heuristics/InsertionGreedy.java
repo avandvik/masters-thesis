@@ -16,8 +16,8 @@ import java.util.*;
 
 public class InsertionGreedy extends Heuristic implements Repairer {
 
-    public InsertionGreedy(String name, boolean destroy, boolean repair) {
-        super(name, destroy, repair);
+    public InsertionGreedy(String name) {
+        super(name);
     }
 
     private double leastIncrease;
@@ -42,9 +42,9 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         if (Parameters.parallelHeuristics) {
             Objective.runMultipleSPInsertion(orderSequences, ordersToPlace);
             Objective.runMultipleSPEvaluate(orderSequences);
-            this.findLeastIncreaseInsertionOrderSequencesPar(ordersToPlace);
+            this.findLeastIncreaseOrderSequencesPar(ordersToPlace);
         } else {
-            this.findLeastIncreaseInsertionOrderSequencesSeq(orderSequences, ordersToPlace);
+            this.findLeastIncreaseOrderSequencesSeq(orderSequences, ordersToPlace);
         }
 
         boolean postponement = this.findLeastIncreaseInsertionPostponedOrders(ordersToPlace);
@@ -62,13 +62,14 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         return newSolution;
     }
 
-    private void findLeastIncreaseInsertionOrderSequencesPar(Set<Order> ordersToPlace) {
+    private void findLeastIncreaseOrderSequencesPar(Set<Order> ordersToPlace) {
         this.leastIncrease = Double.POSITIVE_INFINITY;
         this.bestInsertion = null;
         this.bestOrder = null;
         outer:
         for (Order order : ordersToPlace) {
             Map<List<Integer>, Double> insertionToObj = SubProblemInsertion.orderToInsertionToObjective.get(order);
+            if (insertionToObj == null) continue;  // No valid insertions for order
             for (List<Integer> insertion : insertionToObj.keySet()) {
                 int vesselIdx = insertion.get(0);
                 double increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
@@ -82,7 +83,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         }
     }
 
-    private void findLeastIncreaseInsertionOrderSequencesSeq(List<List<Order>> orderSequences, Set<Order> ordersToPlace) {
+    private void findLeastIncreaseOrderSequencesSeq(List<List<Order>> orderSequences, Set<Order> ordersToPlace) {
         this.leastIncrease = Double.POSITIVE_INFINITY;
         this.bestInsertion = null;
         this.bestOrder = null;
@@ -107,14 +108,6 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         }
     }
 
-    private boolean instHasMandUnplacedOrder(Order order, Set<Order> ordersToPlace) {
-        if (!order.isMandatory()) {
-            Order mandOrder = Problem.getMandatoryOrder(order);
-            return mandOrder != null && ordersToPlace.contains(mandOrder);
-        }
-        return false;
-    }
-
     private boolean findLeastIncreaseInsertionPostponedOrders(Set<Order> ordersToPlace) {
         boolean postponedOrder = false;
         for (Order order : ordersToPlace) {
@@ -135,6 +128,13 @@ public class InsertionGreedy extends Heuristic implements Repairer {
 
         Objective.runMultipleSPInsertion(orderSequences, wrapperOrder);
         Map<List<Integer>, Double> insertionToObj = SubProblemInsertion.orderToInsertionToObjective.get(order);
+
+        if (insertionToObj == null) {
+            newSolution.addPostponedOrder(order);
+            newSolution.removeUnplacedOrder(order);
+            return newSolution;
+        }
+
         List<Integer> bestInsertion = Collections.min(insertionToObj.entrySet(), Map.Entry.comparingByValue()).getKey();
         double bestObj = insertionToObj.get(bestInsertion);
 

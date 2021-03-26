@@ -15,6 +15,7 @@ public class Objective {
 
     public static void setObjValAndSchedule(Solution solution) {
         /* Calculates and sets the objective value of the solution and sets the corresponding vessel schedules */
+
         List<List<Node>> shortestPaths = new ArrayList<>();
         double objectiveValue = 0.0;
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
@@ -39,32 +40,28 @@ public class Objective {
 
     public static SubProblem runSPComplete(List<Order> orderSequence, int vesselNumber) {
         /* Runs SubProblem and returns entire object to access all solution info (schedules) */
-        try {
-            SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
-            SubProblem.initialize();
-            subProblem.run();
-            return subProblem;
-        } catch (IllegalArgumentException e) {
-            // System.out.println(e.getMessage());
-        }
-        return null;
+
+        if (orderSequence.isEmpty()) return null;
+
+        SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
+        SubProblem.initializeResultsStructure();
+        subProblem.run();
+        return subProblem;
     }
 
     public static double runSPLean(List<Order> orderSequence, int vesselNumber) {
         /* Run SubProblem and returns only objective value */
-        try {
-            SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
-            SubProblem.initialize();
-            subProblem.run();
-            return subProblem.getShortestPathCost();
-        } catch (IllegalArgumentException e) {
-            // System.out.println(e.getMessage());
-        }
-        return 0.0;
+
+        if (orderSequence.isEmpty()) return 0.0;
+
+        SubProblem subProblem = new SubProblem(orderSequence, vesselNumber);
+        SubProblem.initializeResultsStructure();
+        subProblem.run();
+        return subProblem.getShortestPathCost();
     }
 
     public static void runMultipleSPInsertion(List<List<Order>> orderSequences, Set<Order> ordersToPlace) {
-        SubProblemInsertion.initialize();
+        SubProblemInsertion.initializeResultsStructure();
         List<Thread> threads = new ArrayList<>();
         for (Order order : ordersToPlace) {
             Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
@@ -83,7 +80,7 @@ public class Objective {
 
     public static void runMultipleSPRemoval(List<List<Order>> orderSequences) {
         if (orderSequences.size() > Problem.getNumberOfVessels()) throw new IllegalStateException();
-        SubProblemRemoval.initialize();
+        SubProblemRemoval.initializeResultsStructure();
         List<Thread> threads = new ArrayList<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = orderSequences.get(vesselIdx);
@@ -105,7 +102,7 @@ public class Objective {
 
     public static void runMultipleSPEvaluate(List<List<Order>> orderSequences) {
         if (orderSequences.size() > Problem.getNumberOfVessels()) throw new IllegalStateException();
-        SubProblem.initialize();
+        SubProblem.initializeResultsStructure();
         List<Thread> threads = new ArrayList<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = orderSequences.get(vesselIdx);
