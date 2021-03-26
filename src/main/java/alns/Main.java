@@ -276,6 +276,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        runExtensively(20, 1000);
+        // runExtensively(20, 1000);
+        runSimple();
     }
 }
