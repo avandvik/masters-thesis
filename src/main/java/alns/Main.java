@@ -54,7 +54,7 @@ public class Main {
     }
 
     private static void initialize() {
-        if (Parameters.local) Data.initializeGurobiEnv();  // Temporary solution to make GitHub Actions run
+        Data.initializeGurobiEnv();
         SubProblem.initializeCache();
         initializeHeuristics();
         initializeSolutionFields();
