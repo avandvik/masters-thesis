@@ -6,3 +6,6 @@ coverage-report:
 
 upload-jar:
 	./shell/upload.sh
+
+run:
+	./run.sh
