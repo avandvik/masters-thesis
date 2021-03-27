@@ -1,9 +1,7 @@
 package setpartitioning;
 
-import alns.Main;
 import alns.Solution;
 import data.Parameters;
-import data.Problem;
 import gurobi.*;
 import objects.Order;
 
