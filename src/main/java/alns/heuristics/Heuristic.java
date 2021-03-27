@@ -1,5 +1,6 @@
 package alns.heuristics;
 
+import data.Parameters;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
@@ -44,9 +45,8 @@ public abstract class Heuristic {
         return name;
     }
 
-    // TODO: Parameterize r (replace 0.8 with 1 - r and 0.2 with r)
     private void smoothenWeights() {
-        this.weight = 0.8 * this.weight + 0.2 * (this.score / this.selections);
+        this.weight = (1 - Parameters.reaction) * this.weight + Parameters.reaction * (this.score / this.selections);
     }
 
     static List<Order> getOrdersToRemove(Order orderToRemove) {

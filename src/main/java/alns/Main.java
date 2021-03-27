@@ -11,6 +11,7 @@ import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
 import subproblem.SubProblem;
+import utils.IO;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,25 +33,18 @@ public class Main {
     public static Map<Integer, Map<List<Order>, Double>> vesselToSequenceToCost;
 
     public static void run() {
-
         initialize();
-
         for (int iteration = 0; iteration < Parameters.totalIterations; iteration++) {
             iterationsCurrentSolution++;
-
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
-
+            // TODO: Local search
             printIterationInfo(iteration, candidateSolution);
-
             double reward = acceptSolution(candidateSolution);
-
             if (iteration > 0 && iteration % Parameters.setPartitioningIterations == 0) runSetPartitioningModel();
-
-            currentTemperature *= Parameters.coolingRate;
-            updateScores(reward, heuristics);
-            if ((iteration + 1) % Parameters.segmentIterations == 0) resetScores();
+            maintenance(reward, heuristics, iteration);
         }
+        if (Parameters.saveSolution) IO.saveSolution(bestSolution);
     }
 
     private static void initialize() {
@@ -188,11 +182,13 @@ public class Main {
         return Problem.random.nextDouble() < Math.exp(-(candidateFitness - currentFitness) / currentTemperature);
     }
 
-    private static void updateScores(double reward, List<Heuristic> heuristics) {
+    private static void maintenance(double reward, List<Heuristic> heuristics, int iteration) {
+        currentTemperature *= Parameters.coolingRate;
         for (Heuristic heuristic : heuristics) heuristic.addToScore(reward);
+        if ((iteration + 1) % Parameters.segmentIterations == 0) resetHeuristicScores();
     }
 
-    private static void resetScores() {
+    private static void resetHeuristicScores() {
         for (Heuristic heuristic : destroyHeuristics) heuristic.resetScoreAndUpdateWeight();
         for (Heuristic heuristic : repairHeuristics) heuristic.resetScoreAndUpdateWeight();
     }
@@ -277,6 +273,11 @@ public class Main {
 
     public static void main(String[] args) {
         // runExtensively(20, 1000);
+        if (args.length == 1 && args[0].equals("solstorm")) {
+            Constants.OUTPUT_PATH = "dummy";
+        } else {
+            Constants.OUTPUT_PATH = Constants.LOCAL_OUTPUT_PATH;
+        }
         runSimple();
     }
 }

@@ -13,6 +13,7 @@ public class Parameters {
 
     // Weights for heuristics
     public static double initialWeight = 0.2;
+    public static double reaction = 0.2;
 
     // Simulated annealing
     public static double startTemperature;
@@ -36,6 +37,7 @@ public class Parameters {
     // Verbose
     public static boolean verbose = false;
     public static boolean semiVerbose = true;
+    public static boolean saveSolution = true;
 
     public static void setTemperatureAndCooling(double currentFitness) {
         double candidateFitness = currentFitness * 1.05;

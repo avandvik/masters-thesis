@@ -34,7 +34,7 @@ public class Vessel implements Comparable<Vessel>{
 
     @Override
     public String toString() {
-        return "Vessel " + name;
+        return name;
     }
 
     @Override

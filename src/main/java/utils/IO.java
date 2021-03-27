@@ -18,19 +18,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IO {
-    /*
-    public static void WriteToJson(Solution solution) {
+
+    @SuppressWarnings("unchecked")
+    public static void saveSolution(Solution solution) {
         JSONObject obj = new JSONObject();
-        for (int vesselNumber = 0; vesselNumber < solution.getOrderSequences().size(); vesselNumber++) {
+
+        obj.put("instance", Problem.fileName);
+
+        obj.put("voyages", new JSONObject());
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             JSONArray orderSequence = new JSONArray();
-            for (int orderIdx = 0; orderIdx < solution.getOrderSequences().get(vesselNumber).size(); orderIdx++) {
-                orderSequence.add("" + solution.getOrderSequences().get(vesselNumber).get(orderIdx));
-                obj.put("" + (vesselNumber + 1), orderSequence);
+            for (Order order : solution.getOrderSequence(vesselIdx)) {
+                orderSequence.add(order.getOrderId());
             }
+            ((JSONObject) obj.get("voyages")).put(Problem.getVessel(vesselIdx), orderSequence);
         }
 
         try {
-            FileWriter file = new FileWriter("data.json");
+            FileWriter file = new FileWriter(Constants.OUTPUT_PATH + Problem.fileName);
             file.write(obj.toJSONString());
             file.flush();
             file.close();
@@ -38,8 +43,6 @@ public class IO {
             e.printStackTrace();
         }
     }
-
-     */
 
     public static void setUpInstallations() {
         Problem.installations = new ArrayList<>();
