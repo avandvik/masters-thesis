@@ -11,16 +11,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class IO {
-
+    /*
     public static void WriteToJson(Solution solution) {
         JSONObject obj = new JSONObject();
         for (int vesselNumber = 0; vesselNumber < solution.getOrderSequences().size(); vesselNumber++) {
@@ -40,6 +38,8 @@ public class IO {
             e.printStackTrace();
         }
     }
+
+     */
 
     public static void setUpInstallations() {
         Problem.installations = new ArrayList<>();
@@ -165,7 +165,8 @@ public class IO {
 
     private static JSONObject getJSONObject(String path) {
         JSONParser jsonParser = new JSONParser();
-        try (FileReader reader = new FileReader(path)) {
+        InputStream inputStream = IO.class.getResourceAsStream(path);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             return (JSONObject) jsonParser.parse(reader);
         } catch (IOException | ParseException e) {
             e.printStackTrace();

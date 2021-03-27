@@ -37,9 +37,6 @@ public class Parameters {
     public static boolean verbose = false;
     public static boolean semiVerbose = true;
 
-    // Local or external
-    public static boolean local = true;
-
     public static void setTemperatureAndCooling(double currentFitness) {
         double candidateFitness = currentFitness * 1.05;
         startTemperature = -(candidateFitness - currentFitness) * (1 / Math.log(0.5));

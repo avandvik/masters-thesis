@@ -1,9 +1,7 @@
 package setpartitioning;
 
-import alns.Main;
 import alns.Solution;
 import data.Parameters;
-import data.Problem;
 import gurobi.*;
 import objects.Order;
 
@@ -170,16 +168,5 @@ public class Model {
             System.out.println("Error code: " + e.getErrorCode() + ". " +
                     e.getMessage());
         }
-    }
-
-    public static void main(String[] args) {
-        Problem.setUpProblem("basicTestData.json", true, 10);
-        Parameters.verbose = false;
-        Parameters.totalIterations = 40;
-        Parameters.maxIterSolution = 20;
-        Parameters.noiseRate = 0.5;
-        Main.run();
-        Model model = new Model();
-        model.run();
     }
 }
