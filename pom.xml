@@ -108,10 +108,13 @@
                             <target>11</target>
 
                             <excludes>
-                                <exclude>**/setpartitioning.Data</exclude>
-                                <exclude>**/setpartitioning.Model</exclude>
+                                <exclude>**/Main.java</exclude>
+                                <exclude>**/setpartitioning/**</exclude>
                             </excludes>
 
+                            <testExcludes>
+                                <exclude>**/alns/MainTest.java</exclude>
+                            </testExcludes>
                         </configuration>
                     </plugin>
                 </plugins>

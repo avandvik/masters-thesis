@@ -171,15 +171,4 @@ public class Model {
                     e.getMessage());
         }
     }
-
-    public static void main(String[] args) {
-        Problem.setUpProblem("basicTestData.json", true, 10);
-        Parameters.verbose = false;
-        Parameters.totalIterations = 40;
-        Parameters.maxIterSolution = 20;
-        Parameters.noiseRate = 0.5;
-        Main.run();
-        Model model = new Model();
-        model.run();
-    }
 }
