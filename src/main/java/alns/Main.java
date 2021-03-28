@@ -272,12 +272,8 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        if (args.length == 1) Constants.OUTPUT_PATH = "/storage/users/anderhva/" + args[0] + "/";
         // runExtensively(20, 1000);
-        if (args.length == 1 && args[0].equals("solstorm")) {
-            Constants.OUTPUT_PATH = "dummy";
-        } else {
-            Constants.OUTPUT_PATH = Constants.LOCAL_OUTPUT_PATH;
-        }
         runSimple();
     }
 }
