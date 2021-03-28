@@ -1,5 +1,6 @@
 package subproblem;
 
+import alns.Objective;
 import data.Messages;
 import data.Problem;
 import objects.Order;
@@ -19,8 +20,10 @@ public class SubProblem implements Runnable {
     public static Map<Integer, Double> vesselToObjective;
 
     // Cache
+    /*
     public static Map<Integer, Double> hashToCost;
     public static Map<Integer, List<Node>> hashToShortestPath;
+     */
 
     public SubProblem(List<Order> orderSequence, int vesselIdx) {
         isOrderSequenceValid(orderSequence);
@@ -30,22 +33,35 @@ public class SubProblem implements Runnable {
         this.isSpotVessel = Problem.isSpotVessel(vesselIdx);
     }
 
+    /*
     public static void initializeCache() {
         hashToCost = new HashMap<>();
         hashToShortestPath = new HashMap<>();
     }
+     */
 
     public static void initializeResultsStructure() {
         vesselToObjective = new ConcurrentHashMap<>();
     }
 
+    public static void addToResultsStructure(int vesselIdx, double cost) {
+        vesselToObjective.put(vesselIdx, cost);
+    }
+
     @Override
     public void run() {
         this.solveSubProblem();
-        vesselToObjective.put(vesselIdx, this.shortestPathCost);
+        addToResultsStructure(vesselIdx, this.shortestPathCost);
+        Objective.cacheSubProblemResults(this.hashCode(), this);
     }
 
     public void solveSubProblem() {
+        Tree tree = new Tree();
+        tree.generateTree(this.orderSequence, this.isSpotVessel);
+        this.shortestPath = tree.findShortestPath();
+        this.shortestPathCost = tree.getGlobalBestCost();
+
+        /*
         boolean cachedSolution = checkCache(this.hashCode());
         if (!cachedSolution) {
             Tree tree = new Tree();
@@ -55,8 +71,10 @@ public class SubProblem implements Runnable {
             this.shortestPathCost = tree.getGlobalBestCost();
             hashToCost.put(this.hashCode(), this.shortestPathCost);
         }
+         */
     }
 
+    /*
     private boolean checkCache(int hash) {
         if (hashToCost.containsKey(hash)) {
             this.shortestPath = hashToShortestPath.get(hash);
@@ -65,13 +83,22 @@ public class SubProblem implements Runnable {
         }
         return false;
     }
+     */
 
     public List<Node> getShortestPath() {
         return shortestPath;
     }
 
+    public void setShortestPath(List<Node> shortestPath) {
+        this.shortestPath = shortestPath;
+    }
+
     public double getShortestPathCost() {
         return shortestPathCost;
+    }
+
+    public void setShortestPathCost(double shortestPathCost) {
+        this.shortestPathCost = shortestPathCost;
     }
 
     public List<Order> getOrderSequence() {
@@ -89,6 +116,11 @@ public class SubProblem implements Runnable {
     private void isVesselIdxValid(int vesselIdx) {
         if (vesselIdx < 0 || vesselIdx >= Problem.getNumberOfVessels())
             throw new IllegalArgumentException(Messages.invalidVesselIdx);
+    }
+
+    public static int getSubProblemHash(List<Order> orderSequence, int vesselIdx) {
+        boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
+        return Objects.hash(orderSequence, isSpotVessel);
     }
 
     @Override
