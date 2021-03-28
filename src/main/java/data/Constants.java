@@ -9,6 +9,8 @@ public class Constants {
     public static final String INSTALLATION_FILE = Constants.PATH_TO_CONSTANT + "installations.json";
     public static final String WEATHER_FILE = Constants.PATH_TO_CONSTANT + "weather.json";
 
+    public static String OUTPUT_PATH = System.getProperty("user.dir") + "/output/";
+
     public static final String ID_KEY = "id";
     public static final String OPENING_HOUR_KEY = "opening_hour";
     public static final String CLOSING_HOUR_KEY = "closing_hour";

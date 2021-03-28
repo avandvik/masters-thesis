@@ -138,8 +138,8 @@ public class Problem {
         return vesselIdx == Problem.getNumberOfVessels() - 1;
     }
 
-    public static Vessel getVessel(int vesselNumber) {
-        return Problem.vessels.get(vesselNumber);
+    public static Vessel getVessel(int vesselIdx) {
+        return Problem.vessels.get(vesselIdx);
     }
 
 

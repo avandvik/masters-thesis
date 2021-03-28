@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import subproblem.Node;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -18,19 +19,43 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IO {
-    /*
-    public static void WriteToJson(Solution solution) {
+
+    @SuppressWarnings("unchecked")
+    public static void saveSolution(Solution solution) {
         JSONObject obj = new JSONObject();
-        for (int vesselNumber = 0; vesselNumber < solution.getOrderSequences().size(); vesselNumber++) {
+
+        obj.put("instance", Problem.fileName);
+        obj.put("objective", solution.getFitness(false));
+        obj.put("voyages", new JSONObject());
+
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            Vessel vessel = Problem.getVessel(vesselIdx);
+            ((JSONObject) obj.get("voyages")).put(vessel, new JSONObject());
+
             JSONArray orderSequence = new JSONArray();
-            for (int orderIdx = 0; orderIdx < solution.getOrderSequences().get(vesselNumber).size(); orderIdx++) {
-                orderSequence.add("" + solution.getOrderSequences().get(vesselNumber).get(orderIdx));
-                obj.put("" + (vesselNumber + 1), orderSequence);
+            for (Order order : solution.getOrderSequence(vesselIdx)) orderSequence.add(order.getOrderId());
+            ((JSONObject) ((JSONObject) obj.get("voyages")).get(vessel)).put("sequence", orderSequence);
+
+            ((JSONObject) ((JSONObject) obj.get("voyages")).get(vessel)).put("time_points", new JSONObject());
+            for (Node node : solution.getShortestPaths().get(vesselIdx)) {
+                JSONObject timePointsOrder = new JSONObject();
+                if (node.getOrder() != null) {
+                    timePointsOrder.put("arrival_time", node.getArrTime());
+                    timePointsOrder.put("service_time", node.getServiceStartTime());
+                    timePointsOrder.put("end_time", node.getDiscreteTime());
+                    ((JSONObject) ((JSONObject) ((JSONObject) obj.get("voyages"))
+                            .get(vessel)).get("time_points")).put(node.getOrder().getOrderId(), timePointsOrder);
+                } else {
+                    timePointsOrder.put("end_time", node.getDiscreteTime());
+                    boolean isStartDepot = node.getDiscreteTime() == Problem.preparationEndTime;
+                    ((JSONObject) ((JSONObject) ((JSONObject) obj.get("voyages"))
+                            .get(vessel)).get("time_points")).put(isStartDepot ? "SD" : "ED", timePointsOrder);
+                }
             }
         }
 
         try {
-            FileWriter file = new FileWriter("data.json");
+            FileWriter file = new FileWriter(Constants.OUTPUT_PATH + Problem.fileName);
             file.write(obj.toJSONString());
             file.flush();
             file.close();
@@ -38,8 +63,6 @@ public class IO {
             e.printStackTrace();
         }
     }
-
-     */
 
     public static void setUpInstallations() {
         Problem.installations = new ArrayList<>();
