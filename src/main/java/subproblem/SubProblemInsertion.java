@@ -1,5 +1,6 @@
 package subproblem;
 
+import alns.Objective;
 import objects.Order;
 
 import java.util.*;
@@ -23,13 +24,18 @@ public class SubProblemInsertion extends SubProblem implements Runnable {
         orderToInsertionToObjective = new ConcurrentHashMap<>();
     }
 
+    public static void addToResultsStructure(Order orderToPlace, int vesselIdx, int insertionIdx, double cost) {
+        List<Integer> insertionKey = new ArrayList<>(Arrays.asList(vesselIdx, insertionIdx));
+        if (!orderToInsertionToObjective.containsKey(orderToPlace)) {
+            orderToInsertionToObjective.put(orderToPlace, new HashMap<>());
+        }
+        orderToInsertionToObjective.get(orderToPlace).put(insertionKey, cost);
+    }
+
     @Override
     public void run() {
         super.solveSubProblem();
-        List<Integer> insertionKey = new ArrayList<>(Arrays.asList(super.getVesselIdx(), this.insertionIdx));
-        if (!orderToInsertionToObjective.containsKey(this.orderToPlace)) {
-            orderToInsertionToObjective.put(this.orderToPlace, new HashMap<>());
-        }
-        orderToInsertionToObjective.get(this.orderToPlace).put(insertionKey, super.getShortestPathCost());
+        addToResultsStructure(this.orderToPlace, super.getVesselIdx(), this.insertionIdx, super.getShortestPathCost());
+        Objective.cacheSubProblemResults(super.hashCode(), this);
     }
 }

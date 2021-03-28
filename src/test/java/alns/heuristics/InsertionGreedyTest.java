@@ -1,5 +1,6 @@
 package alns.heuristics;
 
+import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
 import data.Constants;
@@ -21,7 +22,7 @@ public class InsertionGreedyTest {
     @DisplayName("test InsertionGreedy")
     public void insertionGreedyTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        SubProblem.initializeCache();
+        Objective.initializeCache();
         InsertionGreedy insertionGreedy = new InsertionGreedy(Constants.INSERTION_GREEDY_NAME);
         testSingleInsertion(insertionGreedy);
         testTripleInsertion(insertionGreedy);

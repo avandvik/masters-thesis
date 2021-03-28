@@ -1,5 +1,6 @@
 package alns.heuristics;
 
+import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
 import data.Constants;
@@ -8,7 +9,6 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import subproblem.SubProblem;
 
 import java.util.*;
 
@@ -20,7 +20,7 @@ public class RemovalWorstTest {
     @DisplayName("test RemovalWorst")
     public void removalWorstTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        SubProblem.initializeCache();
+        Objective.initializeCache();
         RemovalWorst removalWorst = new RemovalWorst(Constants.REMOVAL_WORST_NAME);
         Parameters.parallelHeuristics = false;
 

@@ -1,5 +1,6 @@
 package alns.heuristics;
 
+import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
 import data.Constants;
@@ -24,7 +25,7 @@ public class InsertionRegretTest {
     @DisplayName("test InsertionRegret")
     public void insertionRegretTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        SubProblem.initializeCache();
+        Objective.initializeCache();
         InsertionRegret insertionRegret = new InsertionRegret(Constants.INSERTION_REGRET_NAME);
         testRegretTwoOrders(insertionRegret);
         testRegretThreeOrders(insertionRegret);

@@ -1,5 +1,6 @@
 package subproblem;
 
+import alns.Objective;
 import objects.Order;
 
 import java.util.ArrayList;
@@ -23,10 +24,15 @@ public class SubProblemRemoval extends SubProblem implements Runnable {
         removalToObjective = new ConcurrentHashMap<>();
     }
 
+    public static void addToResultsStructure(int vesselIdx, int removalIdx, double cost) {
+        List<Integer> removalKey = new ArrayList<>(Arrays.asList(vesselIdx, removalIdx));
+        removalToObjective.put(removalKey, cost);
+    }
+
     @Override
     public void run() {
         super.solveSubProblem();
-        List<Integer> removalKey = new ArrayList<>(Arrays.asList(super.getVesselIdx(), this.removalIdx));
-        removalToObjective.put(removalKey, super.getShortestPathCost());
+        addToResultsStructure(super.getVesselIdx(), this.removalIdx, super.getShortestPathCost());
+        Objective.cacheSubProblemResults(super.hashCode(), this);
     }
 }

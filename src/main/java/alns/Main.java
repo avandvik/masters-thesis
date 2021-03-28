@@ -49,7 +49,7 @@ public class Main {
 
     private static void initialize() {
         Data.initializeGurobiEnv();
-        SubProblem.initializeCache();
+        Objective.initializeCache();
         initializeHeuristics();
         initializeSolutionFields();
         initializeSimulatedAnnealing();
@@ -172,7 +172,7 @@ public class Main {
             List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
             boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
             int hash = Objects.hash(orderSequence, isSpotVessel);
-            double cost = orderSequence.isEmpty() ? 0.0 : SubProblem.hashToCost.get(hash);
+            double cost = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
 
             vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
         }
