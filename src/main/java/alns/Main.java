@@ -256,7 +256,7 @@ public class Main {
             Main.run();
             double timeElapsed = (System.nanoTime() - startTime) / 1e9;
 
-            System.out.println("Best objective: " + Main.getBestSolution().getFitness(false));
+            System.out.println("Best fitness: " + Main.getBestSolution().getFitness(false));
             System.out.println("Time elapsed: " + timeElapsed + "\n");
 
             seed = rn.nextInt(seedBound);
@@ -266,8 +266,11 @@ public class Main {
 
     private static void runSimple() {
         Problem.setUpProblem("example_10.json", false, 10);
+        double startTime = System.nanoTime();
         Main.run();
+        double timeElapsed = (System.nanoTime() - startTime) / 1e9;
         System.out.println("Best fitness: " + Main.getBestSolution().getFitness(false));
+        System.out.println("Time elapsed: " + timeElapsed + "\n");
         Main.getBestSolution().printSchedules();
     }
 
