@@ -67,9 +67,7 @@ public class Tree {
             Node currentNode = ((LinkedList<Node>) queue).removeFirst();
             Set<Node> setOfChildren = currentNode.getChildren();
             if (currentNode != this.root) updateCurrentBest(currentNode);
-            if (setOfChildren.isEmpty()) {
-                updateGlobalBest(currentNode);
-            }
+            if (setOfChildren.isEmpty()) updateGlobalBest(currentNode);
             for (Node child : setOfChildren) {
                 if (!child.isVisited()) {
                     child.setVisited(true);
