@@ -57,21 +57,17 @@ public class Tree {
         return globalBestCost;
     }
 
-    protected List<Node> getShortestPath() {
-        return shortestPath;
-    }
-
     protected List<Node> findShortestPath() {
         List<Node> queue = initialize();
         while (queue.size() != 0) {
             Node currentNode = ((LinkedList<Node>) queue).removeFirst();
             Set<Node> setOfChildren = currentNode.getChildren();
-            if (currentNode != this.root) updateCurrentBest(currentNode);
             if (setOfChildren.isEmpty()) updateGlobalBest(currentNode);
-            for (Node child : setOfChildren) {
-                if (!child.isVisited()) {
-                    child.setVisited(true);
-                    queue.add(child);
+            for (Node childNode : setOfChildren) {
+                updateChildBest(currentNode, childNode);
+                if (!childNode.isVisited()) {
+                    childNode.setVisited(true);
+                    queue.add(childNode);
                 }
             }
         }
@@ -94,15 +90,13 @@ public class Tree {
         }
     }
 
-    private void updateCurrentBest(Node currentNode) {
-        for (Node parent : currentNode.getParents()) {
-            double currentCost = parent.getBestCost() + parent.getCostOfChild(currentNode);
-            if (currentCost < currentNode.getBestCost()) {
-                currentNode.setBestCost(currentCost);
-                List<Node> path = Helpers.deepCopyList(parent.getBestPath(), false);
-                path.add(currentNode);
-                currentNode.setBestPath(path);
-            }
+    private void updateChildBest(Node currentNode, Node childNode) {
+        double costFromCurrentNode = currentNode.getBestCost() + currentNode.getCostOfChild(childNode);
+        if (costFromCurrentNode < childNode.getBestCost()) {
+            childNode.setBestCost(costFromCurrentNode);
+            List<Node> path = Helpers.deepCopyList(currentNode.getBestPath(), false);
+            path.add(childNode);
+            childNode.setBestPath(path);
         }
     }
 

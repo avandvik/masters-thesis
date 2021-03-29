@@ -26,7 +26,7 @@ public class Parameters {
     public static double rnWorst = 10;
 
     // Concurrency
-    public static boolean parallelHeuristics = true;
+    public static boolean parallelHeuristics = false;
 
     // Iterations
     public static int totalIterations = 1000;

@@ -270,6 +270,7 @@ public class Main {
         double timeElapsed = (System.nanoTime() - startTime) / 1e9;
         System.out.println("Best fitness: " + Main.getBestSolution().getFitness(false));
         System.out.println("Time elapsed: " + timeElapsed + "\n");
+        Main.getBestSolution().printSchedules();
     }
 
     public static void main(String[] args) {
