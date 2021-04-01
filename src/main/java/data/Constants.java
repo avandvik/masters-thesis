@@ -1,6 +1,11 @@
 package data;
 
 public class Constants {
+    public static final String ROOT_PATH = System.getProperty("user.dir");
+
+    public static String OUTPUT_PATH = ROOT_PATH + "/output/";
+    public static String GENERATOR_PATH = ROOT_PATH + "/src/main/resources/instance/";
+
     public static final String PATH_TO_CONSTANT = "/constant/";
     public static final String PATH_TO_INSTANCE = "/instance/";
     public static final String PATH_TO_TEST = "/test/";
@@ -9,14 +14,14 @@ public class Constants {
     public static final String INSTALLATION_FILE = Constants.PATH_TO_CONSTANT + "installations.json";
     public static final String WEATHER_FILE = Constants.PATH_TO_CONSTANT + "weather.json";
 
-    public static String OUTPUT_PATH = System.getProperty("user.dir") + "/output/";
-
     public static final String ID_KEY = "id";
     public static final String OPENING_HOUR_KEY = "opening_hour";
     public static final String CLOSING_HOUR_KEY = "closing_hour";
     public static final String LATITUDE_KEY = "latitude";
     public static final String LONGITUDE_KEY = "longitude";
-    public static final String TYPICAL_DEMAND_KEY = "typical_demand";
+    public static final String STD_DEMAND_MD_KEY = "std_size_MD";
+    public static final String STD_DEMAND_OD_KEY = "std_size_OD";
+    public static final String STD_DEMAND_OP_KEY = "std_size_OP";
     public static final String CAPACITY_KEY = "capacity";
     public static final String AVAILABLE_VESSELS_KEY = "available_vessels";
     public static final String FLEET_KEY = "fleet";

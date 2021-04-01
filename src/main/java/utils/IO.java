@@ -53,9 +53,13 @@ public class IO {
                 }
             }
         }
+        writeToFile(Constants.OUTPUT_PATH + Problem.fileName, obj);
+    }
 
+
+    public static void writeToFile(String path, JSONObject obj) {
         try {
-            FileWriter file = new FileWriter(Constants.OUTPUT_PATH + Problem.fileName);
+            FileWriter file = new FileWriter(path);
             file.write(obj.toJSONString());
             file.flush();
             file.close();
@@ -63,6 +67,7 @@ public class IO {
             e.printStackTrace();
         }
     }
+
 
     public static void setUpInstallations() {
         Problem.installations = new ArrayList<>();
@@ -75,9 +80,7 @@ public class IO {
             int closingHour = Math.toIntExact((long) jsonInstallation.get(Constants.CLOSING_HOUR_KEY));
             double latitude = (double) jsonInstallation.get(Constants.LATITUDE_KEY);
             double longitude = (double) jsonInstallation.get(Constants.LONGITUDE_KEY);
-            double typicalDemand = (double) jsonInstallation.get(Constants.TYPICAL_DEMAND_KEY);
-            Installation installation = new Installation(id, name, openingHour, closingHour, latitude, longitude,
-                    typicalDemand);
+            Installation installation = new Installation(id, name, openingHour, closingHour, latitude, longitude);
             Problem.installations.add(installation);
         }
         Collections.sort(Problem.installations);
@@ -186,7 +189,7 @@ public class IO {
         }
     }
 
-    private static JSONObject getJSONObject(String path) {
+    public static JSONObject getJSONObject(String path) {
         JSONParser jsonParser = new JSONParser();
         InputStream inputStream = IO.class.getResourceAsStream(path);
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
