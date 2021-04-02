@@ -36,7 +36,6 @@ public class InstanceGenerator {
     // Helper fields used in instance generation
     private final static Map<Integer, List<Double>> instIdToOrderSize = new HashMap<>();
     private final static Set<Integer> installationsWithOrders = new HashSet<>();
-    private static String finalFleetVessel;
 
     public static void generateInstance() {
         // Add miscellaneous instance information
@@ -184,7 +183,7 @@ public class InstanceGenerator {
         List<String> vessels = new ArrayList<String>(jsonFleet.keySet());
         vessels.remove(Constants.SPOT_VESSEL_KEY);  // To not add spot vessel twice
         Collections.sort(vessels);  // To add PSV_1 first, then PSV_2, etc.
-        finalFleetVessel = vessels.get(vessels.size() - 1);  // To break out of loop at the bottom
+        String finalFleetVessel = vessels.get(vessels.size() - 1);  // To break out of loop at the bottom
 
         // Add enough fleet vessels to cover the MD orders
         for (String vessel : vessels) {
