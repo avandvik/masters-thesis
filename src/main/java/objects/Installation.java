@@ -1,30 +1,21 @@
 package objects;
 
-import java.util.List;
-
 public class Installation implements Comparable<Installation>{
 
-    private int id;
-    private String name;
+    private final int id;
+    private final String name;
+    private final int openingHour;
+    private final int closingHour;
+    private final double latitude;
+    private final double longitude;
 
-    private int openingHour;
-    private int closingHour;
-
-    private double latitude;
-    private double longitude;
-    private List<Double> distances;
-
-    private double typicalDemand;
-
-    public Installation(int id, String name, int openingHour, int closingHour, double latitude, double longitude,
-                        double typicalDemand) {
+    public Installation(int id, String name, int openingHour, int closingHour, double latitude, double longitude) {
         this.id = id;
         this.name = name;
         this.openingHour = openingHour;
         this.closingHour = closingHour;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.typicalDemand = typicalDemand;
     }
 
     public int getId() {
@@ -49,10 +40,6 @@ public class Installation implements Comparable<Installation>{
 
     public double getLongitude() {
         return longitude;
-    }
-
-    public double getTypicalDemand() {
-        return typicalDemand;
     }
 
     @Override
