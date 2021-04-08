@@ -4,8 +4,20 @@ import os
 import selenium.webdriver
 
 
-local = False
-solstorm_dir = '060421-205532'  # If results are in directory collected from Solstorm
+"""
+TO INSTALL:
+    - Create a virtual environment (e.g. python3 -m venv ./venv)
+    - Source virtual environment (e.g. source ./venv/bin/activate) 
+    - Install requirements.txt (e.g. pip install -r requirements.txt)
+    - Deactivate the virtual environment (e.g. deactivate)
+    - Install phantomjs (e.g. brew install phantomjs)
+
+TO RUN:
+    - Make sure you have the directories plot/plots and plot/solution
+    - Put the solution json file you want to plot in the plot/solution directory
+    - Make sure that there is only one file in the plot/solution directory
+    - Run this file, output gets saved in plot/plots
+"""
 
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 resources_path = '/src/main/resources'
