@@ -3,3 +3,7 @@
 target
 output
 venv
+*.log
+plot/plots/*
+plot/solution/*
+.DS_Store

@@ -18,3 +18,6 @@ run:
 
 get-results:
 	scp -r anderhva@solstorm-login.iot.ntnu.no:/storage/users/anderhva/$(dir_name) /Users/andersvandvik/Repositories/masters-thesis/output/solstorm/$(dir_name)
+
+activate-venv:
+	source ./venv/bin/activate
