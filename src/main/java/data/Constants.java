@@ -3,7 +3,7 @@ package data;
 public class Constants {
     public static final String ROOT_PATH = System.getProperty("user.dir");
 
-    public static String OUTPUT_PATH = ROOT_PATH + "/output/";
+    public static String OUTPUT_PATH = ROOT_PATH + "/output/local/";
     public static String GENERATOR_PATH = ROOT_PATH + "/src/main/resources/generated/";
 
     public static final String PATH_TO_CONSTANT = "/constant/";

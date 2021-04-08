@@ -1,3 +1,6 @@
+dir_name=-g
+export dir_name
+
 test:
 	mvn clean test -P local-simple
 
@@ -12,3 +15,6 @@ upload-jar:
 
 run:
 	./run.sh
+
+get-results:
+	scp -r anderhva@solstorm-login.iot.ntnu.no:/storage/users/anderhva/$(dir_name) /Users/andersvandvik/Repositories/masters-thesis/output/solstorm/$(dir_name)
