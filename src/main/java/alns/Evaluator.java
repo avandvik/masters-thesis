@@ -176,6 +176,7 @@ public class Evaluator {
     }
 
     public static boolean isSolutionComplete(Solution solution) {
+        if (!solution.getUnplacedOrders().isEmpty()) return false;
         Set<Order> unscheduledOrders = inferUnscheduledOrders(solution.getOrderSequences());
         return solution.getPostponedOrders().containsAll(unscheduledOrders);
     }
