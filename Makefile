@@ -1,6 +1,3 @@
-dir_name=-g
-export dir_name
-
 test:
 	mvn clean test -P local-simple
 
@@ -17,4 +14,10 @@ run:
 	./run.sh
 
 get-results:
-	scp -r anderhva@solstorm-login.iot.ntnu.no:/storage/users/anderhva/$(dir_name) /Users/andersvandvik/Repositories/masters-thesis/output/solstorm/$(dir_name)
+	scp -r anderhva@solstorm-login.iot.ntnu.no:/storage/users/anderhva/* /Users/andersvandvik/Repositories/masters-thesis/output/solstorm/
+
+plot-results:
+	./shell/plot_solution.sh
+
+wipe-results:
+	rm -rf /storage/users/anderhva/*
