@@ -46,8 +46,9 @@ def get_instance_name():
     return solution.get('instance')
 
 
-def loop_through_solution():
-    m = define_map()
+def save_solution_plot():
+    m_1 = define_map()
+    m_2 = define_map()
     for vessel in solution.get('voyages').keys():
         order_sequence = solution.get('voyages').get(vessel).get('sequence')
         if len(order_sequence) == 0:
@@ -58,8 +59,12 @@ def loop_through_solution():
             installation_id = order_info.get('installation')
             if installation_id not in installation_sequence:
                 installation_sequence.append(installation_id)
-        add_markers(m, installation_sequence)
-    save_map_png(m, 'test')
+        add_markers(m_1, installation_sequence)
+        add_markers(m_2, installation_sequence)
+        add_lines(m_2, installation_sequence)
+    instance_name = get_instance_name().split('.')[0]
+    save_map_png(m_1, f'{instance_name}_markers')
+    save_map_png(m_2, f'{instance_name}_markers_lines')
 
 
 def define_map():
@@ -72,16 +77,21 @@ def define_map():
 
 
 def add_markers(m, installations):
-    points = []
     for installation in installations:
         location = get_location(installation)
-        points.append(location)
         folium.CircleMarker(location=location,
                             radius=4,
                             color='darkblue',
                             fill_color='white',
                             fill_opacity=1,
                             fill=True).add_to(m)
+
+
+def add_lines(m, installations):
+    points = []
+    for installation in installations:
+        location = get_location(installation)
+        points.append(location)
     points.append(get_location(0))
     folium.PolyLine(points, color="green", weight=2.5, opacity=1).add_to(m)
 
@@ -108,4 +118,4 @@ def save_map_png(m, file_name):
 inst_ids_to_location = map_inst_ids_to_location()
 solution = get_solution()
 instance = get_instance()
-loop_through_solution()
+save_solution_plot()
