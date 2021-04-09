@@ -113,7 +113,7 @@ public class IO {
             JSONObject jsonVessel = (JSONObject) jsonVessels.get(key);
             int id = Math.toIntExact((long) jsonVessel.get(Constants.ID_KEY));
             double capacitySqm = (double) jsonVessel.get(Constants.CAPACITY_KEY);
-            int capacityUnits = (int) Math.ceil(capacitySqm / Problem.sqmInCargoUnit);
+            int capacityUnits = (int) Math.floor(capacitySqm / Problem.sqmInCargoUnit);
             int returnTime =
                     Math.toIntExact((long) ((JSONObject) jsonAvailableVessels.get(key)).get(Constants.RETURN_TIME_KEY));
             Vessel vessel = new Vessel(id, name, capacityUnits, returnTime);
