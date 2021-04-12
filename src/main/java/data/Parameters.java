@@ -31,7 +31,7 @@ public class Parameters {
     // Iterations
     public static int totalIterations = 1000;
     public static int maxIterSolution = 20;
-    public static int setPartitioningIterations = 200;
+    public static int setPartitioningIterations = 100;
     public static int segmentIterations = 50;
 
     // Verbose

@@ -4,12 +4,12 @@ import alns.heuristics.*;
 import alns.heuristics.protocols.Destroyer;
 import alns.heuristics.protocols.Repairer;
 import data.Constants;
-import data.Messages;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
+import subproblem.SubProblem;
 import utils.IO;
 
 import java.util.*;
@@ -38,6 +38,7 @@ public class Main {
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
             // TODO: Local search
+            saveOrderSequences(candidateSolution);
             printIterationInfo(iteration, candidateSolution);
             double reward = acceptSolution(candidateSolution);
             if (iteration > 0 && iteration % Parameters.setPartitioningIterations == 0) runSetPartitioningModel();
@@ -112,12 +113,19 @@ public class Main {
 
     public static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
         Destroyer destroyer = (Destroyer) heuristics.get(0);
-        Solution partialSolution = destroyer.destroy(solution, Parameters.nbrOrdersRemove);  // No need to evaluate
-
-        if (!Evaluator.isPartFeasible(partialSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
-
+        Solution partialSolution = destroyer.destroy(solution, Parameters.nbrOrdersRemove);
         Repairer repairer = (Repairer) heuristics.get(1);
         return repairer.repair(partialSolution);
+    }
+
+    private static void saveOrderSequences(Solution candidateSolution) {
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            List<Order> orderSequence = candidateSolution.getOrderSequence(vesselIdx);
+            boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
+            int hash = Objects.hash(orderSequence, isSpotVessel);
+            double cost = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
+            vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
+        }
     }
 
     public static Double acceptSolution(Solution candidateSolution) {
@@ -135,7 +143,6 @@ public class Main {
     }
 
     private static double doGlobalBestUpdates(Solution candidateSolution) {
-        saveVoyages(candidateSolution);
         bestSolution = candidateSolution;
         currentSolution = candidateSolution;
         visitedSolutions.add(candidateSolution.hashCode());
@@ -144,7 +151,6 @@ public class Main {
     }
 
     private static double doLocalUpdates(Solution candidateSolution) {
-        saveVoyages(candidateSolution);
         currentSolution = candidateSolution;
         iterationsCurrentSolution = 0;
         if (!visitedSolutions.contains(candidateSolution.hashCode())) {
@@ -163,18 +169,6 @@ public class Main {
         model.run();
         Solution candidateSolution = model.getNewSolution();
         acceptSolution(candidateSolution);  // Reward is ignored
-    }
-
-    private static void saveVoyages(Solution solution) {
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-
-            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
-            boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
-            int hash = Objects.hash(orderSequence, isSpotVessel);
-            double cost = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
-
-            vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
-        }
     }
 
     private static boolean simulatedAnnealing(double currentFitness, double candidateFitness) {

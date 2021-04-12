@@ -1,15 +1,13 @@
 package objects;
 
-import java.util.Objects;
-
 public class Vessel implements Comparable<Vessel>{
 
-    private int id;
-    private String name;
-    private double capacity;
-    private int returnTime;
+    private final int id;
+    private final String name;
+    private final int capacity;
+    private final int returnTime;
 
-    public Vessel(int id, String name, double capacity, int returnTime) {
+    public Vessel(int id, String name, int capacity, int returnTime) {
         this.id = id;
         this.name = name;
         this.capacity = capacity;
@@ -24,7 +22,7 @@ public class Vessel implements Comparable<Vessel>{
         return name;
     }
 
-    public double getCapacity() {
+    public int getCapacity() {
         return capacity;
     }
 

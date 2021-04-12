@@ -42,7 +42,7 @@ public class Evaluator {
     }
 
     public static boolean isFeasibleLoadSequence(List<Order> orderSequence, Vessel vessel) {
-        double currentLoad = findTotalStartLoad(orderSequence);
+        int currentLoad = findTotalStartLoad(orderSequence);
         if (currentLoad > vessel.getCapacity()) return false;
         for (Order order : orderSequence) {
             if (order.isDelivery()) {
@@ -57,8 +57,8 @@ public class Evaluator {
         return true;
     }
 
-    public static double findTotalStartLoad(List<Order> orderSequence) {
-        double totalStartLoad = 0.0;
+    public static int findTotalStartLoad(List<Order> orderSequence) {
+        int totalStartLoad = 0;
         for (Order order : orderSequence) {
             if (order.isDelivery()) totalStartLoad += order.getSize();
         }
