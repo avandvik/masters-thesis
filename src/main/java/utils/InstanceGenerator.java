@@ -12,7 +12,7 @@ public class InstanceGenerator {
     private final static JSONObject instance = new JSONObject();
 
     // Miscellaneous instance information
-    private final static int seed = 11;
+    private final static int seed = 1;
     private final static Random rn = new Random(seed);
     private final static double planningPeriodHours = 80.0;
     private final static double discretizationParameter = 4.0;
@@ -22,7 +22,7 @@ public class InstanceGenerator {
     private final static String fileName = "test.json";  // Include .json at the end
 
     // Installation specifics
-    private final static int numberOfInstallations = 5;
+    private final static int numberOfInstallations = 4;
 
     // Order specifics
     private final static double MDLower = 0.5;  // At least MDLower % of the installations must have an MD order
