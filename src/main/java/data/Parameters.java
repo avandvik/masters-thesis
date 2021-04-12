@@ -29,14 +29,14 @@ public class Parameters {
     public static boolean parallelHeuristics = false;
 
     // Iterations
-    public static int totalIterations = 20;
+    public static int totalIterations = 1000;
     public static int maxIterSolution = 20;
-    public static int setPartitioningIterations = 200;
+    public static int setPartitioningIterations = 100;
     public static int segmentIterations = 50;
 
     // Verbose
     public static boolean verbose = false;
-    public static boolean semiVerbose = false;
+    public static boolean semiVerbose = true;
     public static boolean saveSolution = true;
 
     public static void setTemperatureAndCooling(double currentFitness) {

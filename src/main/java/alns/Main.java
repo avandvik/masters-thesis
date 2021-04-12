@@ -9,7 +9,6 @@ import data.Problem;
 import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
-import subproblem.Node;
 import subproblem.SubProblem;
 import utils.IO;
 
@@ -122,41 +121,11 @@ public class Main {
     private static void saveOrderSequences(Solution candidateSolution) {
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = candidateSolution.getOrderSequence(vesselIdx);
-            if (orderSequence.isEmpty()) continue;
-            scoreOrderSequence(orderSequence, vesselIdx);
+            boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
+            int hash = Objects.hash(orderSequence, isSpotVessel);
+            double cost = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
+            vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
         }
-    }
-
-    private static void scoreOrderSequence(List<Order> orderSequence, int vesselIdx) {
-        int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
-
-        // Deck capacity utilization (average through voyage)
-        List<Double> utilizationValues = calculateDeckUtilization(orderSequence, vesselIdx);
-        double avgDeckUtilization = utilizationValues.get(0);
-        double maxDeckUtilization = utilizationValues.get(1);
-        double totalIncreaseUtilization = utilizationValues.get(2);
-
-        // Objective value / number of orders in sequence
-        double objVal = Objective.hashToCost.get(hash);
-    }
-
-    private static List<Double> calculateDeckUtilization(List<Order> orderSequence, int vesselIdx) {
-        int capacity = Problem.getVessel(vesselIdx).getCapacity();
-        List<Double> utilizationSequence = new ArrayList<>();
-        int load = orderSequence.stream().filter(Order::isDelivery).mapToInt(Order::getSize).sum();
-        utilizationSequence.add(load / (double) capacity);
-        for (Order order : orderSequence) {
-            load += order.isDelivery() ? -order.getSize() : order.getSize();
-            utilizationSequence.add(load / (double) capacity);
-        }
-        double avgDeckUtilization = utilizationSequence.stream().mapToDouble(a -> a).average().orElse(0.0);
-        double maxDeckUtilization = Collections.max(utilizationSequence);
-        double totalIncreaseUtilization = 0.0;
-        for (int i = 1; i < utilizationSequence.size(); i++) {
-            double increase = utilizationSequence.get(i) - utilizationSequence.get(i - 1);
-            if (increase > 0) totalIncreaseUtilization += increase;
-        }
-        return new ArrayList<>(Arrays.asList(avgDeckUtilization, maxDeckUtilization, totalIncreaseUtilization));
     }
 
     public static Double acceptSolution(Solution candidateSolution) {
@@ -174,7 +143,6 @@ public class Main {
     }
 
     private static double doGlobalBestUpdates(Solution candidateSolution) {
-        saveVoyagesOld(candidateSolution);
         bestSolution = candidateSolution;
         currentSolution = candidateSolution;
         visitedSolutions.add(candidateSolution.hashCode());
@@ -183,7 +151,6 @@ public class Main {
     }
 
     private static double doLocalUpdates(Solution candidateSolution) {
-        saveVoyagesOld(candidateSolution);
         currentSolution = candidateSolution;
         iterationsCurrentSolution = 0;
         if (!visitedSolutions.contains(candidateSolution.hashCode())) {
@@ -202,18 +169,6 @@ public class Main {
         model.run();
         Solution candidateSolution = model.getNewSolution();
         acceptSolution(candidateSolution);  // Reward is ignored
-    }
-
-    private static void saveVoyagesOld(Solution solution) {
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-
-            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
-            boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
-            int hash = Objects.hash(orderSequence, isSpotVessel);
-            double cost = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
-
-            vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
-        }
     }
 
     private static boolean simulatedAnnealing(double currentFitness, double candidateFitness) {
