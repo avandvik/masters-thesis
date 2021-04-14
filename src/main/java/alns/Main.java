@@ -121,8 +121,7 @@ public class Main {
     private static void saveOrderSequences(Solution candidateSolution) {
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = candidateSolution.getOrderSequence(vesselIdx);
-            boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
-            int hash = Objects.hash(orderSequence, isSpotVessel);
+            int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
             double cost = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
             vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
         }

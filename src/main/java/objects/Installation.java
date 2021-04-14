@@ -44,7 +44,7 @@ public class Installation implements Comparable<Installation>{
 
     @Override
     public String toString() {
-        return "Installation " + this.name;
+        return "Inst " + this.id;
     }
 
 

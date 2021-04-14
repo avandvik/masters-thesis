@@ -2,6 +2,7 @@ package utils;
 
 import alns.Solution;
 import data.Problem;
+import objects.Installation;
 import objects.Order;
 
 import java.util.*;
@@ -56,15 +57,25 @@ public class Helpers {
         return -1;
     }
 
-    public static List<List<Integer>> getInstSequences(List<List<Order>> orderSequences) {
+    public static List<List<Integer>> getInstIdSequences(List<List<Order>> orderSequences) {
         List<List<Integer>> instSequences = new ArrayList<>();
-        for (List<Order> orderSequence : orderSequences) instSequences.add(getInstSequence(orderSequence));
+        for (List<Order> orderSequence : orderSequences) instSequences.add(getInstIdSequence(orderSequence));
         return instSequences;
     }
 
-    public static List<Integer> getInstSequence(List<Order> orderSequence) {
+    public static List<Integer> getInstIdSequence(List<Order> orderSequence) {
         List<Integer> instSequence = new ArrayList<>();
-        for (int i = 0; i < orderSequence.size(); i++) instSequence.add(orderSequence.get(i).getInstallationId());
+        for (Order order : orderSequence) instSequence.add(order.getInstallationId());
+        return instSequence;
+    }
+
+    public static List<Installation> getInstSequence(List<Order> orderSequence) {
+        List<Installation> instSequence = new ArrayList<>();
+        for (Order order : orderSequence) {
+            Installation inst = Problem.getInstallation(order);
+            if (instSequence.contains(inst)) continue;
+            instSequence.add(inst);
+        }
         return instSequence;
     }
 
