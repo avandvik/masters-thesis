@@ -47,7 +47,7 @@ public class Main {
         if (Parameters.saveSolution) IO.saveSolution(bestSolution);
     }
 
-    private static void initialize() {
+    public static void initialize() {
         Data.initializeGurobiEnv();
         Objective.initializeCache();
         initializeHeuristics();

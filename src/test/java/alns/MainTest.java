@@ -30,6 +30,8 @@ public class MainTest {
     @DisplayName("test acceptSolution")
     public void acceptSolutionTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        Objective.initializeCache();
+        Main.initialize();
 
         Solution solutionOne = createFeasibleSolution(2, Problem.getNumberOfOrders());
         Solution solutionTwo = createFeasibleSolution(3, Problem.getNumberOfOrders());
