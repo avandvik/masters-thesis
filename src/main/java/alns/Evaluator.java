@@ -123,7 +123,7 @@ public class Evaluator {
     }
 
     public static boolean isFeasibleVisits(List<List<Order>> orderSequences) {
-        List<List<Integer>> instSequences = Helpers.getInstSequences(orderSequences);
+        List<List<Integer>> instSequences = Helpers.getInstIdSequences(orderSequences);
         if (instInMoreThanOneSequence(instSequences)) return false;
         for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
             List<Integer> instSequence = instSequences.get(vesselNumber);

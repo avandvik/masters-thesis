@@ -126,7 +126,7 @@ public class EvaluatorTest {
         orderSequences.add(new LinkedList<>(Problem.orders.subList(0, 3)));
         orderSequences.add(new LinkedList<>(Problem.orders.subList(3, 7)));
         orderSequences.add(new LinkedList<>(Problem.orders.subList(7, 9)));
-        return Helpers.getInstSequences(orderSequences);
+        return Helpers.getInstIdSequences(orderSequences);
     }
 
     private List<List<Integer>> getInvalidInstSequencesOneInst() {
@@ -136,7 +136,7 @@ public class EvaluatorTest {
         List<Order> dealBreaker = Problem.orders.subList(7, 9);
         dealBreaker.add(Problem.getOrder(2));
         orderSequences.add(new LinkedList<>(dealBreaker));
-        return Helpers.getInstSequences(orderSequences);
+        return Helpers.getInstIdSequences(orderSequences);
     }
 
     private List<List<Integer>> getInvalidInstSequencesTwoInst(List<List<Integer>> invalidSequences) {
@@ -159,21 +159,21 @@ public class EvaluatorTest {
         List<Order> orderSequence = new LinkedList<>(Problem.orders);
 
         // Check valid (All combos present MD-OD-OP, MD-OD, MD-OP, OD-OP)
-        assertFalse(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+        assertFalse(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstIdSequence(orderSequence)));
 
         // Check illegal visit order: OD-MD
         Collections.swap(orderSequence, 3, 4);
-        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstIdSequence(orderSequence)));
 
         // Check illegal visit order: OP-MD
         Collections.swap(orderSequence, 3, 4);
         Collections.swap(orderSequence, 5, 6);
-        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstIdSequence(orderSequence)));
 
         // Check illegal visit order: OP-OD
         Collections.swap(orderSequence, 5, 6);
         Collections.swap(orderSequence, 7, orderSequence.size() - 1);
-        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstIdSequence(orderSequence)));
     }
 
     private void testSpread() {
@@ -181,7 +181,7 @@ public class EvaluatorTest {
 
         Collections.swap(orderSequence, 7, orderSequence.size() - 1);
         orderSequence.add(orderSequence.remove(1));
-        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstIdSequence(orderSequence)));
     }
 
     private void testBothVisitOrderAndSpread() {
@@ -191,6 +191,6 @@ public class EvaluatorTest {
         Collections.swap(orderSequence, 0, 2);
         orderSequence.add(0, orderSequence.remove(3));
         Collections.swap(orderSequence, 6, 7);
-        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstSequence(orderSequence)));
+        assertTrue(Evaluator.isIllegalPattern(orderSequence, Helpers.getInstIdSequence(orderSequence)));
     }
 }

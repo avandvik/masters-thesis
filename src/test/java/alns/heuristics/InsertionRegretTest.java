@@ -9,7 +9,6 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import subproblem.SubProblem;
 import utils.Helpers;
 
 import java.util.Arrays;
