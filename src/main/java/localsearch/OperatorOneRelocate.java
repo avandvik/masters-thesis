@@ -13,7 +13,6 @@ import java.util.*;
 public class OperatorOneRelocate {
 
     private static List<List<Installation>> seenInstSequences;  // History of seen sequences in the search
-    private static List<List<Order>> improvedOrderSequences;
     private static Map<Integer, Double> vesselToBestObjective;
     private static Solution originalSolution;
     private static Solution newSolution;
@@ -41,10 +40,8 @@ public class OperatorOneRelocate {
 
     private static void initialize(Solution solution) {
         seenInstSequences = new ArrayList<>();
-        improvedOrderSequences = new ArrayList<>();
         vesselToBestObjective = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            improvedOrderSequences.add(null);
             List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
             int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
             double bestObjective = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
@@ -81,10 +78,7 @@ public class OperatorOneRelocate {
         double newObjective = Objective.runSPLean(newOrderSequence, vesselIdx);
         if (newObjective < vesselToBestObjective.get(vesselIdx)) {
             vesselToBestObjective.put(vesselIdx, newObjective);
-            improvedOrderSequences.set(vesselIdx, newOrderSequence);
-        }
-        if (improvedOrderSequences.get(vesselIdx) != null) {
-            newSolution.replaceOrderSequence(vesselIdx, improvedOrderSequences.get(vesselIdx));
+            newSolution.replaceOrderSequence(vesselIdx, newOrderSequence);
         }
     }
 }

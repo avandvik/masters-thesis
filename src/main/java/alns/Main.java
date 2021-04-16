@@ -6,6 +6,7 @@ import alns.heuristics.protocols.Repairer;
 import data.Constants;
 import data.Parameters;
 import data.Problem;
+import localsearch.LocalSearch;
 import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
@@ -37,10 +38,10 @@ public class Main {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
-            // TODO: Local search
-            saveOrderSequences(candidateSolution);
-            printIterationInfo(iteration, candidateSolution);
-            double reward = acceptSolution(candidateSolution);
+            Solution improvedSolution = LocalSearch.localSearch(candidateSolution);
+            saveOrderSequences(improvedSolution);
+            printIterationInfo(iteration, improvedSolution);
+            double reward = acceptSolution(improvedSolution);
             if (iteration > 0 && iteration % Parameters.setPartitioningIterations == 0) runSetPartitioningModel();
             maintenance(reward, heuristics, iteration);
         }
