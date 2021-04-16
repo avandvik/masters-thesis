@@ -6,6 +6,7 @@ import alns.heuristics.protocols.Repairer;
 import data.Constants;
 import data.Parameters;
 import data.Problem;
+import localsearch.LocalSearch;
 import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
@@ -37,17 +38,17 @@ public class Main {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
-            // TODO: Local search
-            saveOrderSequences(candidateSolution);
-            printIterationInfo(iteration, candidateSolution);
-            double reward = acceptSolution(candidateSolution);
+            Solution improvedSolution = LocalSearch.localSearch(candidateSolution);
+            saveOrderSequences(improvedSolution);
+            printIterationInfo(iteration, improvedSolution);
+            double reward = acceptSolution(improvedSolution);
             if (iteration > 0 && iteration % Parameters.setPartitioningIterations == 0) runSetPartitioningModel();
             maintenance(reward, heuristics, iteration);
         }
         if (Parameters.saveSolution) IO.saveSolution(bestSolution);
     }
 
-    private static void initialize() {
+    public static void initialize() {
         Data.initializeGurobiEnv();
         Objective.initializeCache();
         initializeHeuristics();
@@ -121,8 +122,7 @@ public class Main {
     private static void saveOrderSequences(Solution candidateSolution) {
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = candidateSolution.getOrderSequence(vesselIdx);
-            boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
-            int hash = Objects.hash(orderSequence, isSpotVessel);
+            int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
             double cost = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
             vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
         }

@@ -45,6 +45,10 @@ public class Solution {
         this.orderSequences.get(vesselIdx).add(insertionIdx, order);
     }
 
+    public void replaceOrderSequence(int vesselIdx, List<Order> newSequence) {
+        this.orderSequences.set(vesselIdx, newSequence);
+    }
+
     public Set<Order> getPostponedOrders() {
         return postponedOrders;
     }
