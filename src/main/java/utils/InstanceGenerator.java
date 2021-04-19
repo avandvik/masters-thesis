@@ -22,7 +22,7 @@ public class InstanceGenerator {
     private final static int returnTime = 80;
 
     // Installation specifics
-    private final static int numberOfInstallations = 23;
+    private final static int numberOfInstallations = 21;
 
     // Order specifics
     private final static double MDLower = 0.5;  // At least MDLower % of the installations must have an MD order
