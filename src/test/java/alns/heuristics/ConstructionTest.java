@@ -104,6 +104,7 @@ public class ConstructionTest {
     public void constructGreedyInitialSolutionTest() {
         Problem.setUpProblem("basicTestData.json",true, 10);
         Objective.initializeCache();
+        Parameters.parallelHeuristics = false;
         assertEquals(createExpectedGreedySolution(), Construction.constructGreedyInitialSolution());
     }
 
