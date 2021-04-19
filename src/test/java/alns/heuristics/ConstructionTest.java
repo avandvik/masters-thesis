@@ -6,7 +6,6 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import subproblem.SubProblem;
 
 import java.util.*;
 
@@ -96,6 +95,6 @@ public class ConstructionTest {
 
     private Set<Order> createExpectedPostponedOrders() {
         return new HashSet<>(Arrays.asList(Problem.getOrder(15), Problem.getOrder(18),
-                Problem.getOrder(12), Problem.getOrder(4)));
+                Problem.getOrder(12)));
     }
 }
