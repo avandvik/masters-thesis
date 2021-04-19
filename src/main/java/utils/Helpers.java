@@ -118,14 +118,4 @@ public class Helpers {
         Collections.shuffle(sortedUnplacedOrders.subList(numberOfMand, sortedUnplacedOrders.size()), Problem.random);
         return sortedUnplacedOrders;
     }
-
-    public static List<Order> sortUnplacedOrders(Set<Order> unplacedOrders) {
-        return sortUnplacedOrders(new ArrayList<>(unplacedOrders));  // Convert Set to ArrayList for predictability
-    }
-
-    public static int generateSPHash(List<Order> orderSequence, boolean isSpotVessel) {
-        Map<List<Order>, Boolean> hashStructure = new HashMap<>();
-        hashStructure.put(orderSequence, isSpotVessel);
-        return hashStructure.hashCode();
-    }
 }

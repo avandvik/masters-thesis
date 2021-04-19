@@ -24,32 +24,36 @@ public class IO {
     public static void saveSolution(Solution solution) {
         JSONObject obj = new JSONObject();
 
-        obj.put("instance", Problem.fileName);
-        obj.put("objective", solution.getFitness(false));
-        obj.put("voyages", new JSONObject());
+        obj.put(Constants.INSTANCE_NAME_KEY, Problem.fileName);
+        obj.put(Constants.OBJECTIVE_VALUE_KEY, solution.getFitness(false));
+        obj.put(Constants.VOYAGES_KEY, new JSONObject());
 
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             Vessel vessel = Problem.getVessel(vesselIdx);
-            ((JSONObject) obj.get("voyages")).put(vessel, new JSONObject());
+            ((JSONObject) obj.get(Constants.VOYAGES_KEY)).put(vessel, new JSONObject());
 
             JSONArray orderSequence = new JSONArray();
             for (Order order : solution.getOrderSequence(vesselIdx)) orderSequence.add(order.getOrderId());
-            ((JSONObject) ((JSONObject) obj.get("voyages")).get(vessel)).put("sequence", orderSequence);
+            ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel)).put(Constants.SEQUENCE_KEY,
+                    orderSequence);
 
-            ((JSONObject) ((JSONObject) obj.get("voyages")).get(vessel)).put("time_points", new JSONObject());
+            ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel)).put(Constants.TIME_POINTS_KEY,
+                    new JSONObject());
             for (Node node : solution.getShortestPaths().get(vesselIdx)) {
                 JSONObject timePointsOrder = new JSONObject();
                 if (node.getOrder() != null) {
-                    timePointsOrder.put("arrival_time", node.getArrTime());
-                    timePointsOrder.put("service_time", node.getServiceStartTime());
-                    timePointsOrder.put("end_time", node.getDiscreteTime());
-                    ((JSONObject) ((JSONObject) ((JSONObject) obj.get("voyages"))
-                            .get(vessel)).get("time_points")).put(node.getOrder().getOrderId(), timePointsOrder);
+                    timePointsOrder.put(Constants.ARRIVAL_TIME_KEY, node.getArrTime());
+                    timePointsOrder.put(Constants.SERVICE_TIME_KEY, node.getServiceStartTime());
+                    timePointsOrder.put(Constants.END_TIME_KEY, node.getDiscreteTime());
+                    ((JSONObject) ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY))
+                            .get(vessel)).get(Constants.TIME_POINTS_KEY)).put(node.getOrder().getOrderId(),
+                            timePointsOrder);
                 } else {
-                    timePointsOrder.put("end_time", node.getDiscreteTime());
+                    timePointsOrder.put(Constants.END_TIME_KEY, node.getDiscreteTime());
                     boolean isStartDepot = node.getDiscreteTime() == Problem.preparationEndTime;
-                    ((JSONObject) ((JSONObject) ((JSONObject) obj.get("voyages"))
-                            .get(vessel)).get("time_points")).put(isStartDepot ? "SD" : "ED", timePointsOrder);
+                    ((JSONObject) ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY))
+                            .get(vessel)).get(Constants.TIME_POINTS_KEY)).put(isStartDepot ? "SD" : "ED",
+                            timePointsOrder);
                 }
             }
         }
@@ -143,7 +147,7 @@ public class IO {
         Problem.fcServicing = (double) jsonVesselInfo.get(Constants.FC_SERVICING_KEY);
         Problem.fuelPrice = (double) jsonVesselInfo.get(Constants.FUEL_PRICE_KEY);
         Problem.spotHourRate = (double) jsonVesselInfo.get(Constants.SPOT_HOUR_RATE_KEY);
-        double realServiceTimeUnit = (double) jsonVesselInfo.get(Constants.SERVICE_TIME_KEY);
+        double realServiceTimeUnit = (double) jsonVesselInfo.get(Constants.UNIT_SERVICE_TIME_KEY);
         Problem.discServiceTimeUnit = realServiceTimeUnit * Problem.discretizationParam;
         int preparationEndHour = Math.toIntExact((long) jsonVesselInfo.get(Constants.PREP_END_KEY));
         Problem.preparationEndTime = preparationEndHour * Problem.discretizationParam - 1;
