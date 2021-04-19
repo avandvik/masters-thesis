@@ -70,7 +70,7 @@ public class Main {
     }
 
     private static void initializeSolutionFields() {
-        currentSolution = Construction.constructRandomInitialSolution();
+        currentSolution = Construction.constructGreedyInitialSolution();
         bestSolution = currentSolution;
         visitedSolutions = new ArrayList<>();
         visitedSolutions.add(currentSolution.hashCode());
@@ -131,7 +131,7 @@ public class Main {
     public static Double acceptSolution(Solution candidateSolution) {
         if (candidateSolution.equals(currentSolution)) {
             if (iterationsCurrentSolution > Parameters.maxIterSolution) {
-                currentSolution = Construction.constructRandomInitialSolution();
+                currentSolution = Construction.constructGreedyInitialSolution();
                 iterationsCurrentSolution = 0;
             }
         } else if (candidateSolution.getFitness(false) < bestSolution.getFitness(false)) {
