@@ -41,7 +41,7 @@ public class Constants {
     public static final String FC_SERVICING_KEY = "fc_servicing";
     public static final String FUEL_PRICE_KEY = "fuel_price";
     public static final String SPOT_HOUR_RATE_KEY = "spot_hour_rate";
-    public static final String SERVICE_TIME_KEY = "real_service_time_per_unit";
+    public static final String UNIT_SERVICE_TIME_KEY = "real_service_time_per_unit";
     public static final String PREP_END_KEY = "preparation_end_hour";
     public static final String SQM_KEY = "square_meters_in_one_cargo_unit";
 
@@ -64,6 +64,15 @@ public class Constants {
     public static final String REMOVAL_WORST_NAME = "worst removal";
     public static final String INSERTION_GREEDY_NAME = "greedy insertion";
     public static final String INSERTION_REGRET_NAME = "regret insertion";
+
+    public static final String INSTANCE_NAME_KEY = "instance";
+    public static final String OBJECTIVE_VALUE_KEY = "objective";
+    public static final String VOYAGES_KEY = "voyages";
+    public static final String SEQUENCE_KEY = "sequence";
+    public static final String TIME_POINTS_KEY = "time_points";
+    public static final String ARRIVAL_TIME_KEY = "arrival_time";
+    public static final String SERVICE_TIME_KEY = "service_time";
+    public static final String END_TIME_KEY = "end_time";
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";

@@ -2,11 +2,11 @@ package alns.heuristics;
 
 import alns.Objective;
 import alns.Solution;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import subproblem.SubProblem;
 
 import java.util.*;
 
@@ -70,7 +70,7 @@ public class ConstructionTest {
     }
 
     private void testInitialSolutionAsExpected() {
-        Solution expectedSolution = createExpectedSolution();
+        Solution expectedSolution = createExpectedRandomSolution();
         Solution actualSolution = Construction.constructRandomInitialSolution();
         assertEquals(expectedSolution, actualSolution);
         Objective.setObjValAndSchedule(expectedSolution);
@@ -82,7 +82,7 @@ public class ConstructionTest {
         assertEquals(createExpectedPostponedOrders(), actualSolution.getPostponedOrders());
     }
 
-    private Solution createExpectedSolution() {
+    private Solution createExpectedRandomSolution() {
         List<List<Order>> orderSequences = new ArrayList<>();
         orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(1),
                 Problem.getOrder(7), Problem.getOrder(3), Problem.getOrder(4))));
@@ -96,6 +96,29 @@ public class ConstructionTest {
 
     private Set<Order> createExpectedPostponedOrders() {
         return new HashSet<>(Arrays.asList(Problem.getOrder(15), Problem.getOrder(18),
-                Problem.getOrder(12), Problem.getOrder(4)));
+                Problem.getOrder(12)));
     }
+
+    @Test
+    @DisplayName("test constructGreedyInitialSolution")
+    public void constructGreedyInitialSolutionTest() {
+        Problem.setUpProblem("basicTestData.json",true, 10);
+        Objective.initializeCache();
+        Parameters.parallelHeuristics = false;
+        assertEquals(createExpectedGreedySolution(), Construction.constructGreedyInitialSolution());
+    }
+
+    private Solution createExpectedGreedySolution() {
+        List<List<Order>> orderSequences = new ArrayList<>();
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(5), Problem.getOrder(7),
+                Problem.getOrder(0), Problem.getOrder(1), Problem.getOrder(6),
+                Problem.getOrder(3), Problem.getOrder(4))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2))));
+        orderSequences.add(new LinkedList<>());
+        Set<Order> postponedOrders = new HashSet<>();
+        Set<Order> unplacedOrders = new HashSet<>();
+
+        return new Solution(orderSequences, postponedOrders, unplacedOrders);
+    }
+
 }

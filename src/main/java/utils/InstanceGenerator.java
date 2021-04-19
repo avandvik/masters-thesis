@@ -3,6 +3,7 @@ package utils;
 import data.Constants;
 import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -12,17 +13,16 @@ public class InstanceGenerator {
     private final static JSONObject instance = new JSONObject();
 
     // Miscellaneous instance information
-    private final static int seed = 11;
+    private static int seed;
     private final static Random rn = new Random(seed);
     private final static double planningPeriodHours = 80.0;
     private final static double discretizationParameter = 4.0;
     private final static String weatherScenario = "perfect";
     private final static String installationOrdering = "random";
     private final static int returnTime = 80;
-    private final static String fileName = "test.json";  // Include .json at the end
 
     // Installation specifics
-    private final static int numberOfInstallations = 5;
+    private final static int numberOfInstallations = 23;
 
     // Order specifics
     private final static double MDLower = 0.5;  // At least MDLower % of the installations must have an MD order
@@ -31,13 +31,16 @@ public class InstanceGenerator {
     private final static double ODUpper = 0.4;
     private final static double OPLower = 0.2;
     private final static double OPUpper = 0.4;
-    private final static double sizeDeviation = 0.2;  // Size in [stdSize * (1-sizeDev), stdSize * (1+sizeDev)]
+    private final static double sizeDeviation = 0.5;  // Size in [stdSize * (1-sizeDev), stdSize * (1+sizeDev)]
 
     // Helper fields used in instance generation
     private final static Map<Integer, List<Double>> instIdToOrderSize = new HashMap<>();
     private final static Set<Integer> installationsWithOrders = new HashSet<>();
+    private static int numberOfOrders = 0;
+    private static int numberOfVessels = 0;
 
-    public static void generateInstance() {
+    public static void generateInstance(int seed) {
+        InstanceGenerator.seed = seed;
         // Add miscellaneous instance information
         addMiscInfoToJSON();
 
@@ -48,6 +51,9 @@ public class InstanceGenerator {
 
         // Assign available vessels
         assignAvailableVessels();
+
+        // Set file name
+        String fileName = setFileName();
 
         // Save
         IO.writeToFile(Constants.GENERATOR_PATH + fileName, instance);
@@ -146,11 +152,11 @@ public class InstanceGenerator {
         }
     }
 
-    private static double calculateOrderSize(int id, int sizeIdx) {
-        double stdSize = instIdToOrderSize.get(id).get(sizeIdx);
+    private static double calculateOrderSize(int installationId, int sizeIdx) {
+        double stdSize = instIdToOrderSize.get(installationId).get(sizeIdx);
         double minSize = stdSize * (1 - sizeDeviation);
         double maxSize = stdSize * (1 + sizeDeviation);
-        return minSize + (maxSize - minSize) * rn.nextDouble();
+        return Math.round(minSize + (maxSize - minSize) * rn.nextDouble());
     }
 
     @SuppressWarnings("unchecked")
@@ -165,6 +171,7 @@ public class InstanceGenerator {
                 orderSize);
         ((JSONObject) ((JSONObject) instance.get(Constants.ORDERS_KEY)).get(orderIdx)).put(Constants.INSTALLATION_KEY
                 , id);
+        numberOfOrders++;
     }
 
     @SuppressWarnings("unchecked")
@@ -186,15 +193,16 @@ public class InstanceGenerator {
         String finalFleetVessel = vessels.get(vessels.size() - 1);  // To break out of loop at the bottom
 
         // Add enough fleet vessels to cover the MD orders
+        List<String> addedVessels = new ArrayList<>();
         for (String vessel : vessels) {
             JSONObject jsonVessel = (JSONObject) jsonFleet.get(vessel);
             double capacity = (double) jsonVessel.get(Constants.CAPACITY_KEY);
             addVessel(vessel);
-            vessels.remove(vessel);
+            addedVessels.add(vessel);
             fleetCapacity += capacity;
             if (fleetCapacity >= MDSize) break;
         }
-
+        vessels.removeAll(addedVessels);
         // Add the spot vessel
         JSONObject jsonSpot = (JSONObject) jsonFleet.get(Constants.SPOT_VESSEL_KEY);
         double capacity = (double) jsonSpot.get(Constants.CAPACITY_KEY);
@@ -232,9 +240,45 @@ public class InstanceGenerator {
         ((JSONObject) instance.get(Constants.AVAILABLE_VESSELS_KEY)).put(key, new JSONObject());
         ((JSONObject) ((JSONObject) instance.get(Constants.AVAILABLE_VESSELS_KEY)).get(key)).put(Constants.RETURN_TIME_KEY,
                 returnTime);
+        numberOfVessels++;
+    }
+
+    private static String setFileName() {
+        int version = 1;
+        String fileName = numberOfInstallations + "-" + numberOfOrders + "-" + (numberOfVessels - 1) + "-" + version;
+        File[] generatedInstances = new File(Constants.GENERATOR_PATH).listFiles();
+        if (generatedInstances == null) return fileName;
+        List<String> instanceNames = new ArrayList<>();
+        for (File instance : generatedInstances) {
+            String instanceName = instance.getName().split("\\.")[0];
+            instanceNames.add(instanceName);
+        }
+        while (instanceNames.contains(fileName)) {
+            version++;
+            int removeLength;
+            if (version <= 10) {
+                removeLength = 1;
+            } else if (version <= 100) {
+                removeLength = 2;
+            } else if (version <= 1000) {
+                removeLength = 3;
+            } else if (version <= 10000) {
+                removeLength = 4;
+            } else {
+                throw new IllegalStateException("Too many versions");
+            }
+            fileName = fileName.substring(0, fileName.length() - removeLength) + version;
+            System.out.println("Instance with same attributes generated, new filename: " + fileName);
+        }
+        fileName += ".json";
+        return fileName;
     }
 
     public static void main(String[] args) {
-        InstanceGenerator.generateInstance();
+        for (int seed = 1; seed < 200; seed++) {
+            InstanceGenerator.numberOfOrders = 0;
+            InstanceGenerator.numberOfVessels = 0;
+            InstanceGenerator.generateInstance(seed);
+        }
     }
 }

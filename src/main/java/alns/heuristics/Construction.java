@@ -2,10 +2,12 @@ package alns.heuristics;
 
 import alns.Evaluator;
 import alns.Solution;
+import data.Constants;
 import data.Problem;
 import objects.Order;
 import utils.Helpers;
 
+import java.security.spec.RSAOtherPrimeInfo;
 import java.util.*;
 
 public class Construction {
@@ -26,6 +28,19 @@ public class Construction {
             insertionIndices.put(vesselIdx, vesselIndices);
         }
         return insertionIndices;
+    }
+
+    public static Solution constructGreedyInitialSolution() {
+
+        InsertionGreedy insertionGreedy = new InsertionGreedy(Constants.INSERTION_GREEDY_NAME);
+
+        List<List<Order>> orderSequences = Helpers.createEmptyOrderSequences();
+        Set<Order> postponedOrders = new HashSet<>();
+        Set<Order> unplacedOrders = new HashSet<>(Problem.orders);
+        Solution emptySolution = new Solution(orderSequences, postponedOrders, unplacedOrders);
+
+        // Repair empty solution using greedy insertion heuristic
+        return insertionGreedy.repair(emptySolution);
     }
 
     public static Solution constructRandomInitialSolution() {

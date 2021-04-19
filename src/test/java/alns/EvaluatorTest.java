@@ -21,7 +21,8 @@ public class EvaluatorTest {
     @DisplayName("test isFeasibleLoad")
     public void isFeasibleLoadTest() {
         Problem.setUpProblem("load.json", true, 10);
-        Vessel vessel = Problem.getVessel(0);
+        int capacity = (int) Math.floor(1000 / Problem.sqmInCargoUnit);
+        Vessel vessel = new Vessel(99, "Test", capacity, 80);
 
         testExceedingTotalLoad(vessel);
         testLimitLoadStart(vessel);
