@@ -3,6 +3,7 @@ package alns.heuristics;
 import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
+import data.Constants;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
@@ -20,7 +21,7 @@ public class RemovalSpotTest {
     public void removalSpotTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Objective.initializeCache();
-        RemovalSpot removalSpot = new RemovalSpot("RemovalSpot");
+        RemovalSpot removalSpot = new RemovalSpot(Constants.REMOVAL_SPOT_NAME);
         Parameters.parallelHeuristics = false;
 
         Solution solution = createInitialSolution();
