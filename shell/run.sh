@@ -9,4 +9,9 @@ cd /home/anderhva/masters-thesis || exit
 
 module load Java/11.0.2
 module load gurobi/9.1
-java -jar masters-thesis.jar "$current_time"
+
+for file in /home/anderhva/masters-thesis/instances/*
+do
+  echo "Running ${file##*instances/}"
+  java -jar masters-thesis.jar "$current_time" "${file##*instances/}"
+done

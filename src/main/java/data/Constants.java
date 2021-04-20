@@ -7,7 +7,7 @@ public class Constants {
     public static String GENERATOR_PATH = ROOT_PATH + "/src/main/resources/generated/";
 
     public static final String PATH_TO_CONSTANT = "/constant/";
-    public static String PATH_TO_RUN = "/run/";
+    public static String PATH_TO_INSTANCES = "/instances/";
     public static final String PATH_TO_TEST = "/test/";
 
     public static final String VESSEL_FILE = Constants.PATH_TO_CONSTANT + "vessels.json";
