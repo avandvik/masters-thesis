@@ -3,6 +3,7 @@ package alns.heuristics;
 import alns.Objective;
 import alns.Solution;
 import data.Constants;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -19,6 +20,7 @@ public class InsertionMaxPenaltyCostTest {
     public void insertionMaxPenaltyCostTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Objective.initializeCache();
+        Parameters.parallelHeuristics = false;
         InsertionMaxPenaltyCost insertionMaxPenaltyCost =
                 new InsertionMaxPenaltyCost(Constants.INSERTION_MAX_PENALTY_COST_NAME);
         assertEquals(createExpectedSolution(), insertionMaxPenaltyCost.repair(createInitialSolution()));

@@ -31,7 +31,7 @@ public class InsertionMaxPenaltyCost extends Heuristic implements Repairer {
         Map<Order, Double> sortedOptionalOrderToPenalty = new LinkedHashMap<>();
         List<Order> sortedOrders = new ArrayList<>();
 
-        for (Order order : new ArrayList<>(partialSolution.getUnplacedOrders())) {  // For predictability
+        for (Order order : partialSolution.getUnplacedOrders()) {
             double postponementPenalty = order.getPostponementPenalty();
             if (order.isMandatory()) {
                 mandatoryOrderToPenalty.put(order, postponementPenalty);
