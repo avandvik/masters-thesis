@@ -197,7 +197,7 @@ public class Problem {
 
     public static void setUpProblem(String fileName, boolean isTest, int randomSeed) {
         Problem.fileName = fileName;
-        Problem.pathToInstanceFile = (isTest ? Constants.PATH_TO_TEST : Constants.PATH_TO_INSTANCE) + fileName;
+        Problem.pathToInstanceFile = (isTest ? Constants.PATH_TO_TEST : Constants.PATH_TO_INSTANCES) + fileName;
         IO.setUpInstanceInfo();
         IO.setUpInstallations();
         IO.setUpVesselInfo();

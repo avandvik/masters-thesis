@@ -22,7 +22,7 @@ public class InstanceGenerator {
     private final static int returnTime = 80;
 
     // Installation specifics
-    private final static int numberOfInstallations = 23;
+    private final static int numberOfInstallations = 5;
 
     // Order specifics
     private final static double MDLower = 0.5;  // At least MDLower % of the installations must have an MD order
@@ -275,7 +275,7 @@ public class InstanceGenerator {
     }
 
     public static void main(String[] args) {
-        for (int seed = 1; seed < 200; seed++) {
+        for (int seed = 1; seed < 100; seed++) {
             InstanceGenerator.numberOfOrders = 0;
             InstanceGenerator.numberOfVessels = 0;
             InstanceGenerator.generateInstance(seed);
