@@ -23,6 +23,7 @@ public class InsertionMaxPenaltyCostTest {
         Parameters.parallelHeuristics = false;
         InsertionMaxPenaltyCost insertionMaxPenaltyCost =
                 new InsertionMaxPenaltyCost(Constants.INSERTION_MAX_PENALTY_COST_NAME);
+        System.out.println(insertionMaxPenaltyCost.repair(createInitialSolution()));
         assertEquals(createExpectedSolution(), insertionMaxPenaltyCost.repair(createInitialSolution()));
     }
 
