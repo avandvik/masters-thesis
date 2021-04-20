@@ -22,15 +22,15 @@ public class InstanceGenerator {
     private final static int returnTime = 80;
 
     // Installation specifics
-    private final static int numberOfInstallations = 21;
+    private final static int numberOfInstallations = 5;
 
     // Order specifics
-    private final static double MDLower = 0.5;  // At least MDLower % of the installations must have an MD order
-    private final static double MDUpper = 0.7;  // At most MDUpper % of the installations must have an MD order
-    private final static double ODLower = 0.2;
-    private final static double ODUpper = 0.4;
-    private final static double OPLower = 0.2;
-    private final static double OPUpper = 0.4;
+    private final static double MDLower = 0.4;  // At least MDLower % of the installations must have an MD order
+    private final static double MDUpper = 0.8;  // At most MDUpper % of the installations must have an MD order
+    private final static double ODLower = 0.1;
+    private final static double ODUpper = 0.5;
+    private final static double OPLower = 0.1;
+    private final static double OPUpper = 0.5;
     private final static double sizeDeviation = 0.5;  // Size in [stdSize * (1-sizeDev), stdSize * (1+sizeDev)]
 
     // Helper fields used in instance generation
@@ -275,7 +275,7 @@ public class InstanceGenerator {
     }
 
     public static void main(String[] args) {
-        for (int seed = 1; seed < 200; seed++) {
+        for (int seed = 1; seed < 100; seed++) {
             InstanceGenerator.numberOfOrders = 0;
             InstanceGenerator.numberOfVessels = 0;
             InstanceGenerator.generateInstance(seed);
