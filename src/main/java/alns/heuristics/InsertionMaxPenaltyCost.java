@@ -45,8 +45,8 @@ public class InsertionMaxPenaltyCost extends Heuristic implements Repairer {
         optionalOrderToPenalty.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .forEachOrdered(y -> sortedOptionalOrderToPenalty.put(y.getKey(), y.getValue()));
 
-        Set<Order> sortedMandatoryOrderKeySet = sortedMandatoryOrderToPenalty.keySet();
-        Set<Order> sortedOptionalOrderKeySet = sortedOptionalOrderToPenalty.keySet();
+        List<Order> sortedMandatoryOrderKeySet = new ArrayList<>(sortedMandatoryOrderToPenalty.keySet());
+        List<Order> sortedOptionalOrderKeySet = new ArrayList<>(sortedOptionalOrderToPenalty.keySet());
         sortedOrders.addAll(sortedMandatoryOrderKeySet);
         sortedOrders.addAll(sortedOptionalOrderKeySet);
 
