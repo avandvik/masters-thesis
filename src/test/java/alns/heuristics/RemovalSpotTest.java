@@ -25,12 +25,12 @@ public class RemovalSpotTest {
 
         Solution solution = createInitialSolution();
         // numberOfOrders is set randomly as it is not relevant for the heuristic
-        assertEquals(removalSpot.destroy(solution,1), createExpectedSolution());
+        assertEquals(removalSpot.destroy(solution, 1), createExpectedSolution());
 
     }
 
     private Solution createInitialSolution() {
-        return SolutionGenerator.createSolutionBasicTestData(3,6);
+        return SolutionGenerator.createSolutionBasicTestData(3, 6);
     }
 
     private Solution createExpectedSolution() {

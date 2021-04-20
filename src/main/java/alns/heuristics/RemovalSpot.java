@@ -24,10 +24,9 @@ public class RemovalSpot extends Heuristic implements Destroyer {
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
         Set<Order> postponedOrders = newSolution.getPostponedOrders();
         Set<Order> unplacedOrders = newSolution.getUnplacedOrders();
-        int spotVesselId = Problem.vessels.size()-1;
+        int spotVesselId = Problem.vessels.size() - 1;
         unplacedOrders.addAll(orderSequences.get(spotVesselId));
         orderSequences.get(spotVesselId).clear();
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
-
 }
