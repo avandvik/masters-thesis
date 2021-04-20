@@ -10,6 +10,9 @@ coverage-report:
 upload-jar:
 	./shell/upload.sh
 
+upload-instances:
+	scp -r src/main/resources/instances/ anderhva@solstorm-login.iot.ntnu.no:/home/anderhva/masters-thesis
+
 run:
 	./run.sh
 

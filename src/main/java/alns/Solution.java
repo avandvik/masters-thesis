@@ -100,10 +100,11 @@ public class Solution {
                             + node.getDiscreteTime();
                 }
                 if (prevNode != null) schedule += "\n\t\tCost: " + prevNode.getCostOfChild(node);
-                System.out.println("\t" + orderName + "\n" + schedule);
+                System.out.println("\t" + orderName + "\n" + schedule + "\n");
                 prevNode = node;
             }
         }
+        System.out.println();
     }
 
     @Override

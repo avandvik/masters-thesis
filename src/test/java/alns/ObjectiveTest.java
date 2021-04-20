@@ -7,14 +7,12 @@ import org.junit.jupiter.api.DisplayName;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-
 public class ObjectiveTest {
 
     @Test
     @DisplayName("")
     public void runMultipleSPsTest() {
-        Problem.setUpProblem("example_8.json", false, 10);
+        Problem.setUpProblem("basicTestData.json", true, 10);
         Map<Integer, List<List<Order>>> vesselToOrderSequences = createVesselToOrderSequences();
         // Map<Integer, List<Double>> results = Objective.runMultipleSPs(vesselToOrderSequences);
         // assertEquals(createExpectedResults(), results);
