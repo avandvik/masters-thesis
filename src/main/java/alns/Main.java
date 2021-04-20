@@ -257,19 +257,29 @@ public class Main {
         }
     }
 
-    private static void runSimple() {
-        Problem.setUpProblem("example_10.json", false, 10);
+    private static void runSimple(String fileName) {
+        Problem.setUpProblem(fileName, false, 10);
         double startTime = System.nanoTime();
         Main.run();
         double timeElapsed = (System.nanoTime() - startTime) / 1e9;
-        System.out.println("Best fitness: " + Main.getBestSolution().getFitness(false));
-        System.out.println("Time elapsed: " + timeElapsed + "\n");
-        Main.getBestSolution().printSchedules();
+        if (Parameters.semiVerbose) {
+            System.out.println("Best fitness: " + Main.getBestSolution().getFitness(false));
+            System.out.println("Time elapsed: " + timeElapsed + "\n");
+            Main.getBestSolution().printSchedules();
+        }
     }
 
     public static void main(String[] args) {
-        if (args.length == 1) Constants.OUTPUT_PATH = "/storage/users/anderhva/" + args[0] + "/";
+        String fileName;
+        if (args.length > 0) {  // Running on Solstorm
+            Constants.OUTPUT_PATH = "/storage/users/anderhva/" + args[0] + "/";
+            Constants.PATH_TO_RUN = Constants.ROOT_PATH + "/run/";
+            fileName = args[1];
+        } else {
+            fileName = "5-5-1-1.json";
+        }
+
         // runExtensively(20, 1000);
-        runSimple();
+        runSimple(fileName);
     }
 }
