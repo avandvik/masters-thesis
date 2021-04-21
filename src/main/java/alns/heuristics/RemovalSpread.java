@@ -40,15 +40,15 @@ public class RemovalSpread extends Heuristic implements Destroyer {
     private Order removeSpread(List<Order> orders) {
         Map<Order, Double> orderToMinTravelDistance = new LinkedHashMap<>();
         for (Order currentOrder : orders) {
-            double min_distance_to_order = Double.POSITIVE_INFINITY;
+            double MIN_DISTANCE_TO_ORDER = Double.POSITIVE_INFINITY;
             for (Order nextOrder : orders) {
                 if (currentOrder.getInstallationId() == nextOrder.getInstallationId()) continue;
                 double distance = DistanceCalculator.distance(currentOrder, nextOrder, "N");
-                if (distance < min_distance_to_order) {
-                    min_distance_to_order = distance;
+                if (distance < MIN_DISTANCE_TO_ORDER) {
+                    MIN_DISTANCE_TO_ORDER = distance;
                 }
             }
-            orderToMinTravelDistance.put(currentOrder, min_distance_to_order);
+            orderToMinTravelDistance.put(currentOrder, MIN_DISTANCE_TO_ORDER);
         }
 
         List<Map.Entry<Order, Double>> orderToDistance = new ArrayList<>(orderToMinTravelDistance.entrySet());
