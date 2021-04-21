@@ -118,4 +118,36 @@ public class Helpers {
         Collections.shuffle(sortedUnplacedOrders.subList(numberOfMand, sortedUnplacedOrders.size()), Problem.random);
         return sortedUnplacedOrders;
     }
+
+    public static List<Order> sortOrdersByPenalty(Solution partialSolution) {
+        List<Order> sortedOrders = new ArrayList<>();
+        List<Order> optionalOrders = new ArrayList<>();
+        for (Order order : partialSolution.getUnplacedOrders()) {
+            if (order.isMandatory()) {
+                sortedOrders.add(order);
+            } else {
+                optionalOrders.add(order);
+            }
+        }
+        Collections.sort(sortedOrders);  // Sort by id for predictability
+        optionalOrders.sort(Comparator.comparing((Order::getPostponementPenalty)).reversed());
+        sortedOrders.addAll(optionalOrders);
+        return sortedOrders;
+    }
+
+    public static List<Order> sortOrdersBySize(Solution partialSolution) {
+        List<Order> sortedOrders = new ArrayList<>();
+        List<Order> optionalOrders = new ArrayList<>();
+        for (Order order : partialSolution.getUnplacedOrders()) {
+            if (order.isMandatory()) {
+                sortedOrders.add(order);
+            } else {
+                optionalOrders.add(order);
+            }
+        }
+        Collections.sort(sortedOrders);  // Sort by id for predictability
+        optionalOrders.sort(Comparator.comparing((Order::getSize)).reversed());
+        sortedOrders.addAll(optionalOrders);
+        return sortedOrders;
+    }
 }
