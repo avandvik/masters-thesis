@@ -45,7 +45,7 @@ public class MainTest {
         Objective.setObjValAndSchedule(solutionTwo);  // Fitness 2561
         Objective.setObjValAndSchedule(solutionThree);  // Fitness 2594
 
-        Parameters.setTemperatureAndCooling(solutionOne.getFitness(false));
+        Parameters.setTemperatureAndCooling(solutionOne.getObjective(false));
         Main.setCurrentTemperature(Parameters.startTemperature);
 
         Main.setCurrentSolution(solutionOne);

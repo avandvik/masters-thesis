@@ -15,7 +15,7 @@ public class Solution {
     private final Set<Order> postponedOrders;
     private final Set<Order> unplacedOrders;
     private List<List<Node>> shortestPaths;
-    private double fitness = Double.POSITIVE_INFINITY;
+    private double objective = Double.POSITIVE_INFINITY;
 
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, boolean setFitness) {
         /* Use this constructor when generating a complete solution */
@@ -73,12 +73,18 @@ public class Solution {
         this.shortestPaths = shortestPaths;
     }
 
-    public double getFitness(boolean noise) {
-        return fitness + (noise ? Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise) : 0.0);
+    public double getObjective(boolean noise) {
+        return objective + (noise ? Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise) : 0.0);
     }
 
-    public void setFitness(double fitness) {
-        this.fitness = fitness;
+    public void setObjective(double objective) {
+        this.objective = objective;
+    }
+
+    public double getPenaltyCosts() {
+        double penaltyCosts = 0.0;
+        for (Order order : postponedOrders) penaltyCosts += order.getPostponementPenalty();
+        return penaltyCosts;
     }
 
     public void printSchedules() {
@@ -100,7 +106,7 @@ public class Solution {
                             + node.getDiscreteTime();
                 }
                 if (prevNode != null) schedule += "\n\t\tCost: " + prevNode.getCostOfChild(node);
-                System.out.println("\t" + orderName + "\n" + schedule + "\n");
+                System.out.println("\t" + orderName + "\n" + schedule);
                 prevNode = node;
             }
         }

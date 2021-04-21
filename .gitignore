@@ -8,3 +8,4 @@ plot/plots/*
 plot/solution/*
 .DS_Store
 generated
+instances

@@ -1,5 +1,6 @@
 package localsearch;
 
+import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
 import data.Problem;
@@ -31,7 +32,9 @@ public class OperatorOneRelocate {
                     if (seenInstSequences.contains(newInstSequence)) continue;
                     seenInstSequences.add(newInstSequence);
                     List<Order> newOrderSequence = createNewOrderSequence(newInstSequence);
-                    updateFields(newOrderSequence, vesselIdx);
+                    if (Evaluator.isOrderSequenceFeasible(newOrderSequence, Problem.getVessel(vesselIdx))) {
+                        updateFields(newOrderSequence, vesselIdx);
+                    }
                 }
             }
         }
