@@ -13,6 +13,12 @@ import setpartitioning.Model;
 import subproblem.SubProblem;
 import utils.IO;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,10 +44,10 @@ public class Main {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
-            Solution improvedSolution = LocalSearch.localSearch(candidateSolution);
-            saveOrderSequences(improvedSolution);
-            printIterationInfo(iteration, improvedSolution);
-            double reward = acceptSolution(improvedSolution);
+            candidateSolution = LocalSearch.localSearch(candidateSolution);
+            saveOrderSequences(candidateSolution);
+            printIterationInfo(iteration, candidateSolution);
+            double reward = acceptSolution(candidateSolution);
             if (iteration > 0 && iteration % Parameters.setPartitioningIterations == 0) runSetPartitioningModel();
             maintenance(reward, heuristics, iteration);
         }
@@ -71,6 +77,7 @@ public class Main {
 
     private static void initializeSolutionFields() {
         currentSolution = Construction.constructGreedyInitialSolution();
+        // currentSolution = Construction.constructRandomInitialSolution();
         bestSolution = currentSolution;
         visitedSolutions = new ArrayList<>();
         visitedSolutions.add(currentSolution.hashCode());
@@ -78,7 +85,7 @@ public class Main {
     }
 
     private static void initializeSimulatedAnnealing() {
-        Parameters.setTemperatureAndCooling(currentSolution.getFitness(false));
+        Parameters.setTemperatureAndCooling(currentSolution.getObjective(false));
         currentTemperature = Parameters.startTemperature;
     }
 
@@ -134,9 +141,9 @@ public class Main {
                 currentSolution = Construction.constructGreedyInitialSolution();
                 iterationsCurrentSolution = 0;
             }
-        } else if (candidateSolution.getFitness(false) < bestSolution.getFitness(false)) {
+        } else if (candidateSolution.getObjective(false) < bestSolution.getObjective(false)) {
             return doGlobalBestUpdates(candidateSolution);
-        } else if (simulatedAnnealing(currentSolution.getFitness(false), candidateSolution.getFitness(false))) {
+        } else if (simulatedAnnealing(currentSolution.getObjective(false), candidateSolution.getObjective(false))) {
             return doLocalUpdates(candidateSolution);
         }
         return 0.0;
@@ -155,7 +162,7 @@ public class Main {
         iterationsCurrentSolution = 0;
         if (!visitedSolutions.contains(candidateSolution.hashCode())) {
             visitedSolutions.add(candidateSolution.hashCode());
-            if (candidateSolution.getFitness(false) < currentSolution.getFitness(false)) {
+            if (candidateSolution.getObjective(false) < currentSolution.getObjective(false)) {
                 return Parameters.newLocalImprovement;
             } else {
                 return Parameters.newLocal;
@@ -218,16 +225,16 @@ public class Main {
         System.out.println("_".repeat(400));
         System.out.println("Iteration: " + iteration + "\n");
         System.out.println(Constants.ANSI_GREEN + "Best solution \n" + bestSolution + "\n"
-                + "Fitness: " + bestSolution.getFitness(false)
+                + "Objective: " + bestSolution.getObjective(false)
                 + "\nHash: " + bestSolution.hashCode() + Constants.ANSI_RESET);
         System.out.println();
         System.out.println(Constants.ANSI_BLUE + "Current solution \n" + currentSolution
-                + "\nFitness: " + currentSolution.getFitness(false)
+                + "\nObjective: " + currentSolution.getObjective(false)
                 + "\nHash: " + currentSolution.hashCode());
         System.out.println("Iterations with current solution: " + iterationsCurrentSolution + Constants.ANSI_RESET);
         System.out.println();
         System.out.println(Constants.ANSI_YELLOW + "Candidate solution \n" + candidateSolution
-                + "\nFitness: " + candidateSolution.getFitness(false)
+                + "\nObjective: " + candidateSolution.getObjective(false)
                 + "\nHash: " + candidateSolution.hashCode());
         System.out.println("Equal solutions: " + candidateSolution.equals(currentSolution) + Constants.ANSI_RESET);
         System.out.println();
@@ -247,10 +254,7 @@ public class Main {
 
             double startTime = System.nanoTime();
             Main.run();
-            double timeElapsed = (System.nanoTime() - startTime) / 1e9;
-
-            System.out.println("Best fitness: " + Main.getBestSolution().getFitness(false));
-            System.out.println("Time elapsed: " + timeElapsed + "\n");
+            printSolutionInfo(startTime);
 
             seed = rn.nextInt(seedBound);
             Problem.setRandom(seed);
@@ -258,26 +262,36 @@ public class Main {
     }
 
     private static void runSimple(String fileName) {
-        Problem.setUpProblem(fileName, false, 10);
+        Problem.setUpProblem(fileName, false, 4);
         double startTime = System.nanoTime();
         Main.run();
-        double timeElapsed = (System.nanoTime() - startTime) / 1e9;
+        printSolutionInfo(startTime);
+    }
+
+    private static void printSolutionInfo(double startTime) {
         if (Parameters.semiVerbose) {
-            System.out.println("Best fitness: " + Main.getBestSolution().getFitness(false));
+            double timeElapsed = (System.nanoTime() - startTime) / 1e9;
+            System.out.println("Best objective: " + Main.getBestSolution().getObjective(false));
+            System.out.println("Penalty costs: " + Main.getBestSolution().getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
             Main.getBestSolution().printSchedules();
         }
     }
 
     public static void main(String[] args) {
-        String fileName;
+        File[] instances;
         if (args.length > 0) {  // Running on Solstorm
             Constants.OUTPUT_PATH = "/storage/users/anderhva/" + args[0] + "/";
-            fileName = args[1];
+            instances = new File(Constants.ROOT_PATH + "/instances/").listFiles();
         } else {
-            fileName = "5-5-1-1.json";
+            instances = new File(Constants.ROOT_PATH + "/src/main/resources/instances/").listFiles();
         }
-        // runExtensively(20, 1000);
-        runSimple(fileName);
+        if (instances == null) throw new IllegalStateException("No instances to run!");
+        for (File instance : instances) {
+            String fileName = instance.getName();
+            System.out.println("Running " + fileName);
+            // runExtensively(20, 1000);
+            runSimple(fileName);
+        }
     }
 }
