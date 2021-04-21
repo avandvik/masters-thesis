@@ -1,7 +1,10 @@
 package alns.heuristics;
 
+import alns.Evaluator;
+import alns.Objective;
 import alns.Solution;
 import alns.heuristics.protocols.Repairer;
+import data.Messages;
 import objects.Order;
 import utils.Helpers;
 import java.util.List;
@@ -14,13 +17,15 @@ public class InsertionMaxOrderSize extends Heuristic implements Repairer {
 
     @Override
     public Solution repair(Solution partialSolution) {
-        Solution newSolution = Helpers.deepCopySolution(partialSolution);
+        Solution solution = Helpers.deepCopySolution(partialSolution);
         List<Order> sortedOrders = Helpers.sortOrdersBySize(partialSolution);
 
         for (Order order : sortedOrders) {
-            newSolution = InsertionGreedy.insertGreedilyInSolution(newSolution, order);
+            solution = InsertionGreedy.insertGreedilyInSolution(solution, order);
         }
-        return newSolution;
+        Objective.setObjValAndSchedule(solution);
+        if (!Evaluator.isSolutionFeasible(solution)) throw new IllegalStateException(Messages.solutionInfeasible);
+        return solution;
     }
 
 }
