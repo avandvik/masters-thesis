@@ -37,8 +37,8 @@ public class Objective {
 
         List<List<Node>> shortestPaths = new ArrayList<>();
         double objectiveValue = 0.0;
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            SubProblem subProblem = runSPComplete(solution.getOrderSequence(vesselNumber), vesselNumber);
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            SubProblem subProblem = runSPComplete(solution.getOrderSequence(vesselIdx), vesselIdx);
             shortestPaths.add(subProblem != null ? subProblem.getShortestPath() : new ArrayList<>());
             objectiveValue += subProblem != null ? subProblem.getShortestPathCost() : 0.0;
         }
@@ -47,12 +47,12 @@ public class Objective {
         objectiveValue += postponementPenalty;
 
         solution.setShortestPaths(shortestPaths);
-        solution.setFitness(objectiveValue);
+        solution.setObjective(objectiveValue);
     }
 
     public static double penalizePostponement(Solution solution) {
         return solution.getPostponedOrders().stream()
-                .map(o -> o.getSize() * o.getPostponementPenalty())
+                .map(Order::getPostponementPenalty)
                 .mapToDouble(Double::doubleValue)
                 .sum();
     }

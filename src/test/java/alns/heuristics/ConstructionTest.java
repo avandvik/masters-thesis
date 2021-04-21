@@ -74,7 +74,7 @@ public class ConstructionTest {
         Solution actualSolution = Construction.constructRandomInitialSolution();
         assertEquals(expectedSolution, actualSolution);
         Objective.setObjValAndSchedule(expectedSolution);
-        assertEquals(expectedSolution.getFitness(false), actualSolution.getFitness(false), 0.0);
+        assertEquals(expectedSolution.getObjective(false), actualSolution.getObjective(false), 0.0);
     }
 
     private void testPostponementInInitialSolution() {

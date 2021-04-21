@@ -34,6 +34,12 @@ public class Evaluator {
                 && isFeasibleVisits(orderSequences);
     }
 
+    public static boolean isOrderSequenceFeasible(List<Order> orderSequence, Vessel vessel) {
+        return isFeasibleLoadSequence(orderSequence, vessel)
+                && isFeasibleDurationSequence(orderSequence)
+                && !isIllegalPattern(orderSequence, Helpers.getInstIdSequence(orderSequence));
+    }
+
     public static boolean isFeasibleLoad(List<List<Order>> orderSequences) {
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             if (!isFeasibleLoadSequence(orderSequences.get(vesselIdx), Problem.getVessel(vesselIdx))) return false;
