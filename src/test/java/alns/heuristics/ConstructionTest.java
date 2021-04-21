@@ -120,5 +120,4 @@ public class ConstructionTest {
 
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
-
 }
