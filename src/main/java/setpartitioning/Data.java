@@ -14,7 +14,7 @@ public class Data {
 
     public static GRBEnv gurobiEnv;
 
-    public static List<Order> orders = Helpers.deepCopyList(Problem.orders, false);
+    public static List<Order> orders;
     public static List<List<Double>> costOfRouteForVessel;
     public static List<Double> costOfPostponedOrders;
     public static List<List<List<Double>>> orderInRouteForVessel;
@@ -34,10 +34,15 @@ public class Data {
     public static void makeArrays() {
         if (Main.vesselToSequenceToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
 
+        makeOrdersArray();
         makeRouteArray();
         makeCostOfRouteForVessel();
         makePostponedOrderCosts();
         makeOrderInRouteForVessel();
+    }
+
+    private static void makeOrdersArray() {
+        orders = Helpers.deepCopyList(Problem.orders, false);
     }
 
     private static void makeRouteArray() {
