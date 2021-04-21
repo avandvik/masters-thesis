@@ -32,6 +32,8 @@ public class RemovalSpread extends Heuristic implements Destroyer {
             }
         }
 
+        newSolution.clearSubProblemResults();
+
         return newSolution;
     }
 

@@ -25,7 +25,7 @@ public class IO {
         JSONObject obj = new JSONObject();
 
         obj.put(Constants.INSTANCE_NAME_KEY, Problem.fileName);
-        obj.put(Constants.OBJECTIVE_VALUE_KEY, solution.getFitness(false));
+        obj.put(Constants.OBJECTIVE_VALUE_KEY, solution.getObjective(false));
         obj.put(Constants.VOYAGES_KEY, new JSONObject());
 
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
