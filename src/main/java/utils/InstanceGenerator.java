@@ -12,17 +12,27 @@ public class InstanceGenerator {
 
     private final static JSONObject instance = new JSONObject();
 
+    // Run-to-run control
+    private static int seed = 16;
+    private final static boolean batch = false;
+    private final static int minSeed = 200;  // Used in batch generation
+    private final static int maxSeed = 250;  // Used in batch generation
+
+    private final static int numberOfInstallations = 15;
+    private final static boolean deterministic = false;  // false -> instances generated according to order specifics
+    private final static int numberOfMDs = 6;
+    private final static int numberOfODs = 3;
+    private final static int numberOfOPs = 2;
+
+    // Random object
+    private static Random rn;
+
     // Miscellaneous instance information
-    private static int seed;
-    private final static Random rn = new Random(seed);
     private final static double planningPeriodHours = 80.0;
     private final static double discretizationParameter = 4.0;
     private final static String weatherScenario = "perfect";
     private final static String installationOrdering = "random";
     private final static int returnTime = 80;
-
-    // Installation specifics
-    private final static int numberOfInstallations = 5;
 
     // Order specifics
     private final static double MDLower = 0.5;  // At least MDLower % of the installations must have an MD order
@@ -34,13 +44,20 @@ public class InstanceGenerator {
     private final static double sizeDeviation = 0.5;  // Size in [stdSize * (1-sizeDev), stdSize * (1+sizeDev)]
 
     // Helper fields used in instance generation
-    private final static Map<Integer, List<Double>> instIdToOrderSize = new HashMap<>();
-    private final static Set<Integer> installationsWithOrders = new HashSet<>();
-    private static int numberOfOrders = 0;
-    private static int numberOfVessels = 0;
+    private static Map<Integer, List<Double>> instIdToOrderSize;
+    private static Set<Integer> installationsWithOrders;
+    private static int numberOfOrders;
+    private static int numberOfVessels;
 
     public static void generateInstance(int seed) {
-        InstanceGenerator.seed = seed;
+        // Initialize helper fields
+        if (seed != 0) InstanceGenerator.seed = seed;
+        InstanceGenerator.numberOfOrders = 0;
+        InstanceGenerator.numberOfVessels = 0;
+        InstanceGenerator.instIdToOrderSize = new HashMap<>();
+        InstanceGenerator.installationsWithOrders = new HashSet<>();
+        InstanceGenerator.rn = new Random(InstanceGenerator.seed);
+
         // Add miscellaneous instance information
         addMiscInfoToJSON();
 
@@ -90,14 +107,9 @@ public class InstanceGenerator {
     @SuppressWarnings("unchecked")
     private static void assignOrders(List<Integer> installationIds) {
         instance.put(Constants.ORDERS_KEY, new JSONObject());
-
-        int numberOfMDs = getNumberOfOrdersOfType(MDLower, MDUpper);
-        int numberOfODs = getNumberOfOrdersOfType(ODLower, ODUpper);
-        int numberOfOPs = getNumberOfOrdersOfType(OPLower, OPUpper);
-
-        addOrdersOfType(numberOfMDs, installationIds, "MD");
-        addOrdersOfType(numberOfODs, installationIds, "OD");
-        addOrdersOfType(numberOfOPs, installationIds, "OP");
+        addOrdersOfType(deterministic ? numberOfMDs : getNumberOfOrdersOfType(MDLower, MDUpper), installationIds, "MD");
+        addOrdersOfType(deterministic ? numberOfODs : getNumberOfOrdersOfType(ODLower, ODUpper), installationIds, "OD");
+        addOrdersOfType(deterministic ? numberOfOPs : getNumberOfOrdersOfType(OPLower, OPUpper), installationIds, "OP");
     }
 
     private static int getNumberOfOrdersOfType(double lowerLimit, double upperLimit) {
@@ -275,10 +287,12 @@ public class InstanceGenerator {
     }
 
     public static void main(String[] args) {
-        for (int seed = 1; seed < 100; seed++) {
-            InstanceGenerator.numberOfOrders = 0;
-            InstanceGenerator.numberOfVessels = 0;
-            InstanceGenerator.generateInstance(seed);
+        if (batch) {
+            for (int seed = minSeed; seed < maxSeed; seed++) {
+                InstanceGenerator.generateInstance(seed);
+            }
+        } else {
+            InstanceGenerator.generateInstance(0);
         }
     }
 }

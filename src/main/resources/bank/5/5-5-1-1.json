@@ -11,33 +11,33 @@
   "installation_ordering": "random",
   "orders": {
     "0": {
-      "installation": 23,
+      "installation": 5,
       "mandatory": "True",
-      "size": 308.0,
+      "size": 246.0,
       "transport": "delivery"
     },
     "1": {
-      "installation": 12,
+      "installation": 14,
       "mandatory": "True",
-      "size": 98.0,
+      "size": 152.0,
       "transport": "delivery"
     },
     "2": {
-      "installation": 13,
-      "mandatory": "False",
-      "size": 71.0,
+      "installation": 2,
+      "mandatory": "True",
+      "size": 84.0,
       "transport": "delivery"
     },
     "3": {
-      "installation": 22,
+      "installation": 12,
       "mandatory": "False",
-      "size": 241.0,
-      "transport": "pickup"
+      "size": 57.0,
+      "transport": "delivery"
     },
     "4": {
-      "installation": 4,
+      "installation": 21,
       "mandatory": "False",
-      "size": 177.0,
+      "size": 225.0,
       "transport": "pickup"
     }
   },
