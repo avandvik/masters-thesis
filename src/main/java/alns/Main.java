@@ -13,12 +13,7 @@ import setpartitioning.Model;
 import subproblem.SubProblem;
 import utils.IO;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -272,8 +267,10 @@ public class Main {
         if (Parameters.semiVerbose) {
             double timeElapsed = (System.nanoTime() - startTime) / 1e9;
             System.out.println("Best objective: " + Main.getBestSolution().getObjective(false));
-            System.out.println("Penalty costs: " + Main.getBestSolution().getPenaltyCosts());
+            System.out.println("\tFuel costs: " + Main.getBestSolution().getFuelCosts());
+            System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
+            System.out.println("Postponed orders: " + Main.getBestSolution().getPostponedOrders());
             Main.getBestSolution().printSchedules();
         }
     }

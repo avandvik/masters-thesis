@@ -6,7 +6,7 @@
     "PSV_2": {
       "return_time": 80
     },
-    "PSV_5": {
+    "PSV_3": {
       "return_time": 80
     },
     "SPOT": {
@@ -17,109 +17,121 @@
   "installation_ordering": "random",
   "orders": {
     "0": {
-      "installation": 12,
+      "installation": 26,
       "mandatory": "True",
-      "size": 144.10000000000002,
+      "size": 306.0,
       "transport": "delivery"
     },
     "1": {
-      "installation": 11,
+      "installation": 21,
       "mandatory": "True",
-      "size": 94.60000000000001,
+      "size": 143.0,
       "transport": "delivery"
     },
     "2": {
-      "installation": 18,
+      "installation": 17,
       "mandatory": "True",
-      "size": 339.90000000000003,
+      "size": 194.0,
       "transport": "delivery"
     },
     "3": {
-      "installation": 26,
+      "installation": 10,
       "mandatory": "True",
-      "size": 206.8,
+      "size": 69.0,
       "transport": "delivery"
     },
     "4": {
-      "installation": 5,
+      "installation": 12,
       "mandatory": "True",
-      "size": 279.40000000000003,
+      "size": 173.0,
       "transport": "delivery"
     },
     "5": {
-      "installation": 17,
+      "installation": 23,
       "mandatory": "True",
-      "size": 125.4,
+      "size": 289.0,
       "transport": "delivery"
     },
     "6": {
       "installation": 15,
       "mandatory": "True",
-      "size": 243.10000000000002,
+      "size": 230.0,
       "transport": "delivery"
     },
     "7": {
-      "installation": 22,
+      "installation": 5,
       "mandatory": "True",
-      "size": 213.4,
+      "size": 259.0,
       "transport": "delivery"
     },
     "8": {
-      "installation": 20,
+      "installation": 2,
       "mandatory": "True",
-      "size": 152.9,
+      "size": 92.0,
       "transport": "delivery"
     },
     "9": {
-      "installation": 22,
+      "installation": 11,
       "mandatory": "False",
-      "size": 117.7,
+      "size": 102.0,
       "transport": "delivery"
     },
     "10": {
-      "installation": 10,
+      "installation": 4,
       "mandatory": "False",
-      "size": 66.0,
+      "size": 106.0,
       "transport": "delivery"
     },
     "11": {
-      "installation": 25,
+      "installation": 24,
       "mandatory": "False",
-      "size": 123.20000000000002,
+      "size": 74.0,
       "transport": "delivery"
     },
     "12": {
-      "installation": 24,
+      "installation": 8,
       "mandatory": "False",
-      "size": 53.900000000000006,
+      "size": 120.0,
       "transport": "delivery"
     },
     "13": {
-      "installation": 24,
+      "installation": 13,
       "mandatory": "False",
-      "size": 128.70000000000002,
-      "transport": "pickup"
+      "size": 77.0,
+      "transport": "delivery"
     },
     "14": {
       "installation": 18,
       "mandatory": "False",
-      "size": 214.50000000000003,
+      "size": 139.0,
       "transport": "pickup"
     },
     "15": {
-      "installation": 8,
+      "installation": 25,
       "mandatory": "False",
-      "size": 328.90000000000003,
+      "size": 249.0,
       "transport": "pickup"
     },
     "16": {
-      "installation": 7,
+      "installation": 27,
       "mandatory": "False",
-      "size": 300.3,
+      "size": 128.0,
+      "transport": "pickup"
+    },
+    "17": {
+      "installation": 5,
+      "mandatory": "False",
+      "size": 139.0,
+      "transport": "pickup"
+    },
+    "18": {
+      "installation": 13,
+      "mandatory": "False",
+      "size": 200.0,
       "transport": "pickup"
     }
   },
   "planning_period_hours": 80.0,
-  "random_seed": 62,
+  "random_seed": 256,
   "weather_scenario": "perfect"
 }

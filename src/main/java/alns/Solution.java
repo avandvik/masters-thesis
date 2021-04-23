@@ -94,16 +94,28 @@ public class Solution {
         return penaltyCosts;
     }
 
+    public double getFuelCosts() {
+        double fuelCosts = 0.0;
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            Node prevNode = null;
+            for (Node node : this.shortestPaths.get(vesselIdx)) {
+                if (prevNode != null) fuelCosts += prevNode.getCostOfChild(node);
+                prevNode = node;
+            }
+        }
+        return fuelCosts;
+    }
+
     public void clearSubProblemResults() {
         this.shortestPaths = null;
         this.objective = Double.POSITIVE_INFINITY;
     }
 
     public void printSchedules() {
-        for (int vesselNumber = 0; vesselNumber < Problem.getNumberOfVessels(); vesselNumber++) {
-            System.out.println("Schedule for " + Problem.getVessel(vesselNumber));
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            System.out.println("Schedule for " + Problem.getVessel(vesselIdx));
             Node prevNode = null;
-            for (Node node : this.shortestPaths.get(vesselNumber)) {
+            for (Node node : this.shortestPaths.get(vesselIdx)) {
                 String orderName = "";
                 String schedule = "";
 

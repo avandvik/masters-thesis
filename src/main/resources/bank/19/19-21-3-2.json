@@ -6,7 +6,7 @@
     "PSV_2": {
       "return_time": 80
     },
-    "PSV_4": {
+    "PSV_3": {
       "return_time": 80
     },
     "SPOT": {
@@ -17,145 +17,133 @@
   "installation_ordering": "random",
   "orders": {
     "0": {
-      "installation": 3,
+      "installation": 5,
       "mandatory": "True",
-      "size": 119.0,
+      "size": 194.0,
       "transport": "delivery"
     },
     "1": {
-      "installation": 7,
-      "mandatory": "True",
-      "size": 168.0,
-      "transport": "delivery"
-    },
-    "2": {
-      "installation": 12,
-      "mandatory": "True",
-      "size": 147.0,
-      "transport": "delivery"
-    },
-    "3": {
-      "installation": 17,
+      "installation": 6,
       "mandatory": "True",
       "size": 112.0,
       "transport": "delivery"
     },
-    "4": {
+    "2": {
       "installation": 19,
       "mandatory": "True",
-      "size": 168.0,
+      "size": 174.0,
+      "transport": "delivery"
+    },
+    "3": {
+      "installation": 15,
+      "mandatory": "True",
+      "size": 257.0,
+      "transport": "delivery"
+    },
+    "4": {
+      "installation": 8,
+      "mandatory": "True",
+      "size": 275.0,
       "transport": "delivery"
     },
     "5": {
-      "installation": 5,
+      "installation": 21,
       "mandatory": "True",
-      "size": 98.0,
+      "size": 108.0,
       "transport": "delivery"
     },
     "6": {
-      "installation": 13,
+      "installation": 23,
       "mandatory": "True",
-      "size": 200.0,
+      "size": 237.0,
       "transport": "delivery"
     },
     "7": {
-      "installation": 16,
+      "installation": 2,
       "mandatory": "True",
-      "size": 211.0,
+      "size": 131.0,
       "transport": "delivery"
     },
     "8": {
-      "installation": 20,
+      "installation": 1,
       "mandatory": "True",
-      "size": 211.0,
+      "size": 299.0,
       "transport": "delivery"
     },
     "9": {
-      "installation": 23,
+      "installation": 27,
       "mandatory": "True",
-      "size": 250.0,
+      "size": 114.0,
       "transport": "delivery"
     },
     "10": {
-      "installation": 27,
-      "mandatory": "True",
-      "size": 172.0,
+      "installation": 4,
+      "mandatory": "False",
+      "size": 109.0,
       "transport": "delivery"
     },
     "11": {
-      "installation": 9,
-      "mandatory": "True",
-      "size": 106.0,
+      "installation": 3,
+      "mandatory": "False",
+      "size": 31.0,
       "transport": "delivery"
     },
     "12": {
       "installation": 12,
       "mandatory": "False",
-      "size": 52.0,
+      "size": 74.0,
       "transport": "delivery"
     },
     "13": {
-      "installation": 21,
+      "installation": 26,
       "mandatory": "False",
-      "size": 44.0,
+      "size": 53.0,
       "transport": "delivery"
     },
     "14": {
-      "installation": 17,
+      "installation": 14,
       "mandatory": "False",
-      "size": 59.0,
-      "transport": "delivery"
+      "size": 124.0,
+      "transport": "pickup"
     },
     "15": {
-      "installation": 20,
+      "installation": 24,
       "mandatory": "False",
-      "size": 115.0,
-      "transport": "delivery"
+      "size": 120.0,
+      "transport": "pickup"
     },
     "16": {
-      "installation": 9,
+      "installation": 20,
       "mandatory": "False",
-      "size": 32.0,
-      "transport": "delivery"
+      "size": 242.0,
+      "transport": "pickup"
     },
     "17": {
-      "installation": 25,
+      "installation": 22,
       "mandatory": "False",
-      "size": 78.0,
-      "transport": "delivery"
+      "size": 215.0,
+      "transport": "pickup"
     },
     "18": {
-      "installation": 25,
+      "installation": 16,
       "mandatory": "False",
-      "size": 236.0,
+      "size": 188.0,
       "transport": "pickup"
     },
     "19": {
-      "installation": 19,
+      "installation": 4,
       "mandatory": "False",
-      "size": 195.0,
+      "size": 212.0,
       "transport": "pickup"
     },
     "20": {
-      "installation": 20,
+      "installation": 8,
       "mandatory": "False",
-      "size": 189.0,
-      "transport": "pickup"
-    },
-    "21": {
-      "installation": 23,
-      "mandatory": "False",
-      "size": 221.0,
-      "transport": "pickup"
-    },
-    "22": {
-      "installation": 3,
-      "mandatory": "False",
-      "size": 143.0,
+      "size": 222.0,
       "transport": "pickup"
     }
   },
   "planning_period_hours": 80.0,
-  "random_seed": 10,
+  "random_seed": 339,
   "weather_scenario": "perfect"
 }

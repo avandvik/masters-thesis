@@ -11,49 +11,55 @@
   "installation_ordering": "random",
   "orders": {
     "0": {
-      "installation": 8,
+      "installation": 6,
       "mandatory": "True",
-      "size": 308.0,
+      "size": 95.0,
       "transport": "delivery"
     },
     "1": {
-      "installation": 1,
+      "installation": 3,
       "mandatory": "True",
-      "size": 158.0,
+      "size": 137.0,
       "transport": "delivery"
     },
     "2": {
-      "installation": 22,
+      "installation": 21,
       "mandatory": "True",
-      "size": 141.0,
+      "size": 231.0,
       "transport": "delivery"
     },
     "3": {
-      "installation": 13,
+      "installation": 23,
       "mandatory": "True",
-      "size": 229.0,
+      "size": 150.0,
       "transport": "delivery"
     },
     "4": {
-      "installation": 4,
+      "installation": 15,
       "mandatory": "False",
-      "size": 84.0,
+      "size": 94.0,
       "transport": "delivery"
     },
     "5": {
-      "installation": 23,
+      "installation": 17,
       "mandatory": "False",
-      "size": 326.0,
-      "transport": "pickup"
+      "size": 76.0,
+      "transport": "delivery"
     },
     "6": {
-      "installation": 12,
+      "installation": 2,
       "mandatory": "False",
-      "size": 180.0,
+      "size": 116.0,
+      "transport": "pickup"
+    },
+    "7": {
+      "installation": 23,
+      "mandatory": "False",
+      "size": 193.0,
       "transport": "pickup"
     }
   },
   "planning_period_hours": 80.0,
-  "random_seed": 1,
+  "random_seed": 10,
   "weather_scenario": "perfect"
 }
