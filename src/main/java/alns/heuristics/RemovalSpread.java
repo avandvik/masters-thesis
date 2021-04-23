@@ -1,7 +1,9 @@
 package alns.heuristics;
 
+import alns.Evaluator;
 import alns.Solution;
 import alns.heuristics.protocols.Destroyer;
+import data.Messages;
 import data.Problem;
 import objects.Order;
 import utils.DistanceCalculator;
@@ -17,6 +19,12 @@ public class RemovalSpread extends Heuristic implements Destroyer {
 
     @Override
     public Solution destroy(Solution solution, int numberOfOrders) {
+        Solution newSolution = getSpreadRemoval(solution, numberOfOrders);
+        if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
+        return newSolution;
+    }
+
+    private Solution getSpreadRemoval(Solution solution, int numberOfOrders) {
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<Order> orders = Helpers.deepCopyList(Problem.orders, true);
         orders.removeIf(candidateOrder -> newSolution.getPostponedOrders().contains(candidateOrder));
