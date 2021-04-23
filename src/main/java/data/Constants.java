@@ -63,6 +63,8 @@ public class Constants {
     public static final String REMOVAL_RELATED_NAME = "related removal";
     public static final String REMOVAL_WORST_NAME = "worst removal";
     public static final String REMOVAL_SPOT_NAME = "spot removal";
+    public static final String REMOVAL_SPREAD_NAME = "spread removal";
+    public static final String REMOVAL_CLUSTER_NAME = "cluster removal";
     public static final String INSERTION_GREEDY_NAME = "greedy insertion";
     public static final String INSERTION_REGRET_NAME = "regret insertion";
     public static final String INSERTION_MAX_PENALTY_COST_NAME = "max penalty cost insertion";
