@@ -150,4 +150,16 @@ public class Helpers {
         sortedOrders.addAll(optionalOrders);
         return sortedOrders;
     }
+
+    public static List<List<Double>> convertOrdersToCoordinates(List<Order> orders) {
+        List<List<Double>> coordinateCentroids = new ArrayList<>();
+        for (int centroidIdx = 0; centroidIdx < orders.size(); centroidIdx++) {
+            coordinateCentroids.add(new LinkedList<>());
+            double latitude = Problem.getInstallation(orders.get(centroidIdx)).getLatitude();
+            double longitude = Problem.getInstallation(orders.get(centroidIdx)).getLongitude();
+            coordinateCentroids.get(centroidIdx).add(latitude);
+            coordinateCentroids.get(centroidIdx).add(longitude);
+        }
+        return coordinateCentroids;
+    }
 }
