@@ -13,16 +13,16 @@ public class InstanceGenerator {
     private final static JSONObject instance = new JSONObject();
 
     // Run-to-run control
-    private static int seed = 16;
-    private final static boolean batch = false;
-    private final static int minSeed = 200;  // Used in batch generation
-    private final static int maxSeed = 250;  // Used in batch generation
+    private static int seed = 352;
+    private final static boolean batch = true;
+    private final static int minSeed = 500;  // Used in batch generation
+    private final static int maxSeed = 550;  // Used in batch generation
 
-    private final static int numberOfInstallations = 15;
+    private final static int numberOfInstallations = 27;
     private final static boolean deterministic = false;  // false -> instances generated according to order specifics
-    private final static int numberOfMDs = 6;
-    private final static int numberOfODs = 3;
-    private final static int numberOfOPs = 2;
+    private final static int numberOfMDs = 15;
+    private final static int numberOfODs = 6;
+    private final static int numberOfOPs = 7;
 
     // Random object
     private static Random rn;
