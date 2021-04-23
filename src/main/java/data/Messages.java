@@ -7,5 +7,7 @@ public class Messages {
     public static String unplacedOrdersNotEmpty = "Unplaced orders not empty when it should be!";
     public static String solutionInfeasible = "Solution is infeasible where it should not!";
     public static String emptySequenceSP = "Empty order sequence passed to SubProblem, skipping!";
-    public static String invalidVesselIdx= "Invalid vesselIdx passed to SubProblem!";
+    public static String invalidVesselIdx = "Invalid vesselIdx passed to SubProblem!";
+    public static String errorInAvgLatLon = "Error in calculation of average latitude or longitude!";
+    public static String emptyCluster = "Could not cluster and find only non-empty clusters!";
 }

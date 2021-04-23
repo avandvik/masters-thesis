@@ -41,15 +41,20 @@ public class DistanceCalculator {
     }
 
     public static double distance(Installation instOne, Installation instTwo, String unit) {
-        double lat1 = instOne.getLatitude();
-        double lat2 = instTwo.getLatitude();
-        double lon1 = instOne.getLongitude();
-        double lon2 = instTwo.getLongitude();
-        if ((lat1 == lat2) && (lon1 == lon2)) {
+        return distance(instOne.getLatitude(), instOne.getLongitude(), instTwo.getLatitude(), instTwo.getLongitude(), unit);
+    }
+
+    public static double distance(double latOne, double lonOne, Order orderTwo, String unit) {
+        Installation installationTwo = Problem.getInstallation(orderTwo);
+        return distance(latOne, lonOne, installationTwo.getLatitude(), installationTwo.getLongitude(), unit);
+    }
+
+    public static double distance(double latOne, double lonOne, double latTwo, double lonTwo, String unit) {
+        if ((latOne == latTwo) && (lonOne == lonTwo)) {
             return 0;
         } else {
-            double theta = lon1 - lon2;
-            double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
+            double theta = lonOne - lonTwo;
+            double dist = Math.sin(Math.toRadians(latOne)) * Math.sin(Math.toRadians(latTwo)) + Math.cos(Math.toRadians(latOne)) * Math.cos(Math.toRadians(latTwo)) * Math.cos(Math.toRadians(theta));
             dist = Math.acos(dist);
             dist = Math.toDegrees(dist);
             dist = dist * 60 * 1.1515;
@@ -61,4 +66,9 @@ public class DistanceCalculator {
             return (dist);
         }
     }
+
+
+
+
+
 }

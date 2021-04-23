@@ -49,6 +49,13 @@ public class Solution {
         this.orderSequences.set(vesselIdx, newSequence);
     }
 
+    public void removeOrderFromSequences(Order rmOrder) {
+        for (List<Order> orderSequence : this.orderSequences) {
+            boolean removed = orderSequence.removeIf(order -> order.equals(rmOrder));
+            if (removed) break;
+        }
+    }
+
     public Set<Order> getPostponedOrders() {
         return postponedOrders;
     }
@@ -97,6 +104,11 @@ public class Solution {
             }
         }
         return fuelCosts;
+    }
+
+    public void clearSubProblemResults() {
+        this.shortestPaths = null;
+        this.objective = Double.POSITIVE_INFINITY;
     }
 
     public void printSchedules() {

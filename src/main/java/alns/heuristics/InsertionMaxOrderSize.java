@@ -23,6 +23,7 @@ public class InsertionMaxOrderSize extends Heuristic implements Repairer {
         for (Order order : sortedOrders) {
             solution = InsertionGreedy.insertGreedilyInSolution(solution, order);
         }
+
         Objective.setObjValAndSchedule(solution);
         if (!Evaluator.isSolutionFeasible(solution)) throw new IllegalStateException(Messages.solutionInfeasible);
         return solution;
