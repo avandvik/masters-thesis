@@ -121,6 +121,7 @@ public class Problem {
         double distance = DistanceCalculator.distance(depot, inst, "N");
         int startTime = Problem.preparationEndTime;
         int arrTime = startTime + Problem.hourToDiscTimePoint(distance / speed);
+        ArcGenerator.setVessel(0);  // The first vessel will always be a fleet vessel
         int serviceEndTime = arrTime + ArcGenerator.calculateServiceDuration(order);
         double sailCost = ArcGenerator.calculateFuelCostSailing(startTime, arrTime, speed, distance) * 2;
         double serviceCost = ArcGenerator.calculateFuelCostServicing(arrTime, serviceEndTime);

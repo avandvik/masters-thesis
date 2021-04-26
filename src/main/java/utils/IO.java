@@ -118,9 +118,10 @@ public class IO {
             int id = Math.toIntExact((long) jsonVessel.get(Constants.ID_KEY));
             double capacitySqm = (double) jsonVessel.get(Constants.CAPACITY_KEY);
             int capacityUnits = (int) Math.floor(capacitySqm / Problem.sqmInCargoUnit);
-            int returnTime =
-                    Math.toIntExact((long) ((JSONObject) jsonAvailableVessels.get(key)).get(Constants.RETURN_TIME_KEY));
-            Vessel vessel = new Vessel(id, name, capacityUnits, returnTime);
+            double fcDesignSpeed = (double) jsonVessel.get(Constants.FC_DESIGN_SPEED_KEY);
+            int returnTime = Math.toIntExact((long) ((JSONObject) jsonAvailableVessels.get(key))
+                    .get(Constants.RETURN_TIME_KEY));
+            Vessel vessel = new Vessel(id, name, capacityUnits, fcDesignSpeed, returnTime);
             Problem.vessels.add(vessel);
         }
         Collections.sort(Problem.vessels);
@@ -141,7 +142,6 @@ public class IO {
         Problem.minSpeed = (double) jsonVesselInfo.get(Constants.MIN_SPEED_KEY);
         Problem.designSpeed = (double) jsonVesselInfo.get(Constants.DESIGN_SPEED_KEY);
         Problem.maxSpeed = (double) jsonVesselInfo.get(Constants.MAX_SPEED_KEY);
-        Problem.fcDesignSpeed = (double) jsonVesselInfo.get(Constants.FC_DESIGN_SPEED_KEY);
         Problem.fcDepot = (double) jsonVesselInfo.get(Constants.FC_DEPOT_KEY);
         Problem.fcIdling = (double) jsonVesselInfo.get(Constants.FC_IDLING_KEY);
         Problem.fcServicing = (double) jsonVesselInfo.get(Constants.FC_SERVICING_KEY);

@@ -12,11 +12,12 @@ import java.util.*;
 public class Tree {
 
     private Node root;
-    private List<Node> nodes = new ArrayList<>();
+    private final List<Node> nodes = new ArrayList<>();
     private List<Node> shortestPath;
     private double globalBestCost;
 
-    public Tree() {
+    public Tree(int vesselIdx) {
+        ArcGenerator.setVessel(vesselIdx);
     }
 
     private void setRoot(Node root) {

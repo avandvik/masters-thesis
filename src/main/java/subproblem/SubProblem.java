@@ -43,7 +43,7 @@ public class SubProblem implements Runnable {
     }
 
     public void solveSubProblem() {
-        Tree tree = new Tree();
+        Tree tree = new Tree(this.vesselIdx);
         tree.generateTree(this.orderSequence, this.isSpotVessel);
         this.shortestPath = tree.findShortestPath();
         this.shortestPathCost = tree.getGlobalBestCost();

@@ -3,10 +3,18 @@ package arcs;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
+import objects.Vessel;
 
 import java.util.*;
 
 public class ArcGenerator {
+
+    private static Vessel vessel;
+
+    // NB! VERIFY THAT THIS IS CALLED WHEN NECESSARY
+    public static void setVessel(int vesselIdx) {
+        vessel = Problem.getVessel(vesselIdx);
+    }
 
     public static List<Double> getSpeeds(double distance, int startTime) {
         if (distance == 0) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
@@ -176,16 +184,16 @@ public class ArcGenerator {
         double distanceInWSOneTwo = wsToDistanceTravelled.get(0) + wsToDistanceTravelled.get(1);
 
         // TODO: Generalize
-        double consumption = calculateFuelConsumption(distanceInWSOneTwo, speed, 0)
-                + calculateFuelConsumption(wsToDistanceTravelled.get(2), speed, 2)
-                + calculateFuelConsumption(wsToDistanceTravelled.get(3), speed, 3);
+        double consumption = calculateFuelConsumptionSailing(distanceInWSOneTwo, speed, 0)
+                + calculateFuelConsumptionSailing(wsToDistanceTravelled.get(2), speed, 2)
+                + calculateFuelConsumptionSailing(wsToDistanceTravelled.get(3), speed, 3);
 
         return consumption * Problem.fuelPrice;
     }
 
-    public static double calculateFuelConsumption(double distance, double speed, int weatherState) {
+    public static double calculateFuelConsumptionSailing(double distance, double speed, int weatherState) {
         return (distance / (speed - Problem.wsToSpeedImpact.get(weatherState))
-                * Problem.fcDesignSpeed * Math.pow(speed / Problem.designSpeed, 3));
+                * vessel.getFcDesignSpeed() * Math.pow(speed / Problem.designSpeed, 3));
     }
 
     public static double calculateFuelCostIdling(int arrTime, int serviceStartTime) {

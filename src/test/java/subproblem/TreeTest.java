@@ -18,7 +18,7 @@ public class TreeTest {
         Problem.setUpProblem("basicTestData.json", true, 10);
         LinkedList<Order> orderSequence = new LinkedList<>();
         for (int i = 0; i < 5; i++) orderSequence.add(Problem.orders.get(i));
-        Tree tree = new Tree();
+        Tree tree = new Tree(0);  // 0 for fleet vessel
         tree.generateTree(orderSequence, false);
 
         for (Node node : tree.getNodes()) {
@@ -62,7 +62,7 @@ public class TreeTest {
         Problem.setUpProblem("basicTestData.json", true, 10);
         LinkedList<Order> orderSequence = new LinkedList<>();
         for (int i = 0; i < 5; i++) orderSequence.add(Problem.orders.get(i));
-        Tree tree = new Tree();
+        Tree tree = new Tree(0);  // Fleet vessel
         tree.generateTree(orderSequence, false);
         List<Node> shortestPath = tree.findShortestPath();
         Node firstNode = shortestPath.get(0);
