@@ -1,6 +1,7 @@
 package localsearch;
 
 import alns.Evaluator;
+import alns.Objective;
 import alns.Solution;
 import data.Problem;
 import objects.Installation;
@@ -21,6 +22,7 @@ public class OperatorOneExchange extends OperatorOne {
             Set<Set<Integer>> instExchanges = getInstExchangesIntra(instSequence);
             performInstExchangesIntra(instSequence, instExchanges, vesselIdx);
         }
+        Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }
 
