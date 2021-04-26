@@ -39,11 +39,13 @@ public class IO {
 
             ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel)).put(Constants.TIME_POINTS_KEY,
                     new JSONObject());
+
+            Node prevNode = null;
             for (Node node : solution.getShortestPaths().get(vesselIdx)) {
                 JSONObject timePointsOrder = new JSONObject();
                 if (node.getOrder() != null) {
-                    timePointsOrder.put(Constants.ARRIVAL_TIME_KEY, node.getArrTime());
-                    timePointsOrder.put(Constants.SERVICE_TIME_KEY, node.getServiceStartTime());
+                    timePointsOrder.put(Constants.ARRIVAL_TIME_KEY, node.getArrTime(prevNode));
+                    timePointsOrder.put(Constants.SERVICE_TIME_KEY, node.getServiceStartTime(prevNode));
                     timePointsOrder.put(Constants.END_TIME_KEY, node.getDiscreteTime());
                     ((JSONObject) ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY))
                             .get(vessel)).get(Constants.TIME_POINTS_KEY)).put(node.getOrder().getOrderId(),
@@ -55,6 +57,7 @@ public class IO {
                             .get(vessel)).get(Constants.TIME_POINTS_KEY)).put(isStartDepot ? "SD" : "ED",
                             timePointsOrder);
                 }
+                prevNode = node;
             }
         }
         writeToFile(Constants.OUTPUT_PATH + Problem.fileName, obj);

@@ -165,6 +165,8 @@ public class Tree {
     private void createNodes(Node fromNode, Order toOrder, boolean isSpot, double distance, int startTime, int c) {
         List<Double> speeds = ArcGenerator.getSpeeds(distance, startTime);
         Map<Double, Integer> speedsToArrTimes = ArcGenerator.mapSpeedsToArrTimes(distance, startTime, speeds);
+
+
         int serviceDuration = toOrder != null ? ArcGenerator.calculateServiceDuration(toOrder) : 0;
         Map<Double, List<Integer>> speedsToTimePoints = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, distance,
                 serviceDuration, toOrder != null ? Problem.getInstallation(toOrder) : Problem.getDepot());
@@ -216,6 +218,8 @@ public class Tree {
             } else {
                 if (cost < depotNode.getCostOfChild(existingNode)) {
                     depotNode.setChildToCost(existingNode, cost);
+
+                    existingNode.setParentToTimePoints(null, timePoints);
                 }
             }
         }
@@ -227,7 +231,6 @@ public class Tree {
             double cost = speedsToCosts.get(speed);
             List<Integer> timePoints = speedsToTimePoints.get(speed);
             int endTime = timePoints.get(2);
-
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
                 Node newNode = new Node(toOrder, fromNode, timePoints);
@@ -236,6 +239,9 @@ public class Tree {
                 this.addNode(newNode);
             } else {
                 existingNode.addParent(fromNode);
+
+                existingNode.setParentToTimePoints(fromNode, timePoints);
+
                 if (fromNode.hasChild(existingNode)) {
                     double bestCost = Math.min(fromNode.getCostOfChild(existingNode), cost);
                     fromNode.setChildToCost(existingNode, bestCost);
@@ -262,6 +268,9 @@ public class Tree {
             this.addNode(depotNode);
         } else {
             existingDepotNode.addParent(fromNode);
+
+            existingDepotNode.setParentToTimePoints(fromNode, timePoints);
+
             fromNode.addChild(existingDepotNode);
             fromNode.setChildToCost(existingDepotNode, cost);
         }
@@ -281,6 +290,24 @@ public class Tree {
                 System.out.println("\t\t" + parent);
             }
             System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        Problem.setUpProblem("5-5-1-1.json", false, 4);
+        Tree tree = new Tree(0);
+        List<Order> orderSequence = new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(1),
+                Problem.getOrder(4), Problem.getOrder(0), Problem.getOrder(2)));
+        tree.generateTree(orderSequence, false);
+        // tree.printTree();
+        tree.findShortestPath();
+        Node prevNode = null;
+        for (Node node : tree.shortestPath) {
+            System.out.println(node.getOrder());
+            System.out.println("\tArr time: " + node.getArrTime(prevNode));
+            System.out.println("\tService start time: " + node.getServiceStartTime(prevNode));
+            System.out.println("\tFinished time: " + node.getDiscreteTime());
+            prevNode = node;
         }
     }
 }
