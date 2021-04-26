@@ -28,10 +28,10 @@ public class OperatorOneExchange extends OperatorOne {
         Set<Set<Integer>> instExchanges = new HashSet<>();
         for (int firstInstIdx = 0; firstInstIdx < instSequence.size(); firstInstIdx++) {
             for (int secondInstIdx = 0; secondInstIdx < instSequence.size(); secondInstIdx++) {
+                if (firstInstIdx == secondInstIdx) continue;
                 instExchanges.add(new HashSet<>(Arrays.asList(firstInstIdx, secondInstIdx)));
             }
         }
-        instExchanges.removeIf(instExchange -> instExchange.size() == 1); // Removes single subsets
         return instExchanges;
     }
 
