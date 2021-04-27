@@ -6,14 +6,14 @@ import java.util.*;
 
 public class Node implements Comparable<Node> {
 
-    private Order order;
-    private Set<Node> parents = new HashSet<>();
-    private Set<Node> children = new HashSet<>();
-    private final int arrTime;
-    private final int serviceStartTime;
+    private final Order order;
+    private final Set<Node> parents = new HashSet<>();
+    private final Set<Node> children = new HashSet<>();
+
+    private final Map<Node, List<Integer>> parentToTimePoints = new HashMap<>();  // arrTime, serviceTime, discreteTime
     private final int discreteTime;  // The end time of incoming arc, start time of outgoing arc
 
-    private Map<Node, Double> childToCost = new HashMap<>();
+    private final Map<Node, Double> childToCost = new HashMap<>();
 
     private List<Node> bestPath = new LinkedList<>();
     private double bestCost = Double.POSITIVE_INFINITY;
@@ -22,9 +22,8 @@ public class Node implements Comparable<Node> {
     public Node(Order order, Node parent, List<Integer> timePoints) {
         this.order = order;
         if (parent != null) this.parents.add(parent);
-        this.arrTime = timePoints.get(0);
-        this.serviceStartTime = timePoints.get(1);
         this.discreteTime = timePoints.get(2);
+        this.parentToTimePoints.put(parent, timePoints);  // First depot node will have null as parent
     }
 
     public List<Node> getBestPath() {
@@ -39,12 +38,12 @@ public class Node implements Comparable<Node> {
         return bestCost;
     }
 
-    public int getArrTime() {
-        return arrTime;
+    public int getArrTime(Node parent) {
+        return parentToTimePoints.get(parent).get(0);
     }
 
-    public int getServiceStartTime() {
-        return serviceStartTime;
+    public int getServiceStartTime(Node parent) {
+        return parentToTimePoints.get(parent).get(1);
     }
 
     public int getDiscreteTime() {
@@ -83,10 +82,6 @@ public class Node implements Comparable<Node> {
         this.bestPath = bestPath;
     }
 
-    public void addToBestPath(Node node) {
-        if (!this.bestPath.contains(node)) this.bestPath.add(node);
-    }
-
     public void setBestCost(double bestCost) {
         this.bestCost = bestCost;
     }
@@ -97,6 +92,10 @@ public class Node implements Comparable<Node> {
 
     public void addChild(Node child) {
         this.children.add(child);
+    }
+
+    public void setParentToTimePoints(Node parent, List<Integer> timePoints) {
+        this.parentToTimePoints.put(parent, timePoints);
     }
 
     @Override

@@ -12,11 +12,12 @@ import java.util.*;
 public class Tree {
 
     private Node root;
-    private List<Node> nodes = new ArrayList<>();
+    private final List<Node> nodes = new ArrayList<>();
     private List<Node> shortestPath;
     private double globalBestCost;
 
-    public Tree() {
+    public Tree(int vesselIdx) {
+        ArcGenerator.setVessel(vesselIdx);
     }
 
     private void setRoot(Node root) {
@@ -103,7 +104,6 @@ public class Tree {
     protected void generateTree(List<Order> orderSequence, boolean isSpotVessel) {
         Order firstOrder = ((LinkedList<Order>) orderSequence).getFirst();
         this.generateNodesDepotToOrder(firstOrder, isSpotVessel);
-
         List<Node> queue = Helpers.deepCopyList(this.getNodesExclDepot(), false);
         Set<Node> addedNodes = new HashSet<>();
         while (!queue.isEmpty()) {
@@ -115,7 +115,6 @@ public class Tree {
             addedNodes.addAll(newNodes);
             queue.addAll(newNodes);
         }
-
         List<Node> lastLayer = getLastLayer(((LinkedList<Order>) orderSequence).getLast(), this.getNodesExclDepot());
         for (Node lastNode : lastLayer) generateNodesOrderToDepot(lastNode, isSpotVessel);
     }
@@ -133,9 +132,7 @@ public class Tree {
     private List<Node> getLastLayer(Order lastOrder, List<Node> nodes) {
         List<Node> lastLayer = new ArrayList<>();
         for (Node node : nodes) {
-            if (node.getOrder().equals(lastOrder)) {
-                lastLayer.add(node);
-            }
+            if (node.getOrder().equals(lastOrder)) lastLayer.add(node);
         }
         return lastLayer;
     }
@@ -164,6 +161,8 @@ public class Tree {
     private void createNodes(Node fromNode, Order toOrder, boolean isSpot, double distance, int startTime, int c) {
         List<Double> speeds = ArcGenerator.getSpeeds(distance, startTime);
         Map<Double, Integer> speedsToArrTimes = ArcGenerator.mapSpeedsToArrTimes(distance, startTime, speeds);
+
+
         int serviceDuration = toOrder != null ? ArcGenerator.calculateServiceDuration(toOrder) : 0;
         Map<Double, List<Integer>> speedsToTimePoints = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, distance,
                 serviceDuration, toOrder != null ? Problem.getInstallation(toOrder) : Problem.getDepot());
@@ -205,7 +204,6 @@ public class Tree {
             double cost = speedsToCosts.get(speed);
             List<Integer> timePoints = speedsToTimePoints.get(speed);
             int endTime = timePoints.get(2);
-
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
                 Node newNode = new Node(toOrder, depotNode, timePoints);
@@ -215,6 +213,7 @@ public class Tree {
             } else {
                 if (cost < depotNode.getCostOfChild(existingNode)) {
                     depotNode.setChildToCost(existingNode, cost);
+                    existingNode.setParentToTimePoints(null, timePoints);
                 }
             }
         }
@@ -226,7 +225,6 @@ public class Tree {
             double cost = speedsToCosts.get(speed);
             List<Integer> timePoints = speedsToTimePoints.get(speed);
             int endTime = timePoints.get(2);
-
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
                 Node newNode = new Node(toOrder, fromNode, timePoints);
@@ -235,6 +233,7 @@ public class Tree {
                 this.addNode(newNode);
             } else {
                 existingNode.addParent(fromNode);
+                existingNode.setParentToTimePoints(fromNode, timePoints);
                 if (fromNode.hasChild(existingNode)) {
                     double bestCost = Math.min(fromNode.getCostOfChild(existingNode), cost);
                     fromNode.setChildToCost(existingNode, bestCost);
@@ -252,7 +251,6 @@ public class Tree {
         double cost = speedsToCosts.get(minCostSpeed);
         List<Integer> timePoints = speedsToTimePoints.get(minCostSpeed);
         int endTime = timePoints.get(2);
-
         Node existingDepotNode = getExistingNode(endTime, null);
         if (existingDepotNode == null) {
             Node depotNode = new Node(null, fromNode, timePoints);
@@ -261,6 +259,7 @@ public class Tree {
             this.addNode(depotNode);
         } else {
             existingDepotNode.addParent(fromNode);
+            existingDepotNode.setParentToTimePoints(fromNode, timePoints);
             fromNode.addChild(existingDepotNode);
             fromNode.setChildToCost(existingDepotNode, cost);
         }

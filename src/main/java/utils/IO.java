@@ -31,30 +31,28 @@ public class IO {
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             Vessel vessel = Problem.getVessel(vesselIdx);
             ((JSONObject) obj.get(Constants.VOYAGES_KEY)).put(vessel, new JSONObject());
-
             JSONArray orderSequence = new JSONArray();
             for (Order order : solution.getOrderSequence(vesselIdx)) orderSequence.add(order.getOrderId());
-            ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel)).put(Constants.SEQUENCE_KEY,
-                    orderSequence);
+            JSONObject vesselObj = ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel));
+            vesselObj.put(Constants.SEQUENCE_KEY, orderSequence);
+            vesselObj.put(Constants.TIME_POINTS_KEY, new JSONObject());
 
-            ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel)).put(Constants.TIME_POINTS_KEY,
-                    new JSONObject());
+            Node prevNode = null;
             for (Node node : solution.getShortestPaths().get(vesselIdx)) {
-                JSONObject timePointsOrder = new JSONObject();
+                JSONObject timePoints = new JSONObject();
                 if (node.getOrder() != null) {
-                    timePointsOrder.put(Constants.ARRIVAL_TIME_KEY, node.getArrTime());
-                    timePointsOrder.put(Constants.SERVICE_TIME_KEY, node.getServiceStartTime());
-                    timePointsOrder.put(Constants.END_TIME_KEY, node.getDiscreteTime());
-                    ((JSONObject) ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY))
-                            .get(vessel)).get(Constants.TIME_POINTS_KEY)).put(node.getOrder().getOrderId(),
-                            timePointsOrder);
+                    timePoints.put(Constants.ARRIVAL_TIME_KEY, node.getArrTime(prevNode));
+                    timePoints.put(Constants.SERVICE_TIME_KEY, node.getServiceStartTime(prevNode));
+                    timePoints.put(Constants.END_TIME_KEY, node.getDiscreteTime());
+                    int orderId = node.getOrder().getOrderId();
+                    ((JSONObject) vesselObj.get(Constants.TIME_POINTS_KEY)).put(orderId, timePoints);
                 } else {
-                    timePointsOrder.put(Constants.END_TIME_KEY, node.getDiscreteTime());
+                    timePoints.put(Constants.END_TIME_KEY, node.getDiscreteTime());
                     boolean isStartDepot = node.getDiscreteTime() == Problem.preparationEndTime;
-                    ((JSONObject) ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY))
-                            .get(vessel)).get(Constants.TIME_POINTS_KEY)).put(isStartDepot ? "SD" : "ED",
-                            timePointsOrder);
+                    String depotName = isStartDepot ? "SD" : "ED";
+                    ((JSONObject) vesselObj.get(Constants.TIME_POINTS_KEY)).put(depotName, timePoints);
                 }
+                prevNode = node;
             }
         }
         writeToFile(Constants.OUTPUT_PATH + Problem.fileName, obj);
@@ -109,18 +107,19 @@ public class IO {
 
     public static void setUpVessels() {
         Problem.vessels = new ArrayList<>();
-        JSONObject jsonVessels = (JSONObject) getJSONObject(Constants.VESSEL_FILE).get(Constants.FLEET_KEY);
-        JSONObject jsonAvailableVessels =
-                (JSONObject) getJSONObject(Problem.pathToInstanceFile).get(Constants.AVAILABLE_VESSELS_KEY);
-        for (Object key : jsonAvailableVessels.keySet()) {
+        String vesselPath = Constants.VESSEL_FILE;
+        String instancePath = Problem.pathToInstanceFile;
+        JSONObject vessels = (JSONObject) getJSONObject(vesselPath).get(Constants.FLEET_KEY);
+        JSONObject availVessels = (JSONObject) getJSONObject(instancePath).get(Constants.AVAILABLE_VESSELS_KEY);
+        for (Object key : availVessels.keySet()) {
             String name = (String) key;
-            JSONObject jsonVessel = (JSONObject) jsonVessels.get(key);
+            JSONObject jsonVessel = (JSONObject) vessels.get(key);
             int id = Math.toIntExact((long) jsonVessel.get(Constants.ID_KEY));
             double capacitySqm = (double) jsonVessel.get(Constants.CAPACITY_KEY);
             int capacityUnits = (int) Math.floor(capacitySqm / Problem.sqmInCargoUnit);
-            int returnTime =
-                    Math.toIntExact((long) ((JSONObject) jsonAvailableVessels.get(key)).get(Constants.RETURN_TIME_KEY));
-            Vessel vessel = new Vessel(id, name, capacityUnits, returnTime);
+            double fcDesignSpeed = (double) jsonVessel.get(Constants.FC_DESIGN_SPEED_KEY);
+            int retTime = Math.toIntExact((long) ((JSONObject) availVessels.get(key)).get(Constants.RETURN_TIME_KEY));
+            Vessel vessel = new Vessel(id, name, capacityUnits, fcDesignSpeed, retTime);
             Problem.vessels.add(vessel);
         }
         Collections.sort(Problem.vessels);
@@ -141,7 +140,6 @@ public class IO {
         Problem.minSpeed = (double) jsonVesselInfo.get(Constants.MIN_SPEED_KEY);
         Problem.designSpeed = (double) jsonVesselInfo.get(Constants.DESIGN_SPEED_KEY);
         Problem.maxSpeed = (double) jsonVesselInfo.get(Constants.MAX_SPEED_KEY);
-        Problem.fcDesignSpeed = (double) jsonVesselInfo.get(Constants.FC_DESIGN_SPEED_KEY);
         Problem.fcDepot = (double) jsonVesselInfo.get(Constants.FC_DEPOT_KEY);
         Problem.fcIdling = (double) jsonVesselInfo.get(Constants.FC_IDLING_KEY);
         Problem.fcServicing = (double) jsonVesselInfo.get(Constants.FC_SERVICING_KEY);

@@ -3,8 +3,10 @@ package alns;
 import data.Messages;
 import data.Parameters;
 import data.Problem;
+import objects.Installation;
 import objects.Order;
 import subproblem.Node;
+import utils.DistanceCalculator;
 import utils.Helpers;
 
 import java.util.*;
@@ -116,13 +118,22 @@ public class Solution {
             System.out.println("Schedule for " + Problem.getVessel(vesselIdx));
             Node prevNode = null;
             for (Node node : this.shortestPaths.get(vesselIdx)) {
-                String orderName = "";
-                String schedule = "";
+                String orderName;
+                String schedule;
+
+                double speed = 0.0;
+                if (prevNode != null && node.getOrder() != null) {
+                    Installation fromInst = Helpers.getInstallationFromNode(prevNode);
+                    Installation toInst = Helpers.getInstallationFromNode(node);
+                    double distance = DistanceCalculator.distance(fromInst, toInst, "N");
+                    double time = Problem.discTimeToHour(node.getArrTime(prevNode) - prevNode.getDiscreteTime());
+                    speed = distance / time;
+                }
 
                 if (node.getOrder() != null) {
                     orderName = node.getOrder().toString();
-                    schedule = "\t\tArrives at: " + node.getArrTime()
-                            + "\n\t\tServices at: " + node.getServiceStartTime()
+                    schedule = "\t\tArrives at: " + node.getArrTime(prevNode) + " (" + speed + ")"
+                            + "\n\t\tServices at: " + node.getServiceStartTime(prevNode)
                             + "\n\t\tFinished at: " + node.getDiscreteTime();
                 } else {
                     orderName = "Depot";
