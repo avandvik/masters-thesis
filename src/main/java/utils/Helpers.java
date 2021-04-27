@@ -4,6 +4,7 @@ import alns.Solution;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
+import subproblem.Node;
 
 import java.util.*;
 
@@ -21,6 +22,13 @@ public class Helpers {
 
     public static <T> Set<T> deepCopySet(Set<T> original) {
         return new HashSet<>(original);
+    }
+
+    public static Solution deepCopySolution(Solution solution) {
+        List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
+        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
+        Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
+        return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
 
     public static List<List<Order>> createEmptyOrderSequences() {
@@ -90,67 +98,6 @@ public class Helpers {
         return list.get(rnIdx);
     }
 
-    public static <T extends Comparable<T>> T removeRandomElementFromSet(Set<T> set) {
-        T element = getRandomElementFromSet(set);
-        set.remove(element);
-        return element;
-    }
-
-    public static Solution deepCopySolution(Solution solution) {
-        List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
-        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
-        Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
-        return new Solution(orderSequences, postponedOrders, unplacedOrders);
-    }
-
-    public static List<Order> sortUnplacedOrders(List<Order> unplacedOrders) {
-        List<Order> sortedUnplacedOrders = new ArrayList<>();
-        int numberOfMand = 0;
-        for (Order order : unplacedOrders) {
-            if (order.isMandatory()) {
-                sortedUnplacedOrders.add(0, order);
-                numberOfMand++;
-            } else {
-                sortedUnplacedOrders.add(order);
-            }
-        }
-        Collections.shuffle(sortedUnplacedOrders.subList(0, numberOfMand), Problem.random);
-        Collections.shuffle(sortedUnplacedOrders.subList(numberOfMand, sortedUnplacedOrders.size()), Problem.random);
-        return sortedUnplacedOrders;
-    }
-
-    public static List<Order> sortOrdersByPenalty(Solution partialSolution) {
-        List<Order> sortedOrders = new ArrayList<>();
-        List<Order> optionalOrders = new ArrayList<>();
-        for (Order order : partialSolution.getUnplacedOrders()) {
-            if (order.isMandatory()) {
-                sortedOrders.add(order);
-            } else {
-                optionalOrders.add(order);
-            }
-        }
-        Collections.sort(sortedOrders);  // Sort by id for predictability
-        optionalOrders.sort(Comparator.comparing((Order::getPostponementPenalty)).reversed());
-        sortedOrders.addAll(optionalOrders);
-        return sortedOrders;
-    }
-
-    public static List<Order> sortOrdersBySize(Solution partialSolution) {
-        List<Order> sortedOrders = new ArrayList<>();
-        List<Order> optionalOrders = new ArrayList<>();
-        for (Order order : partialSolution.getUnplacedOrders()) {
-            if (order.isMandatory()) {
-                sortedOrders.add(order);
-            } else {
-                optionalOrders.add(order);
-            }
-        }
-        Collections.sort(sortedOrders);  // Sort by id for predictability
-        optionalOrders.sort(Comparator.comparing((Order::getSize)).reversed());
-        sortedOrders.addAll(optionalOrders);
-        return sortedOrders;
-    }
-
     public static List<List<Double>> convertOrdersToCoordinates(List<Order> orders) {
         List<List<Double>> coordinateCentroids = new ArrayList<>();
         for (int centroidIdx = 0; centroidIdx < orders.size(); centroidIdx++) {
@@ -161,5 +108,13 @@ public class Helpers {
             coordinateCentroids.get(centroidIdx).add(longitude);
         }
         return coordinateCentroids;
+    }
+
+    public static Installation getInstallationFromNode(Node node) {
+        if (node.getOrder() == null) {
+            return Problem.getDepot();
+        } else {
+            return Problem.getInstallation(node.getOrder());
+        }
     }
 }

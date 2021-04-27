@@ -11,7 +11,6 @@ public class ArcGenerator {
 
     private static Vessel vessel;
 
-    // NB! VERIFY THAT THIS IS CALLED WHEN NECESSARY
     public static void setVessel(int vesselIdx) {
         vessel = Problem.getVessel(vesselIdx);
     }
@@ -183,7 +182,6 @@ public class ArcGenerator {
         Map<Integer, Double> wsToDistanceTravelled = mapWSToDistanceTravelled(wsToTimeSpent, speed);
         double distanceInWSOneTwo = wsToDistanceTravelled.get(0) + wsToDistanceTravelled.get(1);
 
-        // TODO: Generalize
         double consumption = calculateFuelConsumptionSailing(distanceInWSOneTwo, speed, 0)
                 + calculateFuelConsumptionSailing(wsToDistanceTravelled.get(2), speed, 2)
                 + calculateFuelConsumptionSailing(wsToDistanceTravelled.get(3), speed, 3);

@@ -11,7 +11,6 @@ public class Node implements Comparable<Node> {
     private final Set<Node> children = new HashSet<>();
 
     private final Map<Node, List<Integer>> parentToTimePoints = new HashMap<>();  // arrTime, serviceTime, discreteTime
-
     private final int discreteTime;  // The end time of incoming arc, start time of outgoing arc
 
     private final Map<Node, Double> childToCost = new HashMap<>();
@@ -83,10 +82,6 @@ public class Node implements Comparable<Node> {
         this.bestPath = bestPath;
     }
 
-    public void addToBestPath(Node node) {
-        if (!this.bestPath.contains(node)) this.bestPath.add(node);
-    }
-
     public void setBestCost(double bestCost) {
         this.bestCost = bestCost;
     }
@@ -100,7 +95,6 @@ public class Node implements Comparable<Node> {
     }
 
     public void setParentToTimePoints(Node parent, List<Integer> timePoints) {
-        this.parentToTimePoints.put(parent, timePoints);
         this.parentToTimePoints.put(parent, timePoints);
     }
 

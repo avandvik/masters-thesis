@@ -16,10 +16,6 @@ public class Vessel implements Comparable<Vessel>{
         this.returnTime = returnTime;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public String getName() {
         return name;
     }

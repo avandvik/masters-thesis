@@ -186,15 +186,15 @@ public class ArcGeneratorTest {
         double speed = 10.0;
         double distance = speed * Problem.discTimeToHour(arrTime - startTime);
         double delta = 0.5;
-        assertEquals(479.0, ArcGenerator.calculateFuelCostSailing(startTime, arrTime, speed, distance), delta);
+        assertEquals(431.0, ArcGenerator.calculateFuelCostSailing(startTime, arrTime, speed, distance), delta);
         assertEquals(0.0, ArcGenerator.calculateFuelCostSailing(startTime, startTime, speed, 0.0), delta);
         assertEquals(83.0, ArcGenerator.calculateFuelCostIdling(arrTime, serviceStartTime), delta);
         assertEquals(117.0, ArcGenerator.calculateFuelCostServicing(serviceStartTime, serviceEndTime), delta);
         assertEquals(6080.0, ArcGenerator.calculateCharterCost(startTime, serviceEndTime, true), delta);
         assertEquals(0.0, ArcGenerator.calculateCharterCost(startTime, serviceEndTime, false), delta);
-        assertEquals(679.0, ArcGenerator.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
+        assertEquals(631.0, ArcGenerator.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
                 speed, distance, false), delta);
-        assertEquals(6759.0, ArcGenerator.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
+        assertEquals(6711.0, ArcGenerator.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
                 speed, distance, true), delta);
 
         // TODO: Add test for calculateArcCost with weather impact

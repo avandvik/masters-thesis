@@ -104,7 +104,6 @@ public class Tree {
     protected void generateTree(List<Order> orderSequence, boolean isSpotVessel) {
         Order firstOrder = ((LinkedList<Order>) orderSequence).getFirst();
         this.generateNodesDepotToOrder(firstOrder, isSpotVessel);
-
         List<Node> queue = Helpers.deepCopyList(this.getNodesExclDepot(), false);
         Set<Node> addedNodes = new HashSet<>();
         while (!queue.isEmpty()) {
@@ -116,7 +115,6 @@ public class Tree {
             addedNodes.addAll(newNodes);
             queue.addAll(newNodes);
         }
-
         List<Node> lastLayer = getLastLayer(((LinkedList<Order>) orderSequence).getLast(), this.getNodesExclDepot());
         for (Node lastNode : lastLayer) generateNodesOrderToDepot(lastNode, isSpotVessel);
     }
@@ -134,9 +132,7 @@ public class Tree {
     private List<Node> getLastLayer(Order lastOrder, List<Node> nodes) {
         List<Node> lastLayer = new ArrayList<>();
         for (Node node : nodes) {
-            if (node.getOrder().equals(lastOrder)) {
-                lastLayer.add(node);
-            }
+            if (node.getOrder().equals(lastOrder)) lastLayer.add(node);
         }
         return lastLayer;
     }
@@ -208,7 +204,6 @@ public class Tree {
             double cost = speedsToCosts.get(speed);
             List<Integer> timePoints = speedsToTimePoints.get(speed);
             int endTime = timePoints.get(2);
-
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
                 Node newNode = new Node(toOrder, depotNode, timePoints);
@@ -218,7 +213,6 @@ public class Tree {
             } else {
                 if (cost < depotNode.getCostOfChild(existingNode)) {
                     depotNode.setChildToCost(existingNode, cost);
-
                     existingNode.setParentToTimePoints(null, timePoints);
                 }
             }
@@ -239,9 +233,7 @@ public class Tree {
                 this.addNode(newNode);
             } else {
                 existingNode.addParent(fromNode);
-
                 existingNode.setParentToTimePoints(fromNode, timePoints);
-
                 if (fromNode.hasChild(existingNode)) {
                     double bestCost = Math.min(fromNode.getCostOfChild(existingNode), cost);
                     fromNode.setChildToCost(existingNode, bestCost);
@@ -259,7 +251,6 @@ public class Tree {
         double cost = speedsToCosts.get(minCostSpeed);
         List<Integer> timePoints = speedsToTimePoints.get(minCostSpeed);
         int endTime = timePoints.get(2);
-
         Node existingDepotNode = getExistingNode(endTime, null);
         if (existingDepotNode == null) {
             Node depotNode = new Node(null, fromNode, timePoints);
@@ -268,9 +259,7 @@ public class Tree {
             this.addNode(depotNode);
         } else {
             existingDepotNode.addParent(fromNode);
-
             existingDepotNode.setParentToTimePoints(fromNode, timePoints);
-
             fromNode.addChild(existingDepotNode);
             fromNode.setChildToCost(existingDepotNode, cost);
         }
@@ -290,24 +279,6 @@ public class Tree {
                 System.out.println("\t\t" + parent);
             }
             System.out.println();
-        }
-    }
-
-    public static void main(String[] args) {
-        Problem.setUpProblem("5-5-1-1.json", false, 4);
-        Tree tree = new Tree(0);
-        List<Order> orderSequence = new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(1),
-                Problem.getOrder(4), Problem.getOrder(0), Problem.getOrder(2)));
-        tree.generateTree(orderSequence, false);
-        // tree.printTree();
-        tree.findShortestPath();
-        Node prevNode = null;
-        for (Node node : tree.shortestPath) {
-            System.out.println(node.getOrder());
-            System.out.println("\tArr time: " + node.getArrTime(prevNode));
-            System.out.println("\tService start time: " + node.getServiceStartTime(prevNode));
-            System.out.println("\tFinished time: " + node.getDiscreteTime());
-            prevNode = node;
         }
     }
 }

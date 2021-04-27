@@ -67,7 +67,7 @@ public class Constants {
     public static final String REMOVAL_CLUSTER_NAME = "cluster removal";
     public static final String INSERTION_GREEDY_NAME = "greedy insertion";
     public static final String INSERTION_REGRET_NAME = "regret insertion";
-    public static final String INSERTION_MAX_PENALTY_COST_NAME = "max penalty cost insertion";
+    public static final String INSERTION_MAX_PENALTY_NAME = "max penalty cost insertion";
     public static final String INSERTION_MAX_ORDER_SIZE_NAME = "max order size insertion";
 
     public static final String INSTANCE_NAME_KEY = "instance";

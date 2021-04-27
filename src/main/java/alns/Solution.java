@@ -123,8 +123,8 @@ public class Solution {
 
                 double speed = 0.0;
                 if (prevNode != null && node.getOrder() != null) {
-                    Installation fromInst = getInstallationFromNode(prevNode);
-                    Installation toInst = getInstallationFromNode(node);
+                    Installation fromInst = Helpers.getInstallationFromNode(prevNode);
+                    Installation toInst = Helpers.getInstallationFromNode(node);
                     double distance = DistanceCalculator.distance(fromInst, toInst, "N");
                     double time = Problem.discTimeToHour(node.getArrTime(prevNode) - prevNode.getDiscreteTime());
                     speed = distance / time;
@@ -146,14 +146,6 @@ public class Solution {
             }
         }
         System.out.println();
-    }
-
-    private Installation getInstallationFromNode(Node node) {
-        if (node.getOrder() == null) {
-            return Problem.getDepot();
-        } else {
-            return Problem.getInstallation(node.getOrder());
-        }
     }
 
     @Override
