@@ -11,17 +11,12 @@ import utils.Helpers;
 
 import java.util.*;
 
-public class OperatorOneRelocate {
-
-    private static List<List<Installation>> seenInstSequences;  // History of seen sequences in the search
-    private static Map<Integer, Double> vesselToBestObjective;
-    private static Solution originalSolution;
-    private static Solution newSolution;
+public class OperatorOneRelocate extends OperatorOne {
 
     public static Solution oneRelocate(Solution solution) {
         initialize(solution);
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
+            List<Order> orderSequence = originalSolution.getOrderSequence(vesselIdx);
             if (orderSequence.isEmpty()) continue;
             List<Installation> instSequence = Helpers.getInstSequence(orderSequence);
             seenInstSequences.add(instSequence);
@@ -41,19 +36,6 @@ public class OperatorOneRelocate {
         return newSolution;
     }
 
-    private static void initialize(Solution solution) {
-        seenInstSequences = new ArrayList<>();
-        vesselToBestObjective = new HashMap<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
-            int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
-            double bestObjective = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
-            vesselToBestObjective.put(vesselIdx, bestObjective);
-        }
-        originalSolution = solution;
-        newSolution = Helpers.deepCopySolution(solution);
-    }
-
     private static List<Installation> rmInstFromSequence(List<Installation> instSequence, Installation inst) {
         List<Installation> instSequenceExclInst = Helpers.deepCopyList(instSequence, false);
         instSequenceExclInst.remove(inst);
@@ -64,24 +46,5 @@ public class OperatorOneRelocate {
         List<Installation> newInstSequence = Helpers.deepCopyList(instSequence, false);
         newInstSequence.add(idx, inst);
         return newInstSequence;
-    }
-
-    private static List<Order> createNewOrderSequence(List<Installation> newInstSequence) {
-        List<Order> newOrderSequence = new LinkedList<>();
-        for (Installation installation : newInstSequence) {
-            List<Order> ordersFromInst = Problem.getOrdersFromInstallation(installation);
-            ordersFromInst.removeAll(originalSolution.getPostponedOrders());
-            Collections.sort(ordersFromInst);
-            newOrderSequence.addAll(ordersFromInst);
-        }
-        return newOrderSequence;
-    }
-
-    private static void updateFields(List<Order> newOrderSequence, int vesselIdx) {
-        double newObjective = Objective.runSPLean(newOrderSequence, vesselIdx);
-        if (newObjective < vesselToBestObjective.get(vesselIdx)) {
-            vesselToBestObjective.put(vesselIdx, newObjective);
-            newSolution.replaceOrderSequence(vesselIdx, newOrderSequence);
-        }
     }
 }
