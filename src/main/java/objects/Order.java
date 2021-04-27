@@ -1,5 +1,7 @@
 package objects;
 
+import data.Problem;
+
 public class Order implements Comparable<Order> {
 
     private final int orderId;
@@ -33,12 +35,20 @@ public class Order implements Comparable<Order> {
         return size;
     }
 
+    public double getNoisySize() {
+        return this.size + Problem.random.nextDouble();
+    }
+
     public int getInstallationId() {
         return installationId;
     }
 
     public double getPostponementPenalty() {
         return this.penalty;
+    }
+
+    public double getNoisyPenalty() {
+        return this.penalty + Problem.random.nextDouble();
     }
 
     public void setPostponementPenalty(double penalty) {
