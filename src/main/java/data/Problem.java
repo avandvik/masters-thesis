@@ -94,6 +94,12 @@ public class Problem {
         return Problem.orders.stream().filter(o -> o.getInstallationId() == installation.getId()).collect(Collectors.toList());
     }
 
+    public static List<Order> getScheduledOrdersFromInstallation(Installation installation, Set<Order> postponed) {
+        return Problem.orders.stream()
+                .filter(o -> o.getInstallationId() == installation.getId() && !postponed.contains(o))
+                .collect(Collectors.toList());
+    }
+
     public static Order getMandatoryOrder(Order optionalOrder) {
         List<Order> orders = getOrdersFromInstallation(getInstallation(optionalOrder));
         for (Order order : orders) {

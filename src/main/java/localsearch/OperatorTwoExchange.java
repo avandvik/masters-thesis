@@ -17,18 +17,16 @@ public class OperatorTwoExchange extends OperatorTwo {
 
     public static Solution twoExchange(Solution solution) {
         initialize(solution);
-        for (int firVesselIdx = 0; firVesselIdx < Problem.getNumberOfVessels() - 1; firVesselIdx++) {
-            for (int secVesselIdx = firVesselIdx + 1; secVesselIdx < Problem.getNumberOfVessels(); secVesselIdx++) {
-                double originalCost = calculateOriginalCost(firVesselIdx, secVesselIdx);
-                List<Order> orderSequence = originalSolution.getOrderSequence(firVesselIdx);
-                List<Order> nextOrderSequence = originalSolution.getOrderSequence(secVesselIdx);
+        for (int vIdxOne = 0; vIdxOne < Problem.getNumberOfVessels() - 1; vIdxOne++) {
+            for (int vIdxTwo = vIdxOne + 1; vIdxTwo < Problem.getNumberOfVessels(); vIdxTwo++) {
+                double originalCost = calculateOriginalCost(vIdxOne, vIdxTwo);
+                List<Order> orderSequence = originalSolution.getOrderSequence(vIdxOne);
+                List<Order> nextOrderSequence = originalSolution.getOrderSequence(vIdxTwo);
                 if (orderSequence.isEmpty() || nextOrderSequence.isEmpty()) continue;
-                List<Installation> firstInstSequence = Helpers.getInstSequence(orderSequence);
-                List<Installation> secondInstSequence = Helpers.getInstSequence(nextOrderSequence);
-                List<List<Installation>> instSequences = new ArrayList<>(Arrays.asList(firstInstSequence, secondInstSequence));
+                List<List<Installation>> instSequences = new ArrayList<>(Arrays.asList(
+                        Helpers.getInstSequence(orderSequence), Helpers.getInstSequence(nextOrderSequence)));
                 List<List<Integer>> instExchanges = getInstExchangesInter(instSequences);
-                performInstExchangesInter(instSequences, instExchanges, firVesselIdx, secVesselIdx, originalCost);
-
+                performInstExchangesInter(instSequences, vIdxOne, vIdxTwo, instExchanges, originalCost);
             }
         }
         Objective.setObjValAndSchedule(newSolution);
@@ -47,8 +45,8 @@ public class OperatorTwoExchange extends OperatorTwo {
         newSolution = Helpers.deepCopySolution(solution);
     }
 
-    private static double calculateOriginalCost(Integer firstVesselIdx, Integer secondVesselIdx) {
-        return (vesselToCost.get(firstVesselIdx) + vesselToCost.get(secondVesselIdx));
+    private static double calculateOriginalCost(int vIdxOne, int vIdxTwo) {
+        return (vesselToCost.get(vIdxOne) + vesselToCost.get(vIdxTwo));
     }
 
     private static List<List<Integer>> getInstExchangesInter(List<List<Installation>> instSequences) {
@@ -63,51 +61,49 @@ public class OperatorTwoExchange extends OperatorTwo {
         return instExchanges;
     }
 
-    private static void performInstExchangesInter(List<List<Installation>> instSequences, List<List<Integer>> instExchanges,
-                                                  int firVesselIdx, int secVesselIdx, Double originalCost) {
-        List<Installation> firInstSeq = instSequences.get(0);
-        List<Installation> secInstSeq = instSequences.get(1);
+    private static void performInstExchangesInter(List<List<Installation>> instSequences, int vIdxOne, int vIdxTwo,
+                                                  List<List<Integer>> instExchanges, double originalCost) {
         for (List<Integer> instExchangeList : instExchanges) {
             int firstInstIdx = instExchangeList.get(0);
             int secondInstIdx = instExchangeList.get(1);
-            Installation firstInst = firInstSeq.get(firstInstIdx);
-            Installation secondInst = secInstSeq.get(secondInstIdx);
-            List<Installation> firstInstSequence = Helpers.deepCopyList(firInstSeq, false);
-            List<Installation> secondInstSequence = Helpers.deepCopyList(secInstSeq, false);
+            Installation firstInst = instSequences.get(0).get(firstInstIdx);
+            Installation secondInst = instSequences.get(1).get(secondInstIdx);
+            List<Installation> firstInstSequence = Helpers.deepCopyList(instSequences.get(0), false);
+            List<Installation> secondInstSequence = Helpers.deepCopyList(instSequences.get(1), false);
             firstInstSequence.set(firstInstIdx, secondInst);
             secondInstSequence.set(secondInstIdx, firstInst);
             List<Order> firstOrderSequence = createNewOrderSequence(firstInstSequence);
             List<Order> secondOrderSequence = createNewOrderSequence(secondInstSequence);
             List<List<Order>> orderSequences = new ArrayList<>(Arrays.asList(firstOrderSequence, secondOrderSequence));
-            if (orderSequencesFeasible(orderSequences, firVesselIdx, secVesselIdx)) {
-                updateFields(orderSequences, firVesselIdx, secVesselIdx, originalCost);
+            if (orderSequencesFeasible(orderSequences, vIdxOne, vIdxTwo)) {
+                updateFields(orderSequences, vIdxOne, vIdxTwo, originalCost);
             }
         }
     }
 
-    private static boolean orderSequencesFeasible(List<List<Order>> orderSequences, Integer firVesselIdx, Integer secVesselIdx) {
+    private static boolean orderSequencesFeasible(List<List<Order>> orderSequences, int vIdxOne, int vIdxTwo) {
         List<Order> firstOrderSequence = orderSequences.get(0);
         List<Order> secondOrderSequence = orderSequences.get(1);
-        boolean firstCheck = Evaluator.isOrderSequenceFeasible(firstOrderSequence, Problem.getVessel(firVesselIdx));
-        boolean secondCheck = Evaluator.isOrderSequenceFeasible(secondOrderSequence, Problem.getVessel(secVesselIdx));
+        boolean firstCheck = Evaluator.isOrderSequenceFeasible(firstOrderSequence, Problem.getVessel(vIdxOne));
+        boolean secondCheck = Evaluator.isOrderSequenceFeasible(secondOrderSequence, Problem.getVessel(vIdxTwo));
         return firstCheck && secondCheck;
     }
 
-    private static double calculateAggregatedCost(List<List<Order>> orderSequences, Integer firVesselIdx, Integer secVesselIdx) {
-        List<Order> firOrderSeq = orderSequences.get(0);
-        List<Order> secOrderSeq = orderSequences.get(1);
-        return (Objective.runSPLean(firOrderSeq, firVesselIdx) + Objective.runSPLean(secOrderSeq, secVesselIdx));
-    }
-
-    private static void updateFields(List<List<Order>> orderSequences, Integer firVesselIdx, Integer secVesselIdx, Double originalCost) {
+    private static void updateFields(List<List<Order>> orderSequences, int vIdxOne, int vIdxTwo, double originalCost) {
         List<Order> firOrdSeq = orderSequences.get(0);
         List<Order> secOrdSeq = orderSequences.get(1);
-        double aggregatedCost = calculateAggregatedCost(orderSequences, firVesselIdx, secVesselIdx);
+        double aggregatedCost = calculateAggregatedCost(orderSequences, vIdxOne, vIdxTwo);
         double decrease = aggregatedCost - originalCost; // Negative number
         if (decrease < 0 && decrease < greatestDecrease) {
             greatestDecrease = decrease;
-            newSolution.replaceOrderSequence(firVesselIdx, firOrdSeq);
-            newSolution.replaceOrderSequence(secVesselIdx, secOrdSeq);
+            newSolution.replaceOrderSequence(vIdxOne, firOrdSeq);
+            newSolution.replaceOrderSequence(vIdxTwo, secOrdSeq);
         }
+    }
+
+    private static double calculateAggregatedCost(List<List<Order>> orderSequences, int vIdxOne, int vIdxTwo) {
+        List<Order> firOrderSeq = orderSequences.get(0);
+        List<Order> secOrderSeq = orderSequences.get(1);
+        return (Objective.runSPLean(firOrderSeq, vIdxOne) + Objective.runSPLean(secOrderSeq, vIdxTwo));
     }
 }

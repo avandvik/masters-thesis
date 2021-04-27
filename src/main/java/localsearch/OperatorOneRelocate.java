@@ -1,12 +1,10 @@
 package localsearch;
 
 import alns.Evaluator;
-import alns.Objective;
 import alns.Solution;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
-import subproblem.SubProblem;
 import utils.Helpers;
 
 import java.util.*;

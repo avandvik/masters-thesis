@@ -8,6 +8,7 @@ import objects.Order;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public abstract class Operator {
 
@@ -17,13 +18,11 @@ public abstract class Operator {
     public static List<Order> createNewOrderSequence(List<Installation> newInstSequence) {
         List<Order> newOrderSequence = new LinkedList<>();
         for (Installation installation : newInstSequence) {
-            List<Order> ordersFromInst = Problem.getOrdersFromInstallation(installation);
-            ordersFromInst.removeAll(originalSolution.getPostponedOrders());
+            Set<Order> postponed = originalSolution.getPostponedOrders();
+            List<Order> ordersFromInst = Problem.getScheduledOrdersFromInstallation(installation, postponed);
             Collections.sort(ordersFromInst);
             newOrderSequence.addAll(ordersFromInst);
         }
         return newOrderSequence;
     }
-
-
 }
