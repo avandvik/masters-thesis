@@ -5,17 +5,15 @@ public class Vessel implements Comparable<Vessel>{
     private final int id;
     private final String name;
     private final int capacity;
+    private final double fcDesignSpeed;
     private final int returnTime;
 
-    public Vessel(int id, String name, int capacity, int returnTime) {
+    public Vessel(int id, String name, int capacity, double fcDesignSpeed, int returnTime) {
         this.id = id;
         this.name = name;
         this.capacity = capacity;
+        this.fcDesignSpeed = fcDesignSpeed;
         this.returnTime = returnTime;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getName() {
@@ -24,6 +22,10 @@ public class Vessel implements Comparable<Vessel>{
 
     public int getCapacity() {
         return capacity;
+    }
+
+    public double getFcDesignSpeed() {
+        return fcDesignSpeed;
     }
 
     public int getReturnTime() {

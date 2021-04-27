@@ -1,6 +1,5 @@
 package arcs;
 
-import arcs.ArcGenerator;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
@@ -18,6 +17,7 @@ public class ArcGeneratorTest {
     @DisplayName("Test getSpeeds")
     public void testGetSpeeds() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        ArcGenerator.setVessel(0);
         List<Double> expectedSpeeds = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0));
         double distance = 30.0;
         int startTime = 145;
@@ -32,6 +32,7 @@ public class ArcGeneratorTest {
     @DisplayName("Test mapSpeedsToArrTimes")
     public void testMapSpeedsToArrTimes() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        ArcGenerator.setVessel(0);
         double distance = 30.0;
         int startTime = 100;
         List<Double> speeds = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0));
@@ -54,6 +55,7 @@ public class ArcGeneratorTest {
     @DisplayName("Test mapSpeedsToTimePoints")
     public void testMapSpeedsToTimePoints() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        ArcGenerator.setVessel(0);
         double distance = 30.0;
         int serviceDuration = 10;
         Installation depot = Problem.getDepot();
@@ -112,6 +114,7 @@ public class ArcGeneratorTest {
     @DisplayName("Test isReturnPossible")
     public void testIsReturnPossible() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        ArcGenerator.setVessel(0);
         double distanceOne = 40.0;
         double distanceTwo = 0.0;
         int endTimeOne = 100;
@@ -127,6 +130,7 @@ public class ArcGeneratorTest {
     @DisplayName("Test isServicingPossible")
     public void testIsServicingPossible() {
         Problem.setUpProblem("criticalWeather.json", true, 10);
+        ArcGenerator.setVessel(0);
         int startTimeWS3 = Helpers.getStartTimeOfWeatherState(3);
         int serviceStartTimeOne = 100;
         int serviceEndTimeOne = 120;
@@ -146,6 +150,7 @@ public class ArcGeneratorTest {
     @DisplayName("Test calculateAverageMaxSpeed")
     public void testCalculateAverageMaxSpeed() {
         Problem.setUpProblem("criticalWeather.json", true, 10);
+        ArcGenerator.setVessel(0);
         double distance = 40.0;
         double delta = 0.1;
         int startTimeWS2 = Helpers.getStartTimeOfWeatherState(2);
@@ -160,6 +165,7 @@ public class ArcGeneratorTest {
     @DisplayName("Test calculateServiceDuration")
     public void testCalculateServiceDuration() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        ArcGenerator.setVessel(0);
         Order MDOrder = Problem.orders.get(0);
         Order OPOrder = Problem.orders.get(1);
         Order ODOrder = Problem.orders.get(2);
@@ -172,6 +178,7 @@ public class ArcGeneratorTest {
     @DisplayName("Test calculateArcCost")
     public void testCalculateArcCost() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        ArcGenerator.setVessel(0);
         int startTime = 100;
         int arrTime = 120;
         int serviceStartTime = 130;
@@ -179,15 +186,15 @@ public class ArcGeneratorTest {
         double speed = 10.0;
         double distance = speed * Problem.discTimeToHour(arrTime - startTime);
         double delta = 0.5;
-        assertEquals(479.0, ArcGenerator.calculateFuelCostSailing(startTime, arrTime, speed, distance), delta);
+        assertEquals(431.0, ArcGenerator.calculateFuelCostSailing(startTime, arrTime, speed, distance), delta);
         assertEquals(0.0, ArcGenerator.calculateFuelCostSailing(startTime, startTime, speed, 0.0), delta);
         assertEquals(83.0, ArcGenerator.calculateFuelCostIdling(arrTime, serviceStartTime), delta);
         assertEquals(117.0, ArcGenerator.calculateFuelCostServicing(serviceStartTime, serviceEndTime), delta);
         assertEquals(6080.0, ArcGenerator.calculateCharterCost(startTime, serviceEndTime, true), delta);
         assertEquals(0.0, ArcGenerator.calculateCharterCost(startTime, serviceEndTime, false), delta);
-        assertEquals(679.0, ArcGenerator.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
+        assertEquals(631.0, ArcGenerator.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
                 speed, distance, false), delta);
-        assertEquals(6759.0, ArcGenerator.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
+        assertEquals(6711.0, ArcGenerator.calculateArcCost(startTime, arrTime, serviceStartTime, serviceEndTime,
                 speed, distance, true), delta);
 
         // TODO: Add test for calculateArcCost with weather impact
@@ -198,6 +205,7 @@ public class ArcGeneratorTest {
     @DisplayName("Test mapWSToTimeSpent and getTimeInWS")
     public void testWSFunctions() {
         Problem.setUpProblem("criticalWeather.json", true, 10);
+        ArcGenerator.setVessel(0);
         int startTime = 50;
         int endTime = 160;
         assertEquals(0, ArcGenerator.getTimeInWS(startTime, endTime, 0));

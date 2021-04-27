@@ -19,12 +19,8 @@ public class InsertionMaxPenaltyCost extends Heuristic implements Repairer {
     @Override
     public Solution repair(Solution partialSolution) {
         Solution solution = Helpers.deepCopySolution(partialSolution);
-        List<Order> sortedOrders = Helpers.sortOrdersByPenalty(partialSolution);
-
-        for (Order order : sortedOrders) {
-            solution = InsertionGreedy.insertGreedilyInSolution(solution, order);
-        }
-
+        List<Order> sortedOrders = sortOrders(partialSolution, true, false);
+        for (Order order : sortedOrders) solution = InsertionGreedy.insertGreedilyInSolution(solution, order);
         Objective.setObjValAndSchedule(solution);
         if (!Evaluator.isSolutionFeasible(solution)) throw new IllegalStateException(Messages.solutionInfeasible);
         return solution;

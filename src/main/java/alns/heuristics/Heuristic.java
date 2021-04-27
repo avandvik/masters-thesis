@@ -1,13 +1,12 @@
 package alns.heuristics;
 
+import alns.Solution;
 import data.Parameters;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public abstract class Heuristic {
 
@@ -60,6 +59,27 @@ public abstract class Heuristic {
             return mandOrder != null && unplacedOrders.contains(mandOrder);
         }
         return false;
+    }
+
+    static List<Order> sortOrders(Solution partialSolution, boolean penalty, boolean size) {
+        List<Order> sortedOrders = new ArrayList<>();
+        List<Order> optionalOrders = new ArrayList<>();
+        for (Order order : partialSolution.getUnplacedOrders()) {
+            if (order.isMandatory()) {
+                sortedOrders.add(order);
+            } else {
+                optionalOrders.add(order);
+            }
+        }
+        Collections.sort(sortedOrders);  // Sort by id for predictability in test
+        Collections.sort(optionalOrders);  // Sort by id for predictability in test
+        if (penalty) {
+            optionalOrders.sort(Comparator.comparing((Order::getPostponementPenalty)).reversed());
+        } else if (size) {
+            optionalOrders.sort(Comparator.comparing((Order::getSize)).reversed());
+        }
+        sortedOrders.addAll(optionalOrders);
+        return sortedOrders;
     }
 
     @Override

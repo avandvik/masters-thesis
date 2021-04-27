@@ -45,7 +45,7 @@ public class Construction {
     public static Solution constructRandomInitialSolution() {
 
         // Create a list of ordersToPlace sorted with mandatory orders first, then optional
-        List<Order> ordersToPlace = Helpers.sortUnplacedOrders(Problem.orders);
+        List<Order> ordersToPlace = sortUnplacedOrders(Problem.orders);
 
         List<List<Order>> orderSequences = Helpers.createEmptyOrderSequences();
         Set<Order> postponedOrders = new HashSet<>();
@@ -73,5 +73,21 @@ public class Construction {
         }
 
         return new Solution(orderSequences, postponedOrders, true);
+    }
+
+    public static List<Order> sortUnplacedOrders(List<Order> unplacedOrders) {
+        List<Order> sortedUnplacedOrders = new ArrayList<>();
+        int numberOfMand = 0;
+        for (Order order : unplacedOrders) {
+            if (order.isMandatory()) {
+                sortedUnplacedOrders.add(0, order);
+                numberOfMand++;
+            } else {
+                sortedUnplacedOrders.add(order);
+            }
+        }
+        Collections.shuffle(sortedUnplacedOrders.subList(0, numberOfMand), Problem.random);
+        Collections.shuffle(sortedUnplacedOrders.subList(numberOfMand, sortedUnplacedOrders.size()), Problem.random);
+        return sortedUnplacedOrders;
     }
 }
