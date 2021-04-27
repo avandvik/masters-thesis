@@ -10,12 +10,10 @@ import utils.Helpers;
 
 import java.util.*;
 
-public abstract class OperatorOne {
+public abstract class OperatorOne extends Operator {
 
     protected static List<List<Installation>> seenInstSequences;  // TODO: Remove when OneRelocate is updated
     protected static Map<Integer, Double> vesselToBestObjective;
-    protected static Solution originalSolution;
-    protected static Solution newSolution;
 
     public static void initialize(Solution solution) {
         seenInstSequences = new ArrayList<>();  // TODO: Remove when OneRelocate is updated
@@ -28,17 +26,6 @@ public abstract class OperatorOne {
         }
         originalSolution = solution;
         newSolution = Helpers.deepCopySolution(solution);
-    }
-
-    public static List<Order> createNewOrderSequence(List<Installation> newInstSequence) {
-        List<Order> newOrderSequence = new LinkedList<>();
-        for (Installation installation : newInstSequence) {
-            List<Order> ordersFromInst = Problem.getOrdersFromInstallation(installation);
-            ordersFromInst.removeAll(originalSolution.getPostponedOrders());
-            Collections.sort(ordersFromInst);
-            newOrderSequence.addAll(ordersFromInst);
-        }
-        return newOrderSequence;
     }
 
     public static void updateFields(List<Order> newOrderSequence, int vesselIdx) {

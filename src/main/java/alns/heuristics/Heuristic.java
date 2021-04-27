@@ -71,12 +71,11 @@ public abstract class Heuristic {
                 optionalOrders.add(order);
             }
         }
-        Collections.sort(sortedOrders);  // Sort by id for predictability in test
-        Collections.sort(optionalOrders);  // Sort by id for predictability in test
+        Collections.sort(sortedOrders);  // Sort MD orders by id for predictability in test
         if (penalty) {
-            optionalOrders.sort(Comparator.comparing((Order::getPostponementPenalty)).reversed());
+            optionalOrders.sort(Comparator.comparing((Order::getNoisyPenalty)).reversed());
         } else if (size) {
-            optionalOrders.sort(Comparator.comparing((Order::getSize)).reversed());
+            optionalOrders.sort(Comparator.comparing((Order::getNoisySize)).reversed());
         }
         sortedOrders.addAll(optionalOrders);
         return sortedOrders;
