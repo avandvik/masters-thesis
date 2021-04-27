@@ -10,7 +10,6 @@ import utils.Helpers;
 
 import java.util.*;
 
-
 public class OperatorOneExchange extends OperatorOne {
 
     public static Solution oneExchange(Solution solution) {
