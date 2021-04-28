@@ -1,6 +1,5 @@
 package localsearch;
 
-import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
 import data.Problem;
@@ -11,9 +10,6 @@ import utils.Helpers;
 import java.util.*;
 
 public class OperatorTwoExchange extends OperatorTwo {
-
-    private static Map<Integer, Double> vesselToCost;
-    private static double greatestDecrease; // Lowest negative number
 
     public static Solution twoExchange(Solution solution) {
         initialize(solution);
@@ -31,22 +27,6 @@ public class OperatorTwoExchange extends OperatorTwo {
         }
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
-    }
-
-    public static void initialize(Solution solution) {
-        greatestDecrease = 0.0;
-        vesselToCost = new HashMap<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
-            double cost = orderSequence.isEmpty() ? 0.0 : Objective.runSPLean(orderSequence, vesselIdx); // Cached
-            vesselToCost.put(vesselIdx, cost);
-        }
-        originalSolution = solution;
-        newSolution = Helpers.deepCopySolution(solution);
-    }
-
-    private static double calculateOriginalCost(int vIdxOne, int vIdxTwo) {
-        return (vesselToCost.get(vIdxOne) + vesselToCost.get(vIdxTwo));
     }
 
     private static List<List<Integer>> getInstExchangesInter(List<List<Installation>> instSequences) {
@@ -72,38 +52,10 @@ public class OperatorTwoExchange extends OperatorTwo {
             List<Installation> secondInstSequence = Helpers.deepCopyList(instSequences.get(1), false);
             firstInstSequence.set(firstInstIdx, secondInst);
             secondInstSequence.set(secondInstIdx, firstInst);
-            List<Order> firstOrderSequence = createNewOrderSequence(firstInstSequence);
-            List<Order> secondOrderSequence = createNewOrderSequence(secondInstSequence);
-            List<List<Order>> orderSequences = new ArrayList<>(Arrays.asList(firstOrderSequence, secondOrderSequence));
-            if (orderSequencesFeasible(orderSequences, vIdxOne, vIdxTwo)) {
-                updateFields(orderSequences, vIdxOne, vIdxTwo, originalCost);
-            }
+            List<Order> orderSequenceOne = createNewOrderSequence(firstInstSequence);
+            List<Order> orderSequenceTwo = createNewOrderSequence(secondInstSequence);
+            List<List<Order>> orderSequences = Helpers.wrapListsInList(orderSequenceOne, orderSequenceTwo);
+            updateFields(orderSequences, vIdxOne, vIdxTwo, originalCost);
         }
-    }
-
-    private static boolean orderSequencesFeasible(List<List<Order>> orderSequences, int vIdxOne, int vIdxTwo) {
-        List<Order> firstOrderSequence = orderSequences.get(0);
-        List<Order> secondOrderSequence = orderSequences.get(1);
-        boolean firstCheck = Evaluator.isOrderSequenceFeasible(firstOrderSequence, Problem.getVessel(vIdxOne));
-        boolean secondCheck = Evaluator.isOrderSequenceFeasible(secondOrderSequence, Problem.getVessel(vIdxTwo));
-        return firstCheck && secondCheck;
-    }
-
-    private static void updateFields(List<List<Order>> orderSequences, int vIdxOne, int vIdxTwo, double originalCost) {
-        List<Order> firOrdSeq = orderSequences.get(0);
-        List<Order> secOrdSeq = orderSequences.get(1);
-        double aggregatedCost = calculateAggregatedCost(orderSequences, vIdxOne, vIdxTwo);
-        double decrease = aggregatedCost - originalCost; // Negative number
-        if (decrease < 0 && decrease < greatestDecrease) {
-            greatestDecrease = decrease;
-            newSolution.replaceOrderSequence(vIdxOne, firOrdSeq);
-            newSolution.replaceOrderSequence(vIdxTwo, secOrdSeq);
-        }
-    }
-
-    private static double calculateAggregatedCost(List<List<Order>> orderSequences, int vIdxOne, int vIdxTwo) {
-        List<Order> firOrderSeq = orderSequences.get(0);
-        List<Order> secOrderSeq = orderSequences.get(1);
-        return (Objective.runSPLean(firOrderSeq, vIdxOne) + Objective.runSPLean(secOrderSeq, vIdxTwo));
     }
 }
