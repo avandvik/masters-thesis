@@ -73,9 +73,9 @@ public abstract class Heuristic {
         }
         Collections.sort(sortedOrders);  // Sort MD orders by id for predictability in test
         if (penalty) {
-            optionalOrders.sort(Comparator.comparing((Order::getNoisyPenalty)).reversed());
+            optionalOrders.sort(Comparator.comparing((Order::getNoisyPenalty)).reversed());  // Noise to break ties
         } else if (size) {
-            optionalOrders.sort(Comparator.comparing((Order::getNoisySize)).reversed());
+            optionalOrders.sort(Comparator.comparing((Order::getNoisySize)).reversed());  // Noise to break ties
         }
         sortedOrders.addAll(optionalOrders);
         return sortedOrders;
