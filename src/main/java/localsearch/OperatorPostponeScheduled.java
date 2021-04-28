@@ -23,9 +23,8 @@ public class OperatorPostponeScheduled extends Operator {
                 Solution tempSolution = Helpers.deepCopySolution(originalSolution);
                 tempSolution.getOrderSequence(vesselIdx).remove(order);
                 tempSolution.getPostponedOrders().add(order);
-                bestCost = updateFields(tempSolution, vesselIdx, bestCost);
+                bestCost = updateFields(order, tempSolution, vesselIdx, bestCost);
             }
-
         }
         return newSolution;
     }
@@ -50,20 +49,23 @@ public class OperatorPostponeScheduled extends Operator {
         return (Objective.runSPLean(solution.getOrderSequence(vesselIdx), vesselIdx) + solution.getPenaltyCosts());
     }
 
-    private static double updateFields(Solution solution, int vesselIdx, double bestCost) {
+    private static double updateFields(Order order, Solution solution, int vesselIdx, double bestCost) {
         double newCost = calculateNewCost(solution, vesselIdx);
         if (newCost < bestCost) {
             bestCost = newCost;
             List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
             newSolution.replaceOrderSequence(vesselIdx, orderSequence);
-            replacePostponedOrders(newSolution);
+            replacePostponedOrders(order, newSolution, vesselIdx);
         }
         return bestCost;
     }
 
-    private static void replacePostponedOrders(Solution solution) {
-        newSolution.getPostponedOrders().clear();
-        newSolution.getPostponedOrders().addAll(solution.getPostponedOrders());
+    private static void replacePostponedOrders(Order order, Solution solution, int vesselIdx) {
+        for (Order candidateOrder : originalSolution.getOrderSequence(vesselIdx)) {
+            // Remove orders from same order sequence that have been postponed
+            solution.getPostponedOrders().remove(candidateOrder);
+        }
+        solution.getPostponedOrders().add(order);
     }
 
 }
