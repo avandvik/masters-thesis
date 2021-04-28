@@ -18,11 +18,11 @@ public abstract class Operator {
 
     static List<Order> createNewOrderSequence(List<Installation> newInstSequence) {
         List<Order> newOrderSequence = new LinkedList<>();
+        Set<Order> postponed = originalSolution.getPostponedOrders();
         for (Installation installation : newInstSequence) {
-            Set<Order> postponed = originalSolution.getPostponedOrders();
-            List<Order> ordersFromInst = Problem.getScheduledOrdersFromInstallation(installation, postponed);
-            Collections.sort(ordersFromInst);
-            newOrderSequence.addAll(ordersFromInst);
+            List<Order> scheduledOrdersFromInst = Problem.getScheduledOrdersFromInstallation(installation, postponed);
+            Collections.sort(scheduledOrdersFromInst);  // TODO: This is fragile! Sort MD - OD - OP
+            newOrderSequence.addAll(scheduledOrdersFromInst);
         }
         return newOrderSequence;
     }
