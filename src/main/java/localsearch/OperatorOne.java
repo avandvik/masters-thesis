@@ -12,11 +12,11 @@ import java.util.*;
 
 public abstract class OperatorOne extends Operator {
 
-    protected static List<List<Installation>> seenInstSequences;  // TODO: Remove when OneRelocate is updated
+    protected static List<List<Installation>> seenInstSequences;
     protected static Map<Integer, Double> vesselToBestObjective;
 
     public static void initialize(Solution solution) {
-        seenInstSequences = new ArrayList<>();  // TODO: Remove when OneRelocate is updated
+        seenInstSequences = new ArrayList<>();
         vesselToBestObjective = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
