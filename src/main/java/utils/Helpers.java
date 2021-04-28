@@ -117,4 +117,8 @@ public class Helpers {
             return Problem.getInstallation(node.getOrder());
         }
     }
+
+    public static <T> List<List<T>> wrapListsInList(List<T> listOne, List<T> listTwo) {
+        return new ArrayList<>(Arrays.asList(listOne, listTwo));
+    }
 }

@@ -33,16 +33,4 @@ public class OperatorOneRelocate extends OperatorOne {
         }
         return newSolution;
     }
-
-    private static List<Installation> rmInstFromSequence(List<Installation> instSequence, Installation inst) {
-        List<Installation> instSequenceExclInst = Helpers.deepCopyList(instSequence, false);
-        instSequenceExclInst.remove(inst);
-        return instSequenceExclInst;
-    }
-
-    private static List<Installation> addInstToPosition(List<Installation> instSequence, Installation inst, int idx) {
-        List<Installation> newInstSequence = Helpers.deepCopyList(instSequence, false);
-        newInstSequence.add(idx, inst);
-        return newInstSequence;
-    }
 }
