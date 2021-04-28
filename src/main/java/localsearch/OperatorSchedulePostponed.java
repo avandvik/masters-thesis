@@ -7,14 +7,16 @@ import objects.Order;
 import utils.Helpers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 public class OperatorSchedulePostponed extends OperatorTwo {
 
+    private static Set<Order> postponedOrders = originalSolution.getPostponedOrders();
+
     public static Solution schedulePostponedOrder(Solution solution) {
         initialize(solution);
-        Set<Order> postponedOrders = originalSolution.getPostponedOrders();
         for (Order order : postponedOrders) {
             Installation inst = Problem.getInstallation(order);
             List<Order> scheduledOrders = Problem.getScheduledOrdersFromInstallation(inst, postponedOrders);
@@ -29,7 +31,6 @@ public class OperatorSchedulePostponed extends OperatorTwo {
                 }
             }
         }
-
         return solution;
     }
 
@@ -45,6 +46,16 @@ public class OperatorSchedulePostponed extends OperatorTwo {
 
     private static List<Order> createNewOrderSequence(List<Installation> newInstSequence, List<Order> orders, int idx) {
         List<Order> newOrderSequence = new ArrayList<>();
+        for (int instIdx = 0; instIdx < newInstSequence.size(); instIdx++) {
+            if (instIdx == idx) {
+                newOrderSequence.addAll(orders);
+            } else {
+                Installation inst = newInstSequence.get(instIdx);
+                List<Order> scheduledOrdersFromInst = Problem.getScheduledOrdersFromInstallation(inst, postponedOrders);
+                Collections.sort(scheduledOrdersFromInst);  // TODO: This is fragile! Sort MD - OD - OP
+                newOrderSequence.addAll(scheduledOrdersFromInst);
+            }
+        }
         return newOrderSequence;
     }
 }
