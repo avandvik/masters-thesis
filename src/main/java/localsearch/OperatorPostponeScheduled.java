@@ -26,6 +26,7 @@ public class OperatorPostponeScheduled extends Operator {
                 bestCost = updateFields(order, candidateSolution, vIdx, bestCost);
             }
         }
+        Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }
 

@@ -1,21 +1,21 @@
 package localsearch;
 
+import alns.Objective;
 import alns.Solution;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
 import utils.Helpers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class OperatorSchedulePostponed extends OperatorTwo {
+public class OperatorSchedulePostponed extends Operator {
 
-    private static Set<Order> postponedOrders = originalSolution.getPostponedOrders();
+    private static Set<Order> postponedOrders;
+    private static Map<Integer, Double> vesselToCost;
+    private static double greatestDecrease;
 
-    public static Solution schedulePostponedOrder(Solution solution) {
+    public static Solution schedulePostponed(Solution solution) {
         initialize(solution);
         for (Order order : postponedOrders) {
             Installation inst = Problem.getInstallation(order);
@@ -28,10 +28,27 @@ public class OperatorSchedulePostponed extends OperatorTwo {
                     List<Installation> newInstSequence = addInstToPosition(rmInstSequence, inst, insertIdx);
                     scheduledOrders.add(order);  // Orders to place
                     List<Order> newOrderSequence = createNewOrderSequence(newInstSequence, scheduledOrders, insertIdx);
+                    List<List<Order>> newOrderSequences = Helpers.deepCopy2DList(rmOrderSequences);
+                    newOrderSequences.set(vesselIdx, newOrderSequence);
+                    double decrease = calculateDecrease(newOrderSequences, order);
+                    if (decrease < greatestDecrease) {
+                        greatestDecrease = decrease;
+                        newSolution.replaceOrderSequences(newOrderSequences);
+                        newSolution.removePostponedOrder(order);
+                    }
                 }
             }
         }
-        return solution;
+        Objective.setObjValAndSchedule(newSolution);
+        return newSolution;
+    }
+
+    private static void initialize(Solution solution) {
+        originalSolution = solution;
+        newSolution = Helpers.deepCopySolution(solution);
+        postponedOrders = solution.getPostponedOrders();
+        vesselToCost = createVesselToCost(solution);
+        greatestDecrease = 0.0;
     }
 
     private static List<List<Order>> removeOrdersFromSequences(List<Order> orders) {
@@ -57,5 +74,13 @@ public class OperatorSchedulePostponed extends OperatorTwo {
             }
         }
         return newOrderSequence;
+    }
+
+    private static double calculateDecrease(List<List<Order>> newOrderSequences, Order postponedOrder) {
+        double decrease = -postponedOrder.getPostponementPenalty();
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            decrease += Objective.runSPLean(newOrderSequences.get(vIdx), vIdx) - vesselToCost.get(vIdx);
+        }
+        return decrease;
     }
 }
