@@ -1,15 +1,13 @@
 package localsearch;
 
+import alns.Objective;
 import alns.Solution;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
 import utils.Helpers;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public abstract class Operator {
 
@@ -37,5 +35,15 @@ public abstract class Operator {
         List<Installation> newInstSequence = Helpers.deepCopyList(instSequence, false);
         newInstSequence.add(idx, inst);
         return newInstSequence;
+    }
+
+    static Map<Integer, Double> createVesselToCost(Solution solution) {
+        Map<Integer, Double> vesselToCostMap = new HashMap<>();
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
+            double cost = orderSequence.isEmpty() ? 0.0 : Objective.runSPLean(orderSequence, vesselIdx); // Cached
+            vesselToCostMap.put(vesselIdx, cost);
+        }
+        return vesselToCostMap;
     }
 }

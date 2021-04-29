@@ -3,7 +3,6 @@ package localsearch;
 import alns.Objective;
 import alns.Solution;
 import data.Problem;
-import objects.Installation;
 import objects.Order;
 import utils.Helpers;
 
@@ -16,14 +15,15 @@ public class OperatorPostponeScheduled extends Operator {
 
     public static Solution postponeScheduled(Solution solution) {
         initialize(solution);
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            double bestCost = calculateOriginalCost(vesselIdx);
-            List<Order> orderSequence = originalSolution.getOrderSequence(vesselIdx);
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            double bestCost = calculateOriginalCost(vIdx); // best cost of order sequence and postponed order set
+            List<Order> orderSequence = originalSolution.getOrderSequence(vIdx);
             for (Order order : orderSequence) {
-                Solution tempSolution = Helpers.deepCopySolution(originalSolution);
-                tempSolution.getOrderSequence(vesselIdx).remove(order);
-                tempSolution.getPostponedOrders().add(order);
-                bestCost = updateFields(order, tempSolution, vesselIdx, bestCost);
+                if (order.isMandatory()) continue;
+                Solution candidateSolution = Helpers.deepCopySolution(originalSolution);
+                candidateSolution.getOrderSequence(vIdx).remove(order);
+                candidateSolution.getPostponedOrders().add(order);
+                bestCost = updateFields(order, candidateSolution, vIdx, bestCost);
             }
         }
         return newSolution;
@@ -31,37 +31,32 @@ public class OperatorPostponeScheduled extends Operator {
 
     public static void initialize(Solution solution) {
         originalSolution = solution;
-        vesselToCost = new HashMap<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
-            double cost = orderSequence.isEmpty() ? 0.0 : Objective.runSPLean(orderSequence, vesselIdx); // Cached
-            vesselToCost.put(vesselIdx, cost);
-        }
+        vesselToCost = createVesselToCost(solution);
         postponedOrdersCost = originalSolution.getPenaltyCosts();
         newSolution = Helpers.deepCopySolution(solution);
     }
 
-    private static double calculateOriginalCost(int vesselIdx) {
-        return (vesselToCost.get(vesselIdx) + postponedOrdersCost);
+    private static double calculateOriginalCost(int vIdx) {
+        return (vesselToCost.get(vIdx) + postponedOrdersCost);
     }
 
-    private static double calculateNewCost(Solution solution, int vesselIdx) {
-        return (Objective.runSPLean(solution.getOrderSequence(vesselIdx), vesselIdx) + solution.getPenaltyCosts());
+    private static double calculateNewCost(Solution solution, int vIdx) {
+        return (Objective.runSPLean(solution.getOrderSequence(vIdx), vIdx) + solution.getPenaltyCosts());
     }
 
-    private static double updateFields(Order order, Solution solution, int vesselIdx, double bestCost) {
-        double newCost = calculateNewCost(solution, vesselIdx);
+    private static double updateFields(Order order, Solution solution, int vIdx, double bestCost) {
+        double newCost = calculateNewCost(solution, vIdx);
         if (newCost < bestCost) {
-            bestCost = newCost;
-            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
-            newSolution.replaceOrderSequence(vesselIdx, orderSequence);
-            replacePostponedOrders(order, newSolution, vesselIdx);
+            List<Order> orderSequence = solution.getOrderSequence(vIdx);
+            newSolution.replaceOrderSequence(vIdx, orderSequence);
+            replacePostponedOrders(order, newSolution, vIdx);
+            return newCost;
         }
         return bestCost;
     }
 
-    private static void replacePostponedOrders(Order order, Solution solution, int vesselIdx) {
-        for (Order candidateOrder : originalSolution.getOrderSequence(vesselIdx)) {
+    private static void replacePostponedOrders(Order order, Solution solution, int vIdx) {
+        for (Order candidateOrder : originalSolution.getOrderSequence(vIdx)) {
             // Remove orders from same order sequence that have been postponed
             solution.getPostponedOrders().remove(candidateOrder);
         }
