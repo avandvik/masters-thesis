@@ -13,17 +13,12 @@ import java.util.Map;
 
 public abstract class OperatorTwo extends Operator {
 
-    static Map<Integer, Double> vesselToCost;
     static double greatestDecrease; // Lowest negative number
+    static Map<Integer, Double> vesselToCost;
 
     static void initialize(Solution solution) {
         greatestDecrease = 0.0;
-        vesselToCost = new HashMap<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
-            double cost = orderSequence.isEmpty() ? 0.0 : Objective.runSPLean(orderSequence, vesselIdx); // Cached
-            vesselToCost.put(vesselIdx, cost);
-        }
+        vesselToCost = createVesselToCost(solution);
         originalSolution = solution;
         newSolution = Helpers.deepCopySolution(solution);
     }

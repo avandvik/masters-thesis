@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class OperatorTwoExchangeTest {
 
     @Test
-    @DisplayName("test oneExchange")
+    @DisplayName("test twoExchange")
     public void twoExchangeTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Objective.initializeCache();
