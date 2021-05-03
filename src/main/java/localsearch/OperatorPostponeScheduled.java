@@ -11,19 +11,18 @@ import java.util.*;
 public class OperatorPostponeScheduled extends Operator {
 
     private static Map<Integer, Double> vesselToCost;
-    private static double postponedOrdersCost;
+    private static double greatestDecrease;  // Negative means decrease in objective
 
     public static Solution postponeScheduled(Solution solution) {
         initialize(solution);
         for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
-            double bestCost = calculateOriginalCost(vIdx); // best cost of order sequence and postponed order set
             List<Order> orderSequence = originalSolution.getOrderSequence(vIdx);
             for (Order order : orderSequence) {
                 if (order.isMandatory()) continue;
-                Solution candidateSolution = Helpers.deepCopySolution(originalSolution);
-                candidateSolution.getOrderSequence(vIdx).remove(order);
-                candidateSolution.getPostponedOrders().add(order);
-                bestCost = updateFields(order, candidateSolution, vIdx, bestCost);
+                List<Order> newOrderSequence = Helpers.deepCopyList(orderSequence, true);
+                newOrderSequence.remove(order);
+                double decrease = calculateDecrease(vIdx, newOrderSequence, order);
+                updateFields(decrease, vIdx, newOrderSequence, order);
             }
         }
         Objective.setObjValAndSchedule(newSolution);
@@ -32,36 +31,22 @@ public class OperatorPostponeScheduled extends Operator {
 
     public static void initialize(Solution solution) {
         originalSolution = solution;
-        vesselToCost = createVesselToCost(solution);
-        postponedOrdersCost = originalSolution.getPenaltyCosts();
         newSolution = Helpers.deepCopySolution(solution);
+        vesselToCost = createVesselToCost(solution);
+        greatestDecrease = 0.0;
     }
 
-    private static double calculateOriginalCost(int vIdx) {
-        return (vesselToCost.get(vIdx) + postponedOrdersCost);
-    }
-
-    private static double calculateNewCost(Solution solution, int vIdx) {
-        return (Objective.runSPLean(solution.getOrderSequence(vIdx), vIdx) + solution.getPenaltyCosts());
-    }
-
-    private static double updateFields(Order order, Solution solution, int vIdx, double bestCost) {
-        double newCost = calculateNewCost(solution, vIdx);
-        if (newCost < bestCost) {
-            List<Order> orderSequence = solution.getOrderSequence(vIdx);
-            newSolution.replaceOrderSequence(vIdx, orderSequence);
-            replacePostponedOrders(order, newSolution, vIdx);
-            return newCost;
+    private static void updateFields(double decrease, int vIdx, List<Order> newOrderSequence, Order scheduledOrder) {
+        if (decrease < greatestDecrease) {
+            greatestDecrease = decrease;
+            newSolution.replaceOrderSequence(vIdx, newOrderSequence);
+            newSolution.addPostponedOrder(scheduledOrder);
         }
-        return bestCost;
     }
 
-    private static void replacePostponedOrders(Order order, Solution solution, int vIdx) {
-        for (Order candidateOrder : originalSolution.getOrderSequence(vIdx)) {
-            // Remove orders from same order sequence that have been postponed
-            solution.getPostponedOrders().remove(candidateOrder);
-        }
-        solution.getPostponedOrders().add(order);
+    private static double calculateDecrease(int vIdx, List<Order> newOrderSequence, Order scheduledOrder) {
+        double decrease = scheduledOrder.getPostponementPenalty();
+        decrease -= vesselToCost.get(vIdx) - Objective.runSPLean(newOrderSequence, vIdx);
+        return decrease;
     }
-
 }

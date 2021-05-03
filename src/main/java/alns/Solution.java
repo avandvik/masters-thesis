@@ -62,6 +62,10 @@ public class Solution {
         }
     }
 
+    public void removeOrderFromSequence(int vesselIdx, Order rmOrder) {
+        this.orderSequences.get(vesselIdx).remove(rmOrder);
+    }
+
     public Set<Order> getPostponedOrders() {
         return postponedOrders;
     }

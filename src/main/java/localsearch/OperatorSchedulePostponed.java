@@ -21,21 +21,16 @@ public class OperatorSchedulePostponed extends Operator {
             Installation inst = Problem.getInstallation(order);
             List<Order> scheduledOrders = Problem.getScheduledOrdersFromInstallation(inst, postponedOrders);
             List<List<Order>> rmOrderSequences = removeOrdersFromSequences(scheduledOrders);
-            for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-                List<Order> rmOrderSequence = rmOrderSequences.get(vesselIdx);
+            for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+                List<Order> rmOrderSequence = rmOrderSequences.get(vIdx);
                 List<Installation> rmInstSequence = Helpers.getInstSequence(rmOrderSequence);
                 for (int insertIdx = 0; insertIdx <= rmInstSequence.size(); insertIdx++) {
                     List<Installation> newInstSequence = addInstToPosition(rmInstSequence, inst, insertIdx);
-                    scheduledOrders.add(order);  // Orders to place
-                    List<Order> newOrderSequence = createNewOrderSequence(newInstSequence, scheduledOrders, insertIdx);
+                    List<Order> ordersToPlace = getOrdersToPlace(scheduledOrders, order);
+                    List<Order> newOrderSequence = createNewOrderSequence(newInstSequence, ordersToPlace, insertIdx);
                     List<List<Order>> newOrderSequences = Helpers.deepCopy2DList(rmOrderSequences);
-                    newOrderSequences.set(vesselIdx, newOrderSequence);
-                    double decrease = calculateDecrease(newOrderSequences, order);
-                    if (decrease < greatestDecrease) {
-                        greatestDecrease = decrease;
-                        newSolution.replaceOrderSequences(newOrderSequences);
-                        newSolution.removePostponedOrder(order);
-                    }
+                    newOrderSequences.set(vIdx, newOrderSequence);
+                    updateFields(newOrderSequences, order);
                 }
             }
         }
@@ -61,6 +56,12 @@ public class OperatorSchedulePostponed extends Operator {
         return orderSequences;
     }
 
+    private static List<Order> getOrdersToPlace(List<Order> scheduledOrders, Order postponedOrder) {
+        List<Order> ordersToPlace = Helpers.deepCopyList(scheduledOrders, false);
+        ordersToPlace.add(postponedOrder);
+        return ordersToPlace;
+    }
+
     private static List<Order> createNewOrderSequence(List<Installation> newInstSequence, List<Order> orders, int idx) {
         List<Order> newOrderSequence = new ArrayList<>();
         for (int instIdx = 0; instIdx < newInstSequence.size(); instIdx++) {
@@ -74,6 +75,15 @@ public class OperatorSchedulePostponed extends Operator {
             }
         }
         return newOrderSequence;
+    }
+
+    private static void updateFields(List<List<Order>> newOrderSequences, Order postponedOrder) {
+        double decrease = calculateDecrease(newOrderSequences, postponedOrder);
+        if (decrease < greatestDecrease) {
+            greatestDecrease = decrease;
+            newSolution.replaceOrderSequences(newOrderSequences);
+            newSolution.removePostponedOrder(postponedOrder);
+        }
     }
 
     private static double calculateDecrease(List<List<Order>> newOrderSequences, Order postponedOrder) {
