@@ -137,6 +137,7 @@ public class ArcGenerator {
         double sailedDistance = 0.0;
         int currentTime = startSailingTime;
         while (sailedDistance < distance) {
+            if (currentTime == Problem.getGeneralReturnTime()) return -1.0;
             int ws = Problem.weatherForecastDisc.get(currentTime);
             double adjustedMaxSpeed = Problem.maxSpeed - Problem.getSpeedImpact(ws);
             sailedDistance += adjustedMaxSpeed * Problem.timeUnit;
