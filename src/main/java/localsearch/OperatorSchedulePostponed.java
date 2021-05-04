@@ -11,7 +11,7 @@ import java.util.*;
 
 public class OperatorSchedulePostponed extends Operator {
 
-    private static Set<Order> postponedOrders;
+    private static List<Order> postponedOrders;
     private static Map<Integer, Double> vesselToCost;
     private static double greatestDecrease;
 
@@ -41,7 +41,8 @@ public class OperatorSchedulePostponed extends Operator {
     private static void initialize(Solution solution) {
         originalSolution = solution;
         newSolution = Helpers.deepCopySolution(solution);
-        postponedOrders = solution.getPostponedOrders();
+        postponedOrders = new ArrayList<>(solution.getPostponedOrders());  // List for predictability in tests
+        postponedOrders.sort(Comparator.comparing(Order::getPostponementPenalty).reversed());
         vesselToCost = createVesselToCost(solution);
         greatestDecrease = 0.0;
     }
@@ -63,14 +64,14 @@ public class OperatorSchedulePostponed extends Operator {
     }
 
     private static List<Order> createNewOrderSequence(List<Installation> newInstSequence, List<Order> orders, int idx) {
-        List<Order> newOrderSequence = new ArrayList<>();
+        List<Order> newOrderSequence = new LinkedList<>();
         for (int instIdx = 0; instIdx < newInstSequence.size(); instIdx++) {
             if (instIdx == idx) {
                 newOrderSequence.addAll(orders);
             } else {
                 Installation inst = newInstSequence.get(instIdx);
                 List<Order> scheduledOrdersFromInst = Problem.getScheduledOrdersFromInstallation(inst, postponedOrders);
-                Collections.sort(scheduledOrdersFromInst);  // TODO: This is fragile! Sort MD - OD - OP
+                Helpers.sortOrdersFromInst(scheduledOrdersFromInst);
                 newOrderSequence.addAll(scheduledOrdersFromInst);
             }
         }
