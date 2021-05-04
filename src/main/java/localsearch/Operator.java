@@ -19,7 +19,7 @@ public abstract class Operator {
         Set<Order> postponed = originalSolution.getPostponedOrders();
         for (Installation installation : newInstSequence) {
             List<Order> scheduledOrdersFromInst = Problem.getScheduledOrdersFromInstallation(installation, postponed);
-            Collections.sort(scheduledOrdersFromInst);  // TODO: This is fragile! Sort MD - OD - OP
+            Helpers.sortOrdersFromInst(scheduledOrdersFromInst);
             newOrderSequence.addAll(scheduledOrdersFromInst);
         }
         return newOrderSequence;
