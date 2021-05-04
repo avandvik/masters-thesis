@@ -79,11 +79,11 @@ public class InsertionRegret extends Heuristic implements Repairer {
         Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = orderSequences.get(vesselIdx);
-            double currentObjective = Objective.runSPLean(orderSequence, vesselIdx);
+            double currentObjective = Objective.runSP(orderSequence, vesselIdx);
             for (int insertionIdx : insertions.get(vesselIdx)) {
                 List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
                 orderSequenceCopy.add(insertionIdx, order);
-                double increase = Objective.runSPLean(orderSequenceCopy, vesselIdx) - currentObjective;
+                double increase = Objective.runSP(orderSequenceCopy, vesselIdx) - currentObjective;
                 increases.add(increase);
             }
         }

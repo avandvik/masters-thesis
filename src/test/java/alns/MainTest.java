@@ -18,7 +18,7 @@ public class MainTest {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Parameters.verbose = false;
         Parameters.semiVerbose = false;
-        Parameters.totalIterations = 65;
+        Parameters.totalIter = 65;
         Parameters.maxIterSolution = 20;
         Parameters.noiseRate = 0.5;
         Parameters.saveSolution = false;

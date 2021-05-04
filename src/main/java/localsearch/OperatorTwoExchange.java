@@ -18,16 +18,19 @@ public class OperatorTwoExchange extends OperatorTwo {
         for (int vIdxOne = 0; vIdxOne < Problem.getNumberOfVessels() - 1; vIdxOne++) {
             for (int vIdxTwo = vIdxOne + 1; vIdxTwo < Problem.getNumberOfVessels(); vIdxTwo++) {
                 double originalCost = calculateOriginalCost(vIdxOne, vIdxTwo);
-                List<Order> orderSequence = originalSolution.getOrderSequence(vIdxOne);
-                List<Order> nextOrderSequence = originalSolution.getOrderSequence(vIdxTwo);
-                if (orderSequence.isEmpty() || nextOrderSequence.isEmpty()) continue;
-                List<List<Installation>> instSequences = new ArrayList<>(Arrays.asList(
-                        Helpers.getInstSequence(orderSequence), Helpers.getInstSequence(nextOrderSequence)));
+                List<Installation> instSeqOne = Helpers.getInstSequence(newSolution.getOrderSequence(vIdxOne));
+                List<Installation> instSeqTwo = Helpers.getInstSequence(newSolution.getOrderSequence(vIdxTwo));
+                if (instSeqOne.isEmpty() || instSeqTwo.isEmpty()) continue;
+                List<List<Installation>> instSequences = Helpers.wrapListsInList(instSeqOne, instSeqTwo);
                 List<List<Integer>> instExchanges = getInstExchangesInter(instSequences);
                 performInstExchangesInter(instSequences, vIdxOne, vIdxTwo, instExchanges, originalCost);
+                greatestDecrease = 0.0;
             }
         }
-        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
+        if (!Evaluator.isSolutionFeasible(newSolution)) {
+            System.out.println(newSolution);
+            throw new IllegalStateException(Messages.infSolCreated);
+        }
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }
@@ -38,7 +41,7 @@ public class OperatorTwoExchange extends OperatorTwo {
         List<List<Integer>> instExchanges = new ArrayList<>();
         for (int firstInstIdx = 0; firstInstIdx < firstInstSequence.size(); firstInstIdx++) {
             for (int secondInstIdx = 0; secondInstIdx < secondInstSequence.size(); secondInstIdx++) {
-                instExchanges.add(new LinkedList<>(Arrays.asList(firstInstIdx, secondInstIdx)));
+                instExchanges.add(new ArrayList<>(Arrays.asList(firstInstIdx, secondInstIdx)));
             }
         }
         return instExchanges;

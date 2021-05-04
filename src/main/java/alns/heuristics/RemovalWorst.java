@@ -72,11 +72,11 @@ public class RemovalWorst extends Heuristic implements Destroyer {
         this.orderToDecrease = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = orderSequences.get(vesselIdx);
-            double currentObj = Objective.runSPLean(orderSequence, vesselIdx);
+            double currentObj = Objective.runSP(orderSequence, vesselIdx);
             for (int orderIdx = 0; orderIdx < orderSequence.size(); orderIdx++) {
                 List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
                 orderSequenceCopy.remove(orderIdx);
-                double decrease = currentObj - Objective.runSPLean(orderSequenceCopy, vesselIdx);
+                double decrease = currentObj - Objective.runSP(orderSequenceCopy, vesselIdx);
                 Order order = orderSequences.get(vesselIdx).get(orderIdx);
                 this.orderToDecrease.put(order, decrease);
             }

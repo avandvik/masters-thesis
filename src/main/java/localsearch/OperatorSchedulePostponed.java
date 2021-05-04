@@ -94,7 +94,7 @@ public class OperatorSchedulePostponed extends Operator {
     private static double calculateDecrease(List<List<Order>> newOrderSequences, Order postponedOrder) {
         double decrease = -postponedOrder.getPostponementPenalty();
         for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
-            decrease += Objective.runSPLean(newOrderSequences.get(vIdx), vIdx) - vesselToCost.get(vIdx);
+            decrease += Objective.runSP(newOrderSequences.get(vIdx), vIdx) - vesselToCost.get(vIdx);
         }
         return decrease;
     }

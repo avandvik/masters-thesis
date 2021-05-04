@@ -25,24 +25,26 @@ public class Parameters {
     public static double rnRelated = 10;
     public static double rnWorst = 10;
 
-    // Concurrency
-    public static boolean parallelHeuristics = false;
-
     // Iterations
-    public static int totalIterations = 1000;
+    public static int totalIter = 1000;
     public static int maxIterSolution = 20;
-    public static int setPartitioningIterations = 100;
-    public static int segmentIterations = 50;
+    public static int setPartitioningIter = 100;
+    public static int segmentIter = 50;
 
-    // Verbose
+    // Toggles
+    public static boolean setPartitioning = false;
+    public static boolean localSearch = true;
     public static boolean verbose = false;
-    public static boolean semiVerbose = false;
+    public static boolean semiVerbose = true;
     public static boolean saveSolution = false;
+    public static boolean parallelHeuristics = true;
+    public static boolean cacheSP = false;
+
 
     public static void setTemperatureAndCooling(double currentFitness) {
         double candidateFitness = currentFitness * 1.05;
         startTemperature = -(candidateFitness - currentFitness) * (1 / Math.log(0.5));
         double lastTemperature = startTemperature * 0.002;
-        coolingRate = Math.exp(Math.log(lastTemperature / startTemperature) / totalIterations);
+        coolingRate = Math.exp(Math.log(lastTemperature / startTemperature) / totalIter);
     }
 }

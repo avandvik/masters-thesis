@@ -2,6 +2,7 @@ package subproblem;
 
 import alns.Objective;
 import data.Messages;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 
@@ -39,7 +40,7 @@ public class SubProblem implements Runnable {
     public void run() {
         this.solveSubProblem();
         addToResultsStructure(vesselIdx, this.shortestPathCost);
-        Objective.cacheSubProblemResults(this.hashCode(), this);
+        if (Parameters.cacheSP) Objective.cacheSubProblemResults(this.hashCode(), this);
     }
 
     public void solveSubProblem() {

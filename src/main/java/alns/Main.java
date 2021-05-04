@@ -35,16 +35,16 @@ public class Main {
 
     public static void run() {
         initialize();
-        for (int iteration = 0; iteration < Parameters.totalIterations; iteration++) {
+        for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
-            candidateSolution = LocalSearch.localSearch(candidateSolution);
-            saveOrderSequences(candidateSolution);
-            printIterationInfo(iteration, candidateSolution);
+            if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution);
+            if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
+            printIterationInfo(iter, candidateSolution);
             double reward = acceptSolution(candidateSolution);
-            if (iteration > 0 && iteration % Parameters.setPartitioningIterations == 0) runSetPartitioningModel();
-            maintenance(reward, heuristics, iteration);
+            if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartitioningIter == 0) runSetPartitioningModel();
+            maintenance(reward, heuristics, iter);
         }
         if (Parameters.saveSolution) IO.saveSolution(bestSolution);
     }
@@ -121,11 +121,10 @@ public class Main {
     }
 
     private static void saveOrderSequences(Solution candidateSolution) {
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = candidateSolution.getOrderSequence(vesselIdx);
-            int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
-            double cost = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
-            vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            List<Order> orderSequence = candidateSolution.getOrderSequence(vIdx);
+            double cost = Objective.getOrderSequenceCost(orderSequence, vIdx);
+            vesselToSequenceToCost.get(vIdx).put(orderSequence, cost);  // Okay if overwrite
         }
     }
 
@@ -179,7 +178,7 @@ public class Main {
     private static void maintenance(double reward, List<Heuristic> heuristics, int iteration) {
         currentTemperature *= Parameters.coolingRate;
         for (Heuristic heuristic : heuristics) heuristic.addToScore(reward);
-        if ((iteration + 1) % Parameters.segmentIterations == 0) resetHeuristicScores();
+        if ((iteration + 1) % Parameters.segmentIter == 0) resetHeuristicScores();
     }
 
     private static void resetHeuristicScores() {
@@ -235,7 +234,7 @@ public class Main {
     }
 
     private static void printSubtle(int iteration, Solution candidateSolution) {
-        int percentage = (int) (((iteration + 1) / (double) Parameters.totalIterations) * 100);
+        int percentage = (int) (((iteration + 1) / (double) Parameters.totalIter) * 100);
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4] + "\r");
     }
 
@@ -286,8 +285,8 @@ public class Main {
         for (File instance : instances) {
             String fileName = instance.getName();
             System.out.println("Running " + fileName);
-            runExtensively(fileName, 20, 1000);
-            // runSimple(fileName);
+            // runExtensively(fileName, 10, 1000);
+            runSimple(fileName);
         }
     }
 }

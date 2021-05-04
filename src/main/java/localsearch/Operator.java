@@ -41,7 +41,7 @@ public abstract class Operator {
         Map<Integer, Double> vesselToCostMap = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
-            double cost = orderSequence.isEmpty() ? 0.0 : Objective.runSPLean(orderSequence, vesselIdx); // Cached
+            double cost = Objective.getOrderSequenceCost(orderSequence, vesselIdx);
             vesselToCostMap.put(vesselIdx, cost);
         }
         return vesselToCostMap;

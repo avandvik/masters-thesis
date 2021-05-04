@@ -1,6 +1,7 @@
 package alns;
 
 import alns.heuristics.Construction;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import subproblem.Node;
@@ -32,6 +33,15 @@ public class Objective {
         hashToShortestPath.put(hash, subProblem.getShortestPath());
     }
 
+    public static double getCost(int hash) {
+        return hashToCost.get(hash);
+    }
+
+    public static double getOrderSequenceCost(List<Order> orderSequence, int vIdx) {
+        int hash = SubProblem.getSubProblemHash(orderSequence, vIdx);
+        return orderSequence.isEmpty() ? 0.0 : Parameters.cacheSP ? getCost(hash) : runSP(orderSequence, vIdx);
+    }
+
     public static void setObjValAndSchedule(Solution solution) {
         /* Calculates and sets the objective value of the solution and sets the corresponding vessel schedules */
 
@@ -59,9 +69,7 @@ public class Objective {
 
     public static SubProblem runSPComplete(List<Order> orderSequence, int vesselIdx) {
         /* Runs SubProblem and returns entire object to access all solution info (schedules) */
-
         if (orderSequence.isEmpty()) return null;
-
         int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
         if (isCached(hash)) {
             SubProblem subProblem = new SubProblem(orderSequence, vesselIdx);
@@ -69,30 +77,22 @@ public class Objective {
             subProblem.setShortestPathCost(hashToCost.get(hash));
             return subProblem;
         }
-
         SubProblem subProblem = new SubProblem(orderSequence, vesselIdx);
         SubProblem.initializeResultsStructure();
         subProblem.run();
-
-        cacheSubProblemResults(hash, subProblem);
-
+        if (Parameters.cacheSP) cacheSubProblemResults(hash, subProblem);
         return subProblem;
     }
 
-    public static double runSPLean(List<Order> orderSequence, int vesselIdx) {
+    public static double runSP(List<Order> orderSequence, int vesselIdx) {
         /* Run SubProblem and returns only objective value */
-
         if (orderSequence.isEmpty()) return 0.0;
-
         int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
         if (isCached(hash)) return hashToCost.get(hash);
-
         SubProblem subProblem = new SubProblem(orderSequence, vesselIdx);
         SubProblem.initializeResultsStructure();
         subProblem.run();
-
-        cacheSubProblemResults(hash, subProblem);
-
+        if (Parameters.cacheSP) cacheSubProblemResults(hash, subProblem);
         return subProblem.getShortestPathCost();
     }
 

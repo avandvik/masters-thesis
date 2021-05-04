@@ -92,11 +92,11 @@ public class InsertionGreedy extends Heuristic implements Repairer {
             Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
             for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
                 List<Order> orderSequence = orderSequences.get(vesselIdx);
-                double currentObjective = Objective.runSPLean(orderSequence, vesselIdx);
+                double currentObjective = Objective.runSP(orderSequence, vesselIdx);
                 for (int insertionIdx : insertions.get(vesselIdx)) {
                     List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
                     orderSequenceCopy.add(insertionIdx, order);
-                    double increase = Objective.runSPLean(orderSequenceCopy, vesselIdx) - currentObjective;
+                    double increase = Objective.runSP(orderSequenceCopy, vesselIdx) - currentObjective;
                     if (increase < this.leastIncrease) {
                         if (instHasMandUnplacedOrder(order, ordersToPlace)) continue outer;
                         this.leastIncrease = increase;
@@ -140,7 +140,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
 
         int vesselIdx = bestInsertion.get(0);
         int insertionIdx = bestInsertion.get(1);
-        double increase = bestObj - Objective.runSPLean(orderSequences.get(vesselIdx), vesselIdx);
+        double increase = bestObj - Objective.runSP(orderSequences.get(vesselIdx), vesselIdx);
 
         if (!order.isMandatory() && order.getPostponementPenalty() < increase) {
             newSolution.addPostponedOrder(order);
