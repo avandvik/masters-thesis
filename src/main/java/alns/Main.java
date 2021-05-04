@@ -239,10 +239,10 @@ public class Main {
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4] + "\r");
     }
 
-    private static void runExtensively(int numberOfSeeds, int seedBound) {
+    private static void runExtensively(String fileName, int numberOfSeeds, int seedBound) {
         Random rn = new Random(seedBound);
         int seed = rn.nextInt(seedBound);
-        Problem.setUpProblem("example_10.json", false, seed);
+        Problem.setUpProblem(fileName, false, seed);
         for (int i = 0; i < numberOfSeeds; i++) {
             System.out.println("Running with seed: " + seed);
 
@@ -286,8 +286,8 @@ public class Main {
         for (File instance : instances) {
             String fileName = instance.getName();
             System.out.println("Running " + fileName);
-            // runExtensively(20, 1000);
-            runSimple(fileName);
+            runExtensively(fileName, 20, 1000);
+            // runSimple(fileName);
         }
     }
 }

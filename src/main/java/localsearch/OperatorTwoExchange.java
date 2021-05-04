@@ -1,7 +1,9 @@
 package localsearch;
 
+import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
+import data.Messages;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
@@ -25,6 +27,7 @@ public class OperatorTwoExchange extends OperatorTwo {
                 performInstExchangesInter(instSequences, vIdxOne, vIdxTwo, instExchanges, originalCost);
             }
         }
+        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }

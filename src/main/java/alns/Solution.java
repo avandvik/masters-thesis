@@ -24,7 +24,7 @@ public class Solution {
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
         this.unplacedOrders = new HashSet<>();  // Solutions from this constructor must have no unplaced orders
-        if (!Evaluator.isSolutionFeasible(this)) throw new IllegalStateException(Messages.infeasibleSolutionCreated);
+        if (!Evaluator.isSolutionFeasible(this)) throw new IllegalStateException(Messages.infSolCreated);
         if (setFitness) Objective.setObjValAndSchedule(this);
     }
 

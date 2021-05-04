@@ -1,7 +1,9 @@
 package localsearch;
 
+import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
+import data.Messages;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
@@ -34,6 +36,7 @@ public class OperatorSchedulePostponed extends Operator {
                 }
             }
         }
+        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }
@@ -79,6 +82,7 @@ public class OperatorSchedulePostponed extends Operator {
     }
 
     private static void updateFields(List<List<Order>> newOrderSequences, Order postponedOrder) {
+        if (!Evaluator.isOrderSequencesFeasible(newOrderSequences)) return;
         double decrease = calculateDecrease(newOrderSequences, postponedOrder);
         if (decrease < greatestDecrease) {
             greatestDecrease = decrease;

@@ -36,8 +36,8 @@ public class Parameters {
 
     // Verbose
     public static boolean verbose = false;
-    public static boolean semiVerbose = true;
-    public static boolean saveSolution = true;
+    public static boolean semiVerbose = false;
+    public static boolean saveSolution = false;
 
     public static void setTemperatureAndCooling(double currentFitness) {
         double candidateFitness = currentFitness * 1.05;

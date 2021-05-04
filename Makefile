@@ -1,6 +1,9 @@
 test:
 	mvn clean test -P local-simple
 
+compile:
+	mvn clean compile -P local-simple
+
 package:
 	mvn clean package -P local-complete
 

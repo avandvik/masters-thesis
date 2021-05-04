@@ -3,6 +3,7 @@ package localsearch;
 import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
+import data.Messages;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
@@ -32,6 +33,7 @@ public class OperatorOneRelocate extends OperatorOne {
                 }
             }
         }
+        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }
