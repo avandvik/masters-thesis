@@ -83,12 +83,11 @@ public class SubProblem implements Runnable {
     }
 
     public static int getSubProblemHash(List<Order> orderSequence, int vesselIdx) {
-        boolean isSpotVessel = Problem.isSpotVessel(vesselIdx);
-        return Objects.hash(orderSequence, isSpotVessel);
+        return Objects.hash(orderSequence, vesselIdx);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderSequence, isSpotVessel);
+        return Objects.hash(this.orderSequence, this.vesselIdx);
     }
 }
