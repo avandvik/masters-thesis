@@ -1,6 +1,7 @@
 package localsearch;
 
 import alns.Evaluator;
+import alns.Objective;
 import alns.Solution;
 import data.Problem;
 import objects.Installation;
@@ -31,6 +32,7 @@ public class OperatorOneRelocate extends OperatorOne {
                 }
             }
         }
+        Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }
 }

@@ -7,7 +7,6 @@ import data.Problem;
 import objects.Order;
 import utils.Helpers;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,8 +33,8 @@ public abstract class OperatorTwo extends Operator {
         boolean secondFeasible = Evaluator.isOrderSequenceFeasible(orderSequenceTwo, Problem.getVessel(vIdxTwo));
         if (firstFeasible && secondFeasible) {
             double aggregatedCost = calculateAggregatedCost(orderSequences, vIdxOne, vIdxTwo);
-            double decrease = aggregatedCost - originalCost; // Negative number
-            if (decrease < 0 && decrease < greatestDecrease) {
+            double decrease = aggregatedCost - originalCost; // Negative -> decrease
+            if (decrease < greatestDecrease) {
                 greatestDecrease = decrease;
                 newSolution.replaceOrderSequence(vIdxOne, orderSequenceOne);
                 newSolution.replaceOrderSequence(vIdxTwo, orderSequenceTwo);

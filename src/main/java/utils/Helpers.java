@@ -87,6 +87,19 @@ public class Helpers {
         return instSequence;
     }
 
+    public static void sortOrdersFromInst(List<Order> ordersFromInst) {
+        ordersFromInst.sort((o1, o2) -> {
+            // Mandatory comes before optional
+            if (o1.isMandatory() && !o2.isMandatory()) return -1;
+            if (o2.isMandatory() && !o1.isMandatory()) return 1;
+
+            // Delivery comes before pickup
+            if (o1.isDelivery() && !o2.isDelivery()) return -1;
+            if (o2.isDelivery() && !o1.isDelivery()) return 1;
+            return 0;
+        });
+    }
+
     public static double getRandomDouble(double min, double max) {
         return Problem.random.nextDouble() * (max - min) + min;
     }

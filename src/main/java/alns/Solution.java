@@ -13,7 +13,7 @@ import java.util.*;
 
 public class Solution {
 
-    private final List<List<Order>> orderSequences;
+    private List<List<Order>> orderSequences;
     private final Set<Order> postponedOrders;
     private final Set<Order> unplacedOrders;
     private List<List<Node>> shortestPaths;
@@ -51,11 +51,19 @@ public class Solution {
         this.orderSequences.set(vesselIdx, newSequence);
     }
 
+    public void replaceOrderSequences(List<List<Order>> newSequences) {
+        this.orderSequences = newSequences;
+    }
+
     public void removeOrderFromSequences(Order rmOrder) {
         for (List<Order> orderSequence : this.orderSequences) {
             boolean removed = orderSequence.removeIf(order -> order.equals(rmOrder));
             if (removed) break;
         }
+    }
+
+    public void removeOrderFromSequence(int vesselIdx, Order rmOrder) {
+        this.orderSequences.get(vesselIdx).remove(rmOrder);
     }
 
     public Set<Order> getPostponedOrders() {
@@ -64,6 +72,10 @@ public class Solution {
 
     public void addPostponedOrder(Order order) {
         this.postponedOrders.add(order);
+    }
+
+    public void removePostponedOrder(Order order) {
+        this.postponedOrders.remove(order);
     }
 
     public Set<Order> getUnplacedOrders() {
