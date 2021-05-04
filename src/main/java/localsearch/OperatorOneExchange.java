@@ -45,9 +45,7 @@ public class OperatorOneExchange extends OperatorOne {
             int secondInstIdx = instExchangeList.get(1);
             List<Installation> newInstSequence = exchangeInstallations(instSequence, firstInstIdx, secondInstIdx);
             List<Order> newOrderSequence = createNewOrderSequence(newInstSequence);
-            if (Evaluator.isOrderSequenceFeasible(newOrderSequence, Problem.getVessel(vesselIdx))) {
-                updateFields(newOrderSequence, vesselIdx);
-            }
+            updateFields(newOrderSequence, vesselIdx);
         }
     }
 

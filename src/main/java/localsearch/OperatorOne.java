@@ -1,5 +1,6 @@
 package localsearch;
 
+import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
 import data.Problem;
@@ -29,6 +30,7 @@ public abstract class OperatorOne extends Operator {
     }
 
     public static void updateFields(List<Order> newOrderSequence, int vesselIdx) {
+        if (!Evaluator.isOrderSequenceFeasible(newOrderSequence, Problem.getVessel(vesselIdx))) return;
         double newObjective = Objective.runSPLean(newOrderSequence, vesselIdx);
         if (newObjective < vesselToBestObjective.get(vesselIdx)) {
             vesselToBestObjective.put(vesselIdx, newObjective);

@@ -27,9 +27,7 @@ public class OperatorOneRelocate extends OperatorOne {
                     if (seenInstSequences.contains(newInstSequence)) continue;
                     seenInstSequences.add(newInstSequence);
                     List<Order> newOrderSequence = createNewOrderSequence(newInstSequence);
-                    if (Evaluator.isOrderSequenceFeasible(newOrderSequence, Problem.getVessel(vesselIdx))) {
-                        updateFields(newOrderSequence, vesselIdx);
-                    }
+                    updateFields(newOrderSequence, vesselIdx);
                 }
             }
         }

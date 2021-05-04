@@ -33,7 +33,7 @@ public abstract class OperatorTwo extends Operator {
         boolean secondFeasible = Evaluator.isOrderSequenceFeasible(orderSequenceTwo, Problem.getVessel(vIdxTwo));
         if (firstFeasible && secondFeasible) {
             double aggregatedCost = calculateAggregatedCost(orderSequences, vIdxOne, vIdxTwo);
-            double decrease = aggregatedCost - originalCost; // Negative -> decrease
+            double decrease = aggregatedCost - originalCost;  // Negative -> decrease
             if (decrease < greatestDecrease) {
                 greatestDecrease = decrease;
                 newSolution.replaceOrderSequence(vIdxOne, orderSequenceOne);
