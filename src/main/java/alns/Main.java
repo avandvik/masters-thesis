@@ -72,7 +72,6 @@ public class Main {
 
     private static void initializeSolutionFields() {
         currentSolution = Construction.constructGreedyInitialSolution();
-        // currentSolution = Construction.constructRandomInitialSolution();
         bestSolution = currentSolution;
         visitedSolutions = new ArrayList<>();
         visitedSolutions.add(currentSolution.hashCode());
