@@ -102,6 +102,7 @@ public class ArcGenerator {
     public static boolean isReturnPossible(double distance, int endTime) {
         if (endTime >= Problem.getFinalTimePoint() || distance < 0) return false;
         double averageMaxSpeed = calculateAverageMaxSpeed(endTime, distance);
+        if (averageMaxSpeed < 0) return false;
         int earliestArrTime = endTime + (int) Math.ceil(Problem.hourToDiscDecimal(distance / averageMaxSpeed));
         return earliestArrTime <= Problem.getGeneralReturnTime();
     }
