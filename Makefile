@@ -24,6 +24,3 @@ get-results:
 
 plot-results:
 	./shell/plot_solution.sh
-
-wipe-results:
-	rm -rf /storage/users/anderhva/*

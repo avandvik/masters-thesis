@@ -20,7 +20,7 @@ public class ArcGenerator {
         double averageMaxSpeed;
         try {
             averageMaxSpeed = calculateAverageMaxSpeed(startTime, distance);
-        } catch (NullPointerException e) {
+        } catch (IndexOutOfBoundsException e) {
             return null;
         }
         List<Double> speeds = new ArrayList<>();
@@ -109,7 +109,7 @@ public class ArcGenerator {
         double averageMaxSpeed;
         try {
             averageMaxSpeed = calculateAverageMaxSpeed(endTime, distance);
-        } catch (NullPointerException e) {
+        } catch (IndexOutOfBoundsException e) {
             return false;
         }
         int earliestArrTime = endTime + (int) Math.ceil(Problem.hourToDiscDecimal(distance / averageMaxSpeed));
@@ -171,9 +171,7 @@ public class ArcGenerator {
 
     // TODO: The pickup duration must be addressed as an assumption if this is how we want to do this
     public static int calculateServiceDuration(Order order) {
-        if (!order.isMandatory() && !order.isDelivery()) {
-            return 1;
-        }
+        if (!order.isMandatory() && !order.isDelivery()) return 1;
         return (int) Math.ceil(order.getSize() * Problem.discServiceTimeUnit);
     }
 

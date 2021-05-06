@@ -128,7 +128,7 @@ public class Evaluator {
         double averageMaxSpeed;
         try {
             averageMaxSpeed = ArcGenerator.calculateAverageMaxSpeed(startTime, distance);
-        } catch (NullPointerException e) {
+        } catch (IndexOutOfBoundsException e) {
             return Problem.getGeneralReturnTime();  // Will lead to false in isFeasibleDuration
         }
         return Problem.hourToDiscTimePoint(distance / averageMaxSpeed);

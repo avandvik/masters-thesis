@@ -36,7 +36,6 @@ public class Problem {
     public static double minSpeed;
     public static double designSpeed;
     public static double maxSpeed;
-    public static double fcDesignSpeed;
     public static double fcDepot;
     public static double fcIdling;
     public static double fcServicing;
@@ -59,14 +58,6 @@ public class Problem {
 
     public static Installation getDepot() {
         return installations.get(0);
-    }
-
-    public static Installation getInstallation(int idx) {
-        if (idx < 0 || idx > installations.size() - 1) {
-            System.out.println("Index out of range in installation list.");
-            return null;
-        }
-        return installations.get(idx);
     }
 
     public static Installation getInstallation(Order order) {

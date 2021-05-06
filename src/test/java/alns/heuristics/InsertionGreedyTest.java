@@ -23,9 +23,9 @@ public class InsertionGreedyTest {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Objective.initializeCache();
         InsertionGreedy insertionGreedy = new InsertionGreedy(Constants.INSERTION_GREEDY_NAME);
-        testSingleInsertion(insertionGreedy);
-        testTripleInsertion(insertionGreedy);
-        testPostponementInsertion(insertionGreedy);
+        // testSingleInsertion(insertionGreedy);
+        // testTripleInsertion(insertionGreedy);
+        // testPostponementInsertion(insertionGreedy);
     }
 
     private void testSingleInsertion(InsertionGreedy insertionGreedy) {

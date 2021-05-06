@@ -274,12 +274,8 @@ public class Main {
 
     public static void main(String[] args) {
         File[] instances;
-        if (args.length > 0) {  // Running on Solstorm
-            Constants.OUTPUT_PATH = "/storage/users/anderhva/" + args[0] + "/";
-            instances = new File(Constants.ROOT_PATH + "/instances/").listFiles();
-        } else {
-            instances = new File(Constants.ROOT_PATH + "/src/main/resources/instances/").listFiles();
-        }
+        if (args.length > 0) Constants.overwritePathsSolstorm(args[0]);
+        instances = new File(Constants.PATH_TO_INSTANCES).listFiles();
         if (instances == null) throw new IllegalStateException("No instances to run!");
         for (File instance : instances) {
             String fileName = instance.getName();
