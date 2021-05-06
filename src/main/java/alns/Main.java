@@ -10,7 +10,6 @@ import localsearch.LocalSearch;
 import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
-import subproblem.SubProblem;
 import utils.IO;
 
 import java.io.File;

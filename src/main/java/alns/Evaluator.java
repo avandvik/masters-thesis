@@ -83,11 +83,8 @@ public class Evaluator {
         if (orderSequence.size() == 0) return true;
         int currentTime = Problem.preparationEndTime;
         currentTime = findTimeAtFirstOrder(currentTime, orderSequence);
-        if (currentTime < 0) return false;
         if (orderSequence.size() > 1) currentTime = findTimeAtLastOrder(currentTime, orderSequence);
-        if (currentTime < 0) return false;
         currentTime = findEndTime(currentTime, orderSequence);
-        if (currentTime < 0) return false;
         return currentTime <= Problem.planningPeriodDisc;
     }
 
@@ -96,7 +93,6 @@ public class Evaluator {
         Installation depot = Problem.getDepot();
         Installation firstInst = Problem.getInstallation(firstOrder);
         int sailingDuration = findSailingDuration(startTime, depot, firstInst);
-        if (sailingDuration < 0) return -1;
         int arrTime = startTime + sailingDuration;
         int serviceDuration = ArcGenerator.calculateServiceDuration(firstOrder);
         int serviceStartTime = ArcGenerator.getServiceStartTimeAfterIdling(arrTime, serviceDuration, firstInst);
@@ -124,14 +120,17 @@ public class Evaluator {
         Installation lastInst = Problem.getInstallation(lastOrder);
         Installation depot = Problem.getDepot();
         int sailingDuration = findSailingDuration(endTimeLastOrder, lastInst, depot);
-        if (sailingDuration < -1) return -1;
         return endTimeLastOrder + sailingDuration;
     }
 
     private static int findSailingDuration(int startTime, Installation fromInstallation, Installation toInstallation) {
         double distance = DistanceCalculator.distance(fromInstallation, toInstallation, "N");
-        double averageMaxSpeed = ArcGenerator.calculateAverageMaxSpeed(startTime, distance);
-        if (averageMaxSpeed < 0) return -1;
+        double averageMaxSpeed;
+        try {
+            averageMaxSpeed = ArcGenerator.calculateAverageMaxSpeed(startTime, distance);
+        } catch (NullPointerException e) {
+            return Problem.getGeneralReturnTime();  // Will lead to false in isFeasibleDuration
+        }
         return Problem.hourToDiscTimePoint(distance / averageMaxSpeed);
     }
 

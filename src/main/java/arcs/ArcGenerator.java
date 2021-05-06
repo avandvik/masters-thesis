@@ -17,7 +17,12 @@ public class ArcGenerator {
 
     public static List<Double> getSpeeds(double distance, int startTime) {
         if (distance == 0) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
-        double averageMaxSpeed = calculateAverageMaxSpeed(startTime, distance);
+        double averageMaxSpeed;
+        try {
+            averageMaxSpeed = calculateAverageMaxSpeed(startTime, distance);
+        } catch (NullPointerException e) {
+            return null;
+        }
         List<Double> speeds = new ArrayList<>();
         for (double speed = Problem.minSpeed; speed < averageMaxSpeed; speed += 1) speeds.add(speed);
         speeds.add(averageMaxSpeed);
@@ -101,8 +106,12 @@ public class ArcGenerator {
 
     public static boolean isReturnPossible(double distance, int endTime) {
         if (endTime >= Problem.getFinalTimePoint() || distance < 0) return false;
-        double averageMaxSpeed = calculateAverageMaxSpeed(endTime, distance);
-        if (averageMaxSpeed < 0) return false;
+        double averageMaxSpeed;
+        try {
+            averageMaxSpeed = calculateAverageMaxSpeed(endTime, distance);
+        } catch (NullPointerException e) {
+            return false;
+        }
         int earliestArrTime = endTime + (int) Math.ceil(Problem.hourToDiscDecimal(distance / averageMaxSpeed));
         return earliestArrTime <= Problem.getGeneralReturnTime();
     }
@@ -134,11 +143,10 @@ public class ArcGenerator {
         return speedsToCosts;
     }
 
-    public static double calculateAverageMaxSpeed(int startSailingTime, double distance) {
+    public static double calculateAverageMaxSpeed(int startSailingTime, double distance) throws IndexOutOfBoundsException {
         double sailedDistance = 0.0;
         int currentTime = startSailingTime;
         while (sailedDistance < distance) {
-            if (currentTime == Problem.getGeneralReturnTime()) return -1.0;
             int ws = Problem.weatherForecastDisc.get(currentTime);
             double adjustedMaxSpeed = Problem.maxSpeed - Problem.getSpeedImpact(ws);
             sailedDistance += adjustedMaxSpeed * Problem.timeUnit;
