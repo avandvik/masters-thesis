@@ -36,7 +36,10 @@ public class OperatorSchedulePostponed extends Operator {
                 }
             }
         }
-        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
+        if (!Evaluator.isSolutionFeasible(newSolution)) {
+            System.out.println(newSolution);
+            throw new IllegalStateException(Messages.infSolCreated);
+        }
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }

@@ -162,9 +162,15 @@ public class Solution {
 
     @Override
     public String toString() {
-        return "Order sequences: " + this.orderSequences.toString()
-                + "\nPostponed orders: " + this.postponedOrders.toString()
-                + "\nUnplaced orders: " + this.unplacedOrders.toString();
+        StringBuilder outStr = new StringBuilder();
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            outStr.append(Problem.getVessel(vIdx).toString()).append(": ");
+            outStr.append(this.orderSequences.get(vIdx));
+            if (vIdx != Problem.getNumberOfVessels() - 1) outStr.append("\n");
+        }
+        outStr.append("\nPOSTPONED: ").append(this.postponedOrders.toString());
+        outStr.append("\nUNPLACED: ").append(this.unplacedOrders.toString());
+        return outStr.toString();
     }
 
     @Override
