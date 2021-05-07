@@ -59,7 +59,17 @@ public class InsertionRegret extends Heuristic implements Repairer {
             }
             for (List<Integer> insertion : insertionToObj.keySet()) {
                 int vesselIdx = insertion.get(0);
-                double increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
+                double increase;
+                try {
+                    increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
+                } catch (NullPointerException e) {
+                    System.out.println("insertion: " + insertion);
+                    System.out.println("insertionToObj: " + insertionToObj);
+                    System.out.println("vIdx: " + vesselIdx);
+                    System.out.println("vesselToObjective: " + SubProblem.vesselToObjective);
+                    System.out.println("vesselToObjective[vIdx]: " + SubProblem.vesselToObjective.get(vesselIdx));
+                    throw new NullPointerException();
+                }
                 increases.add(increase);
             }
             orderToRegret.put(order, calculateRegret(increases));

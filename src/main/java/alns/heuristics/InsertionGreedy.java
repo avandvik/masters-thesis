@@ -76,8 +76,11 @@ public class InsertionGreedy extends Heuristic implements Repairer {
                 try {
                     increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
                 } catch (NullPointerException e) {
-                    System.out.println(insertionToObj);
-                    System.out.println(SubProblem.vesselToObjective.get(vesselIdx));
+                    System.out.println("insertion: " + insertion);
+                    System.out.println("insertionToObj: " + insertionToObj);
+                    System.out.println("vIdx: " + vesselIdx);
+                    System.out.println("vesselToObjective: " + SubProblem.vesselToObjective);
+                    System.out.println("vesselToObjective[vIdx]: " + SubProblem.vesselToObjective.get(vesselIdx));
                     throw new NullPointerException();
                 }
                 if (increase < this.leastIncrease) {
@@ -128,7 +131,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         return postponedOrder;
     }
 
-    public static Solution insertGreedilyInSolution(Solution partialSolution, Order order) {
+    public static Solution insertGreedilyInSolutionOld(Solution partialSolution, Order order) {
         Solution newSolution = Helpers.deepCopySolution(partialSolution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
         Set<Order> wrapperOrder = new HashSet<>(Collections.singletonList(order));
@@ -156,6 +159,38 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         }
 
         newSolution.insertInOrderSequence(vesselIdx, insertionIdx, order);
+        newSolution.removeUnplacedOrder(order);
+        return newSolution;
+    }
+
+    public static Solution insertGreedilyInSolution(Solution partialSolution, Order order) {
+        double leastIncrease = Double.POSITIVE_INFINITY;
+        int bestVesselIdx = -1;
+        List<Order> bestOrderSequence = null;
+        Solution newSolution = Helpers.deepCopySolution(partialSolution);
+        List<List<Order>> orderSequences = newSolution.getOrderSequences();
+        Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
+        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
+            List<Order> orderSequence = orderSequences.get(vesselIdx);
+            double currentObjective = Objective.runSP(orderSequence, vesselIdx);
+            for (int insertionIdx : insertions.get(vesselIdx)) {
+                List<Order> newOrderSequence = Helpers.deepCopyList(orderSequence, true);
+                newOrderSequence.add(insertionIdx, order);
+                double increase = Objective.runSP(newOrderSequence, vesselIdx) - currentObjective;
+                if (increase < leastIncrease) {
+                    leastIncrease = increase;
+                    bestVesselIdx = vesselIdx;
+                    bestOrderSequence = newOrderSequence;
+                }
+            }
+        }
+        if (!order.isMandatory() && order.getPostponementPenalty() < leastIncrease) {
+            newSolution.addPostponedOrder(order);
+            newSolution.removeUnplacedOrder(order);
+            return newSolution;
+        }
+        if (bestOrderSequence == null) throw new IllegalStateException(Messages.cannotPlaceMDOrder);
+        newSolution.replaceOrderSequence(bestVesselIdx, bestOrderSequence);
         newSolution.removeUnplacedOrder(order);
         return newSolution;
     }

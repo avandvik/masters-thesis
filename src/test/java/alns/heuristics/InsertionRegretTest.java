@@ -11,10 +11,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import utils.Helpers;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,9 +28,7 @@ public class InsertionRegretTest {
     }
 
     private void testRegretTwoOrders(InsertionRegret insertionRegret) {
-        Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5);
-        Solution expectedSolution = Helpers.deepCopySolution(originalSolution);
-        expectedSolution.getOrderSequences().get(1).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
+        Solution expectedSolution = createExpectedSolutionOne();
 
         List<List<Order>> partialOrderSequences = Helpers.deepCopy2DList(expectedSolution.getOrderSequences());
         Set<Order> postponedOrders = Helpers.deepCopySet(expectedSolution.getAllPostponed());
@@ -53,13 +48,10 @@ public class InsertionRegretTest {
     }
 
     private void testRegretThreeOrders(InsertionRegret insertionRegret) {
+        Solution expectedSolution = createExpectedSolutionTwo();
         Solution originalSolution = SolutionGenerator.createSolutionBasicTestData(3, 5);
-        Solution expectedSolution = Helpers.deepCopySolution(originalSolution);
-        expectedSolution.getOrderSequences().get(1).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
-        expectedSolution.getOrderSequences().get(1).add(1, expectedSolution.getOrderSequences().get(2).remove(0));
-
         List<List<Order>> partialOrderSequences = Helpers.deepCopy2DList(originalSolution.getOrderSequences());
-        Set<Order> postponedOrders = Helpers.deepCopySet(expectedSolution.getAllPostponed());
+        Set<Order> postponedOrders = new HashSet<>();
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(partialOrderSequences.get(0).remove(2),
                 partialOrderSequences.get(1).remove(0), partialOrderSequences.get(2).remove(0)));
         Solution partialSolution = new Solution(partialOrderSequences, postponedOrders, unplacedOrders);
@@ -75,4 +67,27 @@ public class InsertionRegretTest {
         assertEquals(parallelSolution, sequentialSolution);
     }
 
+    private Solution createExpectedSolutionOne() {
+        List<List<Order>> orderSequences = new ArrayList<>();
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2), Problem.getOrder(0),
+                Problem.getOrder(1))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(5), Problem.getOrder(6),
+                Problem.getOrder(7))));
+        Set<Order> postponedOrders = new HashSet<>();
+        Set<Order> unplacedOrders = new HashSet<>();
+        return new Solution(orderSequences, postponedOrders, unplacedOrders);
+    }
+
+    private Solution createExpectedSolutionTwo() {
+        List<List<Order>> orderSequences = new ArrayList<>();
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2), Problem.getOrder(5),
+                Problem.getOrder(0), Problem.getOrder(1))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(6),
+                Problem.getOrder(7))));
+        Set<Order> postponedOrders = new HashSet<>();
+        Set<Order> unplacedOrders = new HashSet<>();
+        return new Solution(orderSequences, postponedOrders, unplacedOrders);
+    }
 }

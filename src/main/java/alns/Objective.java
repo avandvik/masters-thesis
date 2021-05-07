@@ -172,8 +172,7 @@ public class Objective {
                 SubProblem.vesselToObjective.put(vesselIdx, 0.0);
                 continue;
             }
-            boolean solvedByCache = cacheEvaluate(orderSequence, vesselIdx);
-            if (solvedByCache) continue;
+            if (cacheEvaluate(orderSequence, vesselIdx)) continue;
             Thread thread = new Thread(new SubProblem(orderSequence, vesselIdx));
             threads.add(thread);
             thread.start();
