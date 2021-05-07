@@ -27,14 +27,14 @@ public class RemovalSpread extends Heuristic implements Destroyer {
     private Solution getSpreadRemoval(Solution solution, int numberOfOrders) {
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<Order> orders = Helpers.deepCopyList(Problem.orders, true);
-        orders.removeIf(candidateOrder -> newSolution.getPostponedOrders().contains(candidateOrder));
+        orders.removeIf(candidateOrder -> newSolution.getAllPostponed().contains(candidateOrder));
 
         while (newSolution.getUnplacedOrders().size() < numberOfOrders) {
             Order removalOrder = removeSpread(orders);
             List<Order> removalOrders = getOrdersToRemove(removalOrder);
             for (Order order : removalOrders) {
                 newSolution.removeOrderFromSequences(order);
-                newSolution.getPostponedOrders().remove(order);
+                newSolution.getAllPostponed().remove(order);
                 newSolution.getUnplacedOrders().add(order);
                 orders.remove(removalOrder);
             }

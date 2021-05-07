@@ -267,7 +267,7 @@ public class Main {
             System.out.println("\tFuel costs: " + Main.getBestSolution().getFuelCosts());
             System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
-            System.out.println("Postponed orders: " + Main.getBestSolution().getPostponedOrders());
+            System.out.println("Postponed orders: " + Main.getBestSolution().getAllPostponed());
             Main.getBestSolution().printSchedules();
         }
     }

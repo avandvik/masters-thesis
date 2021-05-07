@@ -16,14 +16,14 @@ public class Evaluator {
     public static boolean isSolutionFeasible(Solution solution) {
         return isOrderSequencesFeasible(solution.getOrderSequences())
                 && isSolutionComplete(solution)
-                && noMandatoryOrdersPostponed(solution.getPostponedOrders())
+                && noMandatoryOrdersPostponed(solution.getAllPostponed())
                 && eachOrderOccursOnce(solution)
                 && hasVoyageForEachVessel(solution);
     }
 
     public static boolean isPartFeasible(Solution partialSolution) {
         return isOrderSequencesFeasible(partialSolution.getOrderSequences())
-                && noMandatoryOrdersPostponed(partialSolution.getPostponedOrders())
+                && noMandatoryOrdersPostponed(partialSolution.getAllPostponed())
                 && eachOrderOccursOnce(partialSolution)
                 && hasVoyageForEachVessel(partialSolution);
     }
@@ -190,7 +190,7 @@ public class Evaluator {
     public static boolean isSolutionComplete(Solution solution) {
         if (!solution.getUnplacedOrders().isEmpty()) return false;
         Set<Order> unscheduledOrders = inferUnscheduledOrders(solution.getOrderSequences());
-        return solution.getPostponedOrders().containsAll(unscheduledOrders);
+        return solution.getAllPostponed().containsAll(unscheduledOrders);
     }
 
     private static Set<Order> inferUnscheduledOrders(List<List<Order>> orderSequences) {
@@ -219,7 +219,7 @@ public class Evaluator {
                 seenOrders.add(order);
             }
         }
-        for (Order order : solution.getPostponedOrders()) {
+        for (Order order : solution.getAllPostponed()) {
             if (seenOrders.contains(order)) return false;
             seenOrders.add(order);
         }

@@ -61,7 +61,7 @@ public class Objective {
     }
 
     public static double penalizePostponement(Solution solution) {
-        return solution.getPostponedOrders().stream()
+        return solution.getAllPostponed().stream()
                 .map(Order::getPostponementPenalty)
                 .mapToDouble(Double::doubleValue)
                 .sum();

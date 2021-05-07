@@ -36,7 +36,7 @@ public class InsertionRegretTest {
         expectedSolution.getOrderSequences().get(1).add(0, expectedSolution.getOrderSequences().get(0).remove(2));
 
         List<List<Order>> partialOrderSequences = Helpers.deepCopy2DList(expectedSolution.getOrderSequences());
-        Set<Order> postponedOrders = Helpers.deepCopySet(expectedSolution.getPostponedOrders());
+        Set<Order> postponedOrders = Helpers.deepCopySet(expectedSolution.getAllPostponed());
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(partialOrderSequences.get(0).remove(0),
                 partialOrderSequences.get(1).remove(0)));
         Solution partialSolution = new Solution(partialOrderSequences, postponedOrders, unplacedOrders);
@@ -59,7 +59,7 @@ public class InsertionRegretTest {
         expectedSolution.getOrderSequences().get(1).add(1, expectedSolution.getOrderSequences().get(2).remove(0));
 
         List<List<Order>> partialOrderSequences = Helpers.deepCopy2DList(originalSolution.getOrderSequences());
-        Set<Order> postponedOrders = Helpers.deepCopySet(expectedSolution.getPostponedOrders());
+        Set<Order> postponedOrders = Helpers.deepCopySet(expectedSolution.getAllPostponed());
         Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(partialOrderSequences.get(0).remove(2),
                 partialOrderSequences.get(1).remove(0), partialOrderSequences.get(2).remove(0)));
         Solution partialSolution = new Solution(partialOrderSequences, postponedOrders, unplacedOrders);

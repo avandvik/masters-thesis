@@ -72,7 +72,14 @@ public class InsertionGreedy extends Heuristic implements Repairer {
             if (insertionToObj == null) continue;  // No valid insertions for order
             for (List<Integer> insertion : insertionToObj.keySet()) {
                 int vesselIdx = insertion.get(0);
-                double increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
+                double increase;
+                try {
+                    increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
+                } catch (NullPointerException e) {
+                    System.out.println(insertionToObj);
+                    System.out.println(SubProblem.vesselToObjective.get(vesselIdx));
+                    throw new NullPointerException();
+                }
                 if (increase < this.leastIncrease) {
                     if (instHasMandUnplacedOrder(order, ordersToPlace)) continue outer;
                     this.leastIncrease = increase;

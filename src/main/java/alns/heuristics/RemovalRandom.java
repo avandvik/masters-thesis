@@ -28,7 +28,7 @@ public class RemovalRandom extends Heuristic implements Destroyer {
     public Solution getRandomRemoval(Solution solution) {
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
-        Set<Order> postponedOrders = newSolution.getPostponedOrders();
+        Set<Order> postponedOrders = newSolution.getAllPostponed();
         Set<Order> unplacedOrders = newSolution.getUnplacedOrders();
 
         List<Order> ordersToRemove = findRandomOrdersToRemove(orderSequences, postponedOrders);

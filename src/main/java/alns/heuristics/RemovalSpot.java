@@ -22,7 +22,7 @@ public class RemovalSpot extends Heuristic implements Destroyer {
     private Solution removeSpotVesselOrders(Solution solution) {
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
-        Set<Order> postponedOrders = newSolution.getPostponedOrders();
+        Set<Order> postponedOrders = newSolution.getAllPostponed();
         Set<Order> unplacedOrders = newSolution.getUnplacedOrders();
         int spotVesselId = Problem.vessels.size() - 1;
         unplacedOrders.addAll(orderSequences.get(spotVesselId));

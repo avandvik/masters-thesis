@@ -79,7 +79,7 @@ public class ConstructionTest {
 
     private void testPostponementInInitialSolution() {
         Solution actualSolution = Construction.constructRandomInitialSolution();
-        assertEquals(createExpectedPostponedOrders(), actualSolution.getPostponedOrders());
+        assertEquals(createExpectedPostponedOrders(), actualSolution.getAllPostponed());
     }
 
     private Solution createExpectedRandomSolution() {

@@ -21,8 +21,9 @@ public class OperatorSchedulePostponed extends Operator {
         initialize(solution);
         for (Order order : postponedOrders) {
             Installation inst = Problem.getInstallation(order);
-            List<Order> scheduledOrders = Problem.getScheduledOrdersFromInstallation(inst, postponedOrders);
+            List<Order> scheduledOrders = Problem.getScheduledOrdersInst(inst, newSolution.getAllPostponed());
             List<List<Order>> rmOrderSequences = removeOrdersFromSequences(scheduledOrders);
+            outer:
             for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
                 List<Order> rmOrderSequence = rmOrderSequences.get(vIdx);
                 List<Installation> rmInstSequence = Helpers.getInstSequence(rmOrderSequence);
@@ -32,12 +33,18 @@ public class OperatorSchedulePostponed extends Operator {
                     List<Order> newOrderSequence = createNewOrderSequence(newInstSequence, ordersToPlace, insertIdx);
                     List<List<Order>> newOrderSequences = Helpers.deepCopy2DList(rmOrderSequences);
                     newOrderSequences.set(vIdx, newOrderSequence);
-                    updateFields(newOrderSequences, order);
+                    boolean updatedFields = updateFields(newOrderSequences, order);
+                    if (updatedFields) break outer;
                 }
             }
+            greatestDecrease = 0.0;
         }
         if (!Evaluator.isSolutionFeasible(newSolution)) {
+            System.out.println(originalSolution);
             System.out.println(newSolution);
+            System.out.println("Load: " + Evaluator.isFeasibleLoad(newSolution.getOrderSequences()));
+            System.out.println("Duration: " + Evaluator.isFeasibleDuration(newSolution.getOrderSequences()));
+            System.out.println("Visits: " + Evaluator.isFeasibleVisits(newSolution.getOrderSequences()));
             throw new IllegalStateException(Messages.infSolCreated);
         }
         Objective.setObjValAndSchedule(newSolution);
@@ -47,7 +54,7 @@ public class OperatorSchedulePostponed extends Operator {
     private static void initialize(Solution solution) {
         originalSolution = solution;
         newSolution = Helpers.deepCopySolution(solution);
-        postponedOrders = new ArrayList<>(solution.getPostponedOrders());  // List for predictability in tests
+        postponedOrders = new ArrayList<>(solution.getAllPostponed());  // List for predictability in tests
         postponedOrders.sort(Comparator.comparing(Order::getPostponementPenalty).reversed());
         vesselToCost = createVesselToCost(solution);
         greatestDecrease = 0.0;
@@ -55,7 +62,7 @@ public class OperatorSchedulePostponed extends Operator {
 
     private static List<List<Order>> removeOrdersFromSequences(List<Order> orders) {
         List<List<Order>> orderSequences = new ArrayList<>();
-        for (List<Order> orderSequence : originalSolution.getOrderSequences()) {
+        for (List<Order> orderSequence : newSolution.getOrderSequences()) {
             List<Order> rmOrderSequence = Helpers.deepCopyList(orderSequence, true);
             rmOrderSequence.removeAll(orders);
             orderSequences.add(rmOrderSequence);
@@ -76,22 +83,24 @@ public class OperatorSchedulePostponed extends Operator {
                 newOrderSequence.addAll(orders);
             } else {
                 Installation inst = newInstSequence.get(instIdx);
-                List<Order> scheduledOrdersFromInst = Problem.getScheduledOrdersFromInstallation(inst, postponedOrders);
-                Helpers.sortOrdersFromInst(scheduledOrdersFromInst);
-                newOrderSequence.addAll(scheduledOrdersFromInst);
+                List<Order> scheduledOrdersInst = Problem.getScheduledOrdersInst(inst, newSolution.getAllPostponed());
+                Helpers.sortOrdersFromInst(scheduledOrdersInst);
+                newOrderSequence.addAll(scheduledOrdersInst);
             }
         }
         return newOrderSequence;
     }
 
-    private static void updateFields(List<List<Order>> newOrderSequences, Order postponedOrder) {
-        if (!Evaluator.isOrderSequencesFeasible(newOrderSequences)) return;
+    private static boolean updateFields(List<List<Order>> newOrderSequences, Order postponedOrder) {
+        if (!Evaluator.isOrderSequencesFeasible(newOrderSequences)) return false;
         double decrease = calculateDecrease(newOrderSequences, postponedOrder);
         if (decrease < greatestDecrease) {
             greatestDecrease = decrease;
             newSolution.replaceOrderSequences(newOrderSequences);
             newSolution.removePostponedOrder(postponedOrder);
+            return true;
         }
+        return false;
     }
 
     private static double calculateDecrease(List<List<Order>> newOrderSequences, Order postponedOrder) {

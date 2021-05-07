@@ -26,7 +26,7 @@ public class Helpers {
 
     public static Solution deepCopySolution(Solution solution) {
         List<List<Order>> orderSequences = Helpers.deepCopy2DList(solution.getOrderSequences());
-        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getPostponedOrders());
+        Set<Order> postponedOrders = Helpers.deepCopySet(solution.getAllPostponed());
         Set<Order> unplacedOrders = Helpers.deepCopySet(solution.getUnplacedOrders());
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }

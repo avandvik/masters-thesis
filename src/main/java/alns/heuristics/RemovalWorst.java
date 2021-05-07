@@ -36,7 +36,7 @@ public class RemovalWorst extends Heuristic implements Destroyer {
 
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
-        Set<Order> postponedOrders = newSolution.getPostponedOrders();
+        Set<Order> postponedOrders = newSolution.getAllPostponed();
 
         if (Parameters.parallelHeuristics) {
             Objective.runMultipleSPRemoval(orderSequences);
@@ -48,7 +48,7 @@ public class RemovalWorst extends Heuristic implements Destroyer {
 
         List<Order> ordersToRemove = findOrdersToRemove();
         newSolution.getUnplacedOrders().addAll(ordersToRemove);
-        newSolution.getPostponedOrders().removeAll(ordersToRemove);
+        newSolution.getAllPostponed().removeAll(ordersToRemove);
         for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
 
         return newSolution;
