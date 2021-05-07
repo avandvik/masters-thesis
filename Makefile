@@ -11,10 +11,10 @@ coverage-report:
 	mvn clean test -P local-coverage
 
 upload-jar:
-	./shell/upload.sh
+	./shell/upload_jar.sh
 
 upload-instances:
-	scp -r src/main/resources/instances/ anderhva@solstorm-login.iot.ntnu.no:/home/anderhva/masters-thesis
+	./shell/upload_instances.sh
 
 run:
 	./run.sh

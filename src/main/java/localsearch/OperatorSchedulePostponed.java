@@ -39,14 +39,7 @@ public class OperatorSchedulePostponed extends Operator {
             }
             greatestDecrease = 0.0;
         }
-        if (!Evaluator.isSolutionFeasible(newSolution)) {
-            System.out.println(originalSolution);
-            System.out.println(newSolution);
-            System.out.println("Load: " + Evaluator.isFeasibleLoad(newSolution.getOrderSequences()));
-            System.out.println("Duration: " + Evaluator.isFeasibleDuration(newSolution.getOrderSequences()));
-            System.out.println("Visits: " + Evaluator.isFeasibleVisits(newSolution.getOrderSequences()));
-            throw new IllegalStateException(Messages.infSolCreated);
-        }
+        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }
