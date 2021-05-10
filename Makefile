@@ -1,6 +1,9 @@
 test:
 	mvn clean test -P local-simple
 
+compile:
+	mvn clean compile -P local-simple
+
 package:
 	mvn clean package -P local-complete
 
@@ -8,10 +11,10 @@ coverage-report:
 	mvn clean test -P local-coverage
 
 upload-jar:
-	./shell/upload.sh
+	./shell/upload_jar.sh
 
 upload-instances:
-	scp -r src/main/resources/instances/ anderhva@solstorm-login.iot.ntnu.no:/home/anderhva/masters-thesis
+	./shell/upload_instances.sh
 
 run:
 	./run.sh
@@ -21,6 +24,3 @@ get-results:
 
 plot-results:
 	./shell/plot_solution.sh
-
-wipe-results:
-	rm -rf /storage/users/anderhva/*

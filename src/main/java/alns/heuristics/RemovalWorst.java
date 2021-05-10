@@ -36,7 +36,7 @@ public class RemovalWorst extends Heuristic implements Destroyer {
 
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
-        Set<Order> postponedOrders = newSolution.getPostponedOrders();
+        Set<Order> postponedOrders = newSolution.getAllPostponed();
 
         if (Parameters.parallelHeuristics) {
             Objective.runMultipleSPRemoval(orderSequences);
@@ -48,7 +48,7 @@ public class RemovalWorst extends Heuristic implements Destroyer {
 
         List<Order> ordersToRemove = findOrdersToRemove();
         newSolution.getUnplacedOrders().addAll(ordersToRemove);
-        newSolution.getPostponedOrders().removeAll(ordersToRemove);
+        newSolution.getAllPostponed().removeAll(ordersToRemove);
         for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
 
         return newSolution;
@@ -72,11 +72,11 @@ public class RemovalWorst extends Heuristic implements Destroyer {
         this.orderToDecrease = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = orderSequences.get(vesselIdx);
-            double currentObj = Objective.runSPLean(orderSequence, vesselIdx);
+            double currentObj = Objective.runSP(orderSequence, vesselIdx);
             for (int orderIdx = 0; orderIdx < orderSequence.size(); orderIdx++) {
                 List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
                 orderSequenceCopy.remove(orderIdx);
-                double decrease = currentObj - Objective.runSPLean(orderSequenceCopy, vesselIdx);
+                double decrease = currentObj - Objective.runSP(orderSequenceCopy, vesselIdx);
                 Order order = orderSequences.get(vesselIdx).get(orderIdx);
                 this.orderToDecrease.put(order, decrease);
             }

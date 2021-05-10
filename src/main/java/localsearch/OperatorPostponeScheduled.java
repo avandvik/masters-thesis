@@ -1,7 +1,9 @@
 package localsearch;
 
+import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
+import data.Messages;
 import data.Problem;
 import objects.Order;
 import utils.Helpers;
@@ -22,9 +24,12 @@ public class OperatorPostponeScheduled extends Operator {
                 List<Order> newOrderSequence = Helpers.deepCopyList(orderSequence, true);
                 newOrderSequence.remove(order);
                 double decrease = calculateDecrease(vIdx, newOrderSequence, order);
-                updateFields(decrease, vIdx, newOrderSequence, order);
+                boolean updatedFields = updateFields(decrease, vIdx, newOrderSequence, order);
+                if (updatedFields) break;
             }
+            greatestDecrease = 0.0;
         }
+        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }
@@ -36,17 +41,19 @@ public class OperatorPostponeScheduled extends Operator {
         greatestDecrease = 0.0;
     }
 
-    private static void updateFields(double decrease, int vIdx, List<Order> newOrderSequence, Order scheduledOrder) {
+    private static boolean updateFields(double decrease, int vIdx, List<Order> newOrderSequence, Order scheduledOrder) {
         if (decrease < greatestDecrease) {
             greatestDecrease = decrease;
             newSolution.replaceOrderSequence(vIdx, newOrderSequence);
             newSolution.addPostponedOrder(scheduledOrder);
+            return true;
         }
+        return false;
     }
 
     private static double calculateDecrease(int vIdx, List<Order> newOrderSequence, Order scheduledOrder) {
         double decrease = scheduledOrder.getPostponementPenalty();
-        decrease -= vesselToCost.get(vIdx) - Objective.runSPLean(newOrderSequence, vIdx);
+        decrease -= vesselToCost.get(vIdx) - Objective.runSP(newOrderSequence, vIdx);
         return decrease;
     }
 }

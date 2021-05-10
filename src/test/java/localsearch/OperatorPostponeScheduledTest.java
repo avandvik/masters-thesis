@@ -42,7 +42,7 @@ public class OperatorPostponeScheduledTest {
     private Solution createExpectedSolution () {
         Solution solution = SolutionGenerator.createSolutionBasicTestData(5, 8);
         Order rmOrder = solution.getOrderSequence(0).remove(1);
-        solution.getPostponedOrders().add(rmOrder);
+        solution.getAllPostponed().add(rmOrder);
         return solution;
     }
 }

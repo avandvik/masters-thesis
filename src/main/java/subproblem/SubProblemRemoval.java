@@ -1,6 +1,7 @@
 package subproblem;
 
 import alns.Objective;
+import data.Parameters;
 import objects.Order;
 
 import java.util.ArrayList;
@@ -33,6 +34,6 @@ public class SubProblemRemoval extends SubProblem implements Runnable {
     public void run() {
         super.solveSubProblem();
         addToResultsStructure(super.getVesselIdx(), this.removalIdx, super.getShortestPathCost());
-        Objective.cacheSubProblemResults(super.hashCode(), this);
+        if (Parameters.cacheSP) Objective.cacheSubProblemResults(super.hashCode(), this);
     }
 }

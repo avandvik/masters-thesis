@@ -1,29 +1,31 @@
 package localsearch;
 
-import alns.Evaluator;
-import alns.Objective;
 import alns.Solution;
-import data.Messages;
 
 public class LocalSearch {
 
     public static Solution localSearch(Solution solution) {
-        Solution improvedSolution = intraVoyageImprovement(solution);
-        improvedSolution = interVoyageImprovement(improvedSolution);  // TODO: Use solution or improvedSolution?
-
-        if (!Evaluator.isSolutionFeasible(improvedSolution)) throw new IllegalStateException(Messages.infeasibleSolutionCreated);
-        Objective.setObjValAndSchedule(improvedSolution);
-        return improvedSolution;
+        Solution newSolution = intraVoyageImprovement(solution);
+        newSolution = interVoyageImprovement(newSolution);
+        newSolution = schedulePostponeImprovement(newSolution);
+        return newSolution;
     }
 
-    public static Solution intraVoyageImprovement(Solution solution) {
-        Solution improvedSolution = OperatorOneRelocate.oneRelocate(solution);
-        return improvedSolution;
+    private static Solution intraVoyageImprovement(Solution solution) {
+        Solution newSolution = OperatorOneRelocate.oneRelocate(solution);
+        newSolution = OperatorOneExchange.oneExchange(newSolution);
+        return newSolution;
     }
 
-    public static Solution interVoyageImprovement(Solution solution) {
-        Solution improvedSolution;
+    private static Solution interVoyageImprovement(Solution solution) {
+        Solution newSolution = OperatorTwoRelocate.twoRelocate(solution);
+        newSolution = OperatorTwoExchange.twoExchange(newSolution);
+        return newSolution;
+    }
 
-        return solution;
+    private static Solution schedulePostponeImprovement(Solution solution) {
+        Solution newSolution = OperatorPostponeScheduled.postponeScheduled(solution);
+        newSolution = OperatorSchedulePostponed.schedulePostponed(newSolution);
+        return newSolution;
     }
 }

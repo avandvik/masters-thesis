@@ -51,14 +51,18 @@ public class InsertionRegret extends Heuristic implements Repairer {
         Map<Order, Double> orderToRegret = new HashMap<>();
         for (Order order : unplacedOrders) {
             List<Double> increases = new ArrayList<>();
+            if (!order.isMandatory()) increases.add(order.getPostponementPenalty());
             Map<List<Integer>, Double> insertionToObj = SubProblemInsertion.orderToInsertionToObjective.get(order);
-            if (insertionToObj == null) continue;
-            for (List<Integer> insertion : insertionToObj.keySet()) {
-                int vesselIdx = insertion.get(0);
-                double increase = insertionToObj.get(insertion) - SubProblem.vesselToObjective.get(vesselIdx);
+            if (insertionToObj == null) {
+                orderToRegret.put(order, calculateRegret(increases));
+                continue;
+            }
+            for (Map.Entry<List<Integer>, Double> entry : insertionToObj.entrySet()) {
+                List<Integer> insertion = entry.getKey();
+                double obj = entry.getValue();
+                double increase = obj - SubProblem.vesselToObjective.get(insertion.get(0));
                 increases.add(increase);
             }
-            if (!order.isMandatory()) increases.add(order.getPostponementPenalty());
             orderToRegret.put(order, calculateRegret(increases));
         }
         return orderToRegret;
@@ -79,11 +83,11 @@ public class InsertionRegret extends Heuristic implements Repairer {
         Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = orderSequences.get(vesselIdx);
-            double currentObjective = Objective.runSPLean(orderSequence, vesselIdx);
+            double currentObjective = Objective.runSP(orderSequence, vesselIdx);
             for (int insertionIdx : insertions.get(vesselIdx)) {
                 List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
                 orderSequenceCopy.add(insertionIdx, order);
-                double increase = Objective.runSPLean(orderSequenceCopy, vesselIdx) - currentObjective;
+                double increase = Objective.runSP(orderSequenceCopy, vesselIdx) - currentObjective;
                 increases.add(increase);
             }
         }

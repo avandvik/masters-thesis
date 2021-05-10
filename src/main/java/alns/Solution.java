@@ -24,7 +24,7 @@ public class Solution {
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
         this.unplacedOrders = new HashSet<>();  // Solutions from this constructor must have no unplaced orders
-        if (!Evaluator.isSolutionFeasible(this)) throw new IllegalStateException(Messages.infeasibleSolutionCreated);
+        if (!Evaluator.isSolutionFeasible(this)) throw new IllegalStateException(Messages.infSolCreated);
         if (setFitness) Objective.setObjValAndSchedule(this);
     }
 
@@ -66,7 +66,7 @@ public class Solution {
         this.orderSequences.get(vesselIdx).remove(rmOrder);
     }
 
-    public Set<Order> getPostponedOrders() {
+    public Set<Order> getAllPostponed() {
         return postponedOrders;
     }
 
@@ -162,9 +162,15 @@ public class Solution {
 
     @Override
     public String toString() {
-        return "Order sequences: " + this.orderSequences.toString()
-                + "\nPostponed orders: " + this.postponedOrders.toString()
-                + "\nUnplaced orders: " + this.unplacedOrders.toString();
+        StringBuilder outStr = new StringBuilder();
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            outStr.append(Problem.getVessel(vIdx).toString()).append(": ");
+            outStr.append(this.orderSequences.get(vIdx));
+            if (vIdx != Problem.getNumberOfVessels() - 1) outStr.append("\n");
+        }
+        outStr.append("\nPOSTPONED: ").append(this.postponedOrders.toString());
+        outStr.append("\nUNPLACED: ").append(this.unplacedOrders.toString());
+        return outStr.toString();
     }
 
     @Override

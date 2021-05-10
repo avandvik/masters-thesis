@@ -36,7 +36,7 @@ public class RemovalRelated extends Heuristic implements Destroyer {
 
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
-        Set<Order> postponedOrders = newSolution.getPostponedOrders();
+        Set<Order> postponedOrders = newSolution.getAllPostponed();
 
         // Choose a random order or more
         List<Order> ordersToRemove = RemovalRandom.findRandomOrdersToRemove(orderSequences, postponedOrders);
@@ -60,7 +60,7 @@ public class RemovalRelated extends Heuristic implements Destroyer {
 
     private void updateSolution(Solution solution, List<Order> ordersToRemove) {
         solution.getUnplacedOrders().addAll(ordersToRemove);
-        solution.getPostponedOrders().removeAll(ordersToRemove);
+        solution.getAllPostponed().removeAll(ordersToRemove);
         for (List<Order> orderSequence : solution.getOrderSequences()) orderSequence.removeAll(ordersToRemove);
     }
 

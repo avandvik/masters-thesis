@@ -16,9 +16,9 @@ public abstract class Operator {
 
     static List<Order> createNewOrderSequence(List<Installation> newInstSequence) {
         List<Order> newOrderSequence = new LinkedList<>();
-        Set<Order> postponed = originalSolution.getPostponedOrders();
+        Set<Order> postponed = originalSolution.getAllPostponed();
         for (Installation installation : newInstSequence) {
-            List<Order> scheduledOrdersFromInst = Problem.getScheduledOrdersFromInstallation(installation, postponed);
+            List<Order> scheduledOrdersFromInst = Problem.getScheduledOrdersInst(installation, postponed);
             Helpers.sortOrdersFromInst(scheduledOrdersFromInst);
             newOrderSequence.addAll(scheduledOrdersFromInst);
         }
@@ -41,7 +41,7 @@ public abstract class Operator {
         Map<Integer, Double> vesselToCostMap = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             List<Order> orderSequence = solution.getOrderSequence(vesselIdx);
-            double cost = orderSequence.isEmpty() ? 0.0 : Objective.runSPLean(orderSequence, vesselIdx); // Cached
+            double cost = Objective.getOrderSequenceCost(orderSequence, vesselIdx);
             vesselToCostMap.put(vesselIdx, cost);
         }
         return vesselToCostMap;

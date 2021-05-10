@@ -193,9 +193,8 @@ public class IO {
 
     public static JSONObject getJSONObject(String path) {
         JSONParser jsonParser = new JSONParser();
-        InputStream inputStream = IO.class.getResourceAsStream(path);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            return (JSONObject) jsonParser.parse(reader);
+        try {
+            return (JSONObject) jsonParser.parse(new FileReader(path));
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }

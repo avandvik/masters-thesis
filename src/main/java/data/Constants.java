@@ -6,13 +6,13 @@ public class Constants {
     public static String OUTPUT_PATH = ROOT_PATH + "/output/local/";
     public static String GENERATOR_PATH = ROOT_PATH + "/src/main/resources/generated/";
 
-    public static final String PATH_TO_CONSTANT = "/constant/";
-    public static String PATH_TO_INSTANCES = "/instances/";
-    public static final String PATH_TO_TEST = "/test/";
+    public static String PATH_TO_INSTANCES = ROOT_PATH + "/src/main/resources/instances/";
+    public static String PATH_TO_CONSTANT = ROOT_PATH + "/src/main/resources/constant/";
+    public static String PATH_TO_TEST = ROOT_PATH + "/src/main/resources/test/";
 
-    public static final String VESSEL_FILE = Constants.PATH_TO_CONSTANT + "vessels.json";
-    public static final String INSTALLATION_FILE = Constants.PATH_TO_CONSTANT + "installations.json";
-    public static final String WEATHER_FILE = Constants.PATH_TO_CONSTANT + "weather.json";
+    public static String VESSEL_FILE = Constants.PATH_TO_CONSTANT + "vessels.json";
+    public static String INSTALLATION_FILE = Constants.PATH_TO_CONSTANT + "installations.json";
+    public static String WEATHER_FILE = Constants.PATH_TO_CONSTANT + "weather.json";
 
     public static final String ID_KEY = "id";
     public static final String OPENING_HOUR_KEY = "opening_hour";
@@ -98,4 +98,12 @@ public class Constants {
     public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
     public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
 
+    public static void overwritePathsSolstorm(String outputDir) {
+        Constants.OUTPUT_PATH = "/storage/users/anderhva/" + outputDir + "/";
+        Constants.PATH_TO_INSTANCES = "/home/anderhva/masters-thesis/instances/";
+        Constants.PATH_TO_CONSTANT = "/home/anderhva/masters-thesis/constant/";
+        Constants.VESSEL_FILE = Constants.PATH_TO_CONSTANT + "vessels.json";
+        Constants.INSTALLATION_FILE = Constants.PATH_TO_CONSTANT + "installations.json";
+        Constants.WEATHER_FILE = Constants.PATH_TO_CONSTANT + "weather.json";
+    }
 }

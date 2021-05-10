@@ -33,11 +33,12 @@ public class OperatorSchedulePostponedTest {
 
     private Solution createExpectedSolution() {
         List<List<Order>> orderSequences = new ArrayList<>();
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(7), Problem.getOrder(0),
-                Problem.getOrder(1), Problem.getOrder(2), Problem.getOrder(3))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4),
+                Problem.getOrder(7), Problem.getOrder(0), Problem.getOrder(1),
+                Problem.getOrder(2))));
         orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(5), Problem.getOrder(6))));
         orderSequences.add(new LinkedList<>());
-        Set<Order> postponedOrders = new HashSet<>(Collections.singletonList(Problem.getOrder(4)));
+        Set<Order> postponedOrders = new HashSet<>();
         Set<Order> unplacedOrders = new HashSet<>();
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }

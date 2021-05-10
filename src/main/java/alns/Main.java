@@ -10,7 +10,6 @@ import localsearch.LocalSearch;
 import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
-import subproblem.SubProblem;
 import utils.IO;
 
 import java.io.File;
@@ -35,16 +34,16 @@ public class Main {
 
     public static void run() {
         initialize();
-        for (int iteration = 0; iteration < Parameters.totalIterations; iteration++) {
+        for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
             Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
-            candidateSolution = LocalSearch.localSearch(candidateSolution);
-            saveOrderSequences(candidateSolution);
-            printIterationInfo(iteration, candidateSolution);
+            if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution);
+            if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
+            printIterationInfo(iter, candidateSolution);
             double reward = acceptSolution(candidateSolution);
-            if (iteration > 0 && iteration % Parameters.setPartitioningIterations == 0) runSetPartitioningModel();
-            maintenance(reward, heuristics, iteration);
+            if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartitioningIter == 0) runSetPartitioningModel();
+            maintenance(reward, heuristics, iter);
         }
         if (Parameters.saveSolution) IO.saveSolution(bestSolution);
     }
@@ -121,11 +120,10 @@ public class Main {
     }
 
     private static void saveOrderSequences(Solution candidateSolution) {
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = candidateSolution.getOrderSequence(vesselIdx);
-            int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
-            double cost = orderSequence.isEmpty() ? 0.0 : Objective.hashToCost.get(hash);
-            vesselToSequenceToCost.get(vesselIdx).put(orderSequence, cost);  // Okay if overwrite
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            List<Order> orderSequence = candidateSolution.getOrderSequence(vIdx);
+            double cost = Objective.getOrderSequenceCost(orderSequence, vIdx);
+            vesselToSequenceToCost.get(vIdx).put(orderSequence, cost);  // Okay if overwrite
         }
     }
 
@@ -179,7 +177,7 @@ public class Main {
     private static void maintenance(double reward, List<Heuristic> heuristics, int iteration) {
         currentTemperature *= Parameters.coolingRate;
         for (Heuristic heuristic : heuristics) heuristic.addToScore(reward);
-        if ((iteration + 1) % Parameters.segmentIterations == 0) resetHeuristicScores();
+        if ((iteration + 1) % Parameters.segmentIter == 0) resetHeuristicScores();
     }
 
     private static void resetHeuristicScores() {
@@ -235,14 +233,14 @@ public class Main {
     }
 
     private static void printSubtle(int iteration, Solution candidateSolution) {
-        int percentage = (int) (((iteration + 1) / (double) Parameters.totalIterations) * 100);
+        int percentage = (int) (((iteration + 1) / (double) Parameters.totalIter) * 100);
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4] + "\r");
     }
 
-    private static void runExtensively(int numberOfSeeds, int seedBound) {
+    private static void runExtensively(String fileName, int numberOfSeeds, int seedBound) {
         Random rn = new Random(seedBound);
         int seed = rn.nextInt(seedBound);
-        Problem.setUpProblem("example_10.json", false, seed);
+        Problem.setUpProblem(fileName, false, seed);
         for (int i = 0; i < numberOfSeeds; i++) {
             System.out.println("Running with seed: " + seed);
 
@@ -269,24 +267,20 @@ public class Main {
             System.out.println("\tFuel costs: " + Main.getBestSolution().getFuelCosts());
             System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
-            System.out.println("Postponed orders: " + Main.getBestSolution().getPostponedOrders());
+            System.out.println("Postponed orders: " + Main.getBestSolution().getAllPostponed());
             Main.getBestSolution().printSchedules();
         }
     }
 
     public static void main(String[] args) {
         File[] instances;
-        if (args.length > 0) {  // Running on Solstorm
-            Constants.OUTPUT_PATH = "/storage/users/anderhva/" + args[0] + "/";
-            instances = new File(Constants.ROOT_PATH + "/instances/").listFiles();
-        } else {
-            instances = new File(Constants.ROOT_PATH + "/src/main/resources/instances/").listFiles();
-        }
+        if (args.length > 0) Constants.overwritePathsSolstorm(args[0]);
+        instances = new File(Constants.PATH_TO_INSTANCES).listFiles();
         if (instances == null) throw new IllegalStateException("No instances to run!");
         for (File instance : instances) {
             String fileName = instance.getName();
             System.out.println("Running " + fileName);
-            // runExtensively(20, 1000);
+            // runExtensively(fileName, 10, 1000);
             runSimple(fileName);
         }
     }

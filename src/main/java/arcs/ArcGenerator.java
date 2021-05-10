@@ -17,7 +17,12 @@ public class ArcGenerator {
 
     public static List<Double> getSpeeds(double distance, int startTime) {
         if (distance == 0) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
-        double averageMaxSpeed = calculateAverageMaxSpeed(startTime, distance);
+        double averageMaxSpeed;
+        try {
+            averageMaxSpeed = calculateAverageMaxSpeed(startTime, distance);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
         List<Double> speeds = new ArrayList<>();
         for (double speed = Problem.minSpeed; speed < averageMaxSpeed; speed += 1) speeds.add(speed);
         speeds.add(averageMaxSpeed);
@@ -101,7 +106,12 @@ public class ArcGenerator {
 
     public static boolean isReturnPossible(double distance, int endTime) {
         if (endTime >= Problem.getFinalTimePoint() || distance < 0) return false;
-        double averageMaxSpeed = calculateAverageMaxSpeed(endTime, distance);
+        double averageMaxSpeed;
+        try {
+            averageMaxSpeed = calculateAverageMaxSpeed(endTime, distance);
+        } catch (IndexOutOfBoundsException e) {
+            return false;
+        }
         int earliestArrTime = endTime + (int) Math.ceil(Problem.hourToDiscDecimal(distance / averageMaxSpeed));
         return earliestArrTime <= Problem.getGeneralReturnTime();
     }
@@ -133,7 +143,7 @@ public class ArcGenerator {
         return speedsToCosts;
     }
 
-    public static double calculateAverageMaxSpeed(int startSailingTime, double distance) {
+    public static double calculateAverageMaxSpeed(int startSailingTime, double distance) throws IndexOutOfBoundsException {
         double sailedDistance = 0.0;
         int currentTime = startSailingTime;
         while (sailedDistance < distance) {
@@ -161,9 +171,7 @@ public class ArcGenerator {
 
     // TODO: The pickup duration must be addressed as an assumption if this is how we want to do this
     public static int calculateServiceDuration(Order order) {
-        if (!order.isMandatory() && !order.isDelivery()) {
-            return 1;
-        }
+        if (!order.isMandatory() && !order.isDelivery()) return 1;
         return (int) Math.ceil(order.getSize() * Problem.discServiceTimeUnit);
     }
 

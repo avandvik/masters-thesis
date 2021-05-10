@@ -33,7 +33,7 @@ public abstract class OperatorTwo extends Operator {
         boolean secondFeasible = Evaluator.isOrderSequenceFeasible(orderSequenceTwo, Problem.getVessel(vIdxTwo));
         if (firstFeasible && secondFeasible) {
             double aggregatedCost = calculateAggregatedCost(orderSequences, vIdxOne, vIdxTwo);
-            double decrease = aggregatedCost - originalCost; // Negative -> decrease
+            double decrease = aggregatedCost - originalCost;  // Negative -> decrease
             if (decrease < greatestDecrease) {
                 greatestDecrease = decrease;
                 newSolution.replaceOrderSequence(vIdxOne, orderSequenceOne);
@@ -45,6 +45,6 @@ public abstract class OperatorTwo extends Operator {
     private static double calculateAggregatedCost(List<List<Order>> orderSequences, int vIdxOne, int vIdxTwo) {
         List<Order> firOrderSeq = orderSequences.get(0);
         List<Order> secOrderSeq = orderSequences.get(1);
-        return (Objective.runSPLean(firOrderSeq, vIdxOne) + Objective.runSPLean(secOrderSeq, vIdxTwo));
+        return (Objective.runSP(firOrderSeq, vIdxOne) + Objective.runSP(secOrderSeq, vIdxTwo));
     }
 }

@@ -1,6 +1,7 @@
 package alns;
 
 import alns.heuristics.Construction;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import subproblem.Node;
@@ -32,6 +33,15 @@ public class Objective {
         hashToShortestPath.put(hash, subProblem.getShortestPath());
     }
 
+    public static double getCost(int hash) {
+        return hashToCost.get(hash);
+    }
+
+    public static double getOrderSequenceCost(List<Order> orderSequence, int vIdx) {
+        int hash = SubProblem.getSubProblemHash(orderSequence, vIdx);
+        return orderSequence.isEmpty() ? 0.0 : Parameters.cacheSP ? getCost(hash) : runSP(orderSequence, vIdx);
+    }
+
     public static void setObjValAndSchedule(Solution solution) {
         /* Calculates and sets the objective value of the solution and sets the corresponding vessel schedules */
 
@@ -51,7 +61,7 @@ public class Objective {
     }
 
     public static double penalizePostponement(Solution solution) {
-        return solution.getPostponedOrders().stream()
+        return solution.getAllPostponed().stream()
                 .map(Order::getPostponementPenalty)
                 .mapToDouble(Double::doubleValue)
                 .sum();
@@ -59,9 +69,7 @@ public class Objective {
 
     public static SubProblem runSPComplete(List<Order> orderSequence, int vesselIdx) {
         /* Runs SubProblem and returns entire object to access all solution info (schedules) */
-
         if (orderSequence.isEmpty()) return null;
-
         int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
         if (isCached(hash)) {
             SubProblem subProblem = new SubProblem(orderSequence, vesselIdx);
@@ -69,30 +77,22 @@ public class Objective {
             subProblem.setShortestPathCost(hashToCost.get(hash));
             return subProblem;
         }
-
         SubProblem subProblem = new SubProblem(orderSequence, vesselIdx);
         SubProblem.initializeResultsStructure();
         subProblem.run();
-
-        cacheSubProblemResults(hash, subProblem);
-
+        if (Parameters.cacheSP) cacheSubProblemResults(hash, subProblem);
         return subProblem;
     }
 
-    public static double runSPLean(List<Order> orderSequence, int vesselIdx) {
+    public static double runSP(List<Order> orderSequence, int vesselIdx) {
         /* Run SubProblem and returns only objective value */
-
         if (orderSequence.isEmpty()) return 0.0;
-
         int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
         if (isCached(hash)) return hashToCost.get(hash);
-
         SubProblem subProblem = new SubProblem(orderSequence, vesselIdx);
         SubProblem.initializeResultsStructure();
         subProblem.run();
-
-        cacheSubProblemResults(hash, subProblem);
-
+        if (Parameters.cacheSP) cacheSubProblemResults(hash, subProblem);
         return subProblem.getShortestPathCost();
     }
 
@@ -105,10 +105,8 @@ public class Objective {
                 for (int insertionIdx : insertions.get(vesselIdx)) {
                     List<Order> orderSequence = Helpers.deepCopyList(orderSequences.get(vesselIdx), true);
                     orderSequence.add(insertionIdx, order);  // This should never be empty
-
                     boolean solvedByCache = cacheInsertion(order, orderSequence, vesselIdx, insertionIdx);
                     if (solvedByCache) continue;
-
                     Thread thread = new Thread(new SubProblemInsertion(orderSequence, vesselIdx, insertionIdx, order));
                     threads.add(thread);
                     thread.start();
@@ -143,10 +141,8 @@ public class Objective {
                     SubProblemRemoval.removalToObjective.put(key, 0.0);
                     continue;
                 }
-
                 boolean solvedByCache = cacheRemoval(orderSequenceCopy, vesselIdx, removalIdx);
                 if (solvedByCache) continue;
-
                 Thread thread = new Thread(new SubProblemRemoval(orderSequenceCopy, vesselIdx, removalIdx));
                 threads.add(thread);
                 thread.start();
@@ -176,10 +172,7 @@ public class Objective {
                 SubProblem.vesselToObjective.put(vesselIdx, 0.0);
                 continue;
             }
-
-            boolean solvedByCache = cacheEvaluate(orderSequence, vesselIdx);
-            if (solvedByCache) continue;
-
+            if (cacheEvaluate(orderSequence, vesselIdx)) continue;
             Thread thread = new Thread(new SubProblem(orderSequence, vesselIdx));
             threads.add(thread);
             thread.start();

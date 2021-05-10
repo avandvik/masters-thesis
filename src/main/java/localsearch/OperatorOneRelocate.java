@@ -3,6 +3,7 @@ package localsearch;
 import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
+import data.Messages;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
@@ -26,12 +27,11 @@ public class OperatorOneRelocate extends OperatorOne {
                     if (seenInstSequences.contains(newInstSequence)) continue;
                     seenInstSequences.add(newInstSequence);
                     List<Order> newOrderSequence = createNewOrderSequence(newInstSequence);
-                    if (Evaluator.isOrderSequenceFeasible(newOrderSequence, Problem.getVessel(vesselIdx))) {
-                        updateFields(newOrderSequence, vesselIdx);
-                    }
+                    updateFields(newOrderSequence, vesselIdx);
                 }
             }
         }
+        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }

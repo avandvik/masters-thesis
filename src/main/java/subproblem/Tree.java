@@ -160,19 +160,14 @@ public class Tree {
 
     private void createNodes(Node fromNode, Order toOrder, boolean isSpot, double distance, int startTime, int c) {
         List<Double> speeds = ArcGenerator.getSpeeds(distance, startTime);
+        if (speeds == null) return;  // No valid speeds given the distance and start time
         Map<Double, Integer> speedsToArrTimes = ArcGenerator.mapSpeedsToArrTimes(distance, startTime, speeds);
-
         int serviceDuration = toOrder != null ? ArcGenerator.calculateServiceDuration(toOrder) : 0;
-        Map<Double, List<Integer>> speedsToTimePoints = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, distance,
+        Map<Double, List<Integer>> speedsToTimes = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, distance,
                 serviceDuration, toOrder != null ? Problem.getInstallation(toOrder) : Problem.getDepot());
-
-        // Check for early break
-        if (speedsToTimePoints.values().isEmpty()) return;
-
-        Map<Double, Double> speedsToCosts = ArcGenerator.mapSpeedsToCosts(speedsToTimePoints, distance, startTime,
-                isSpot);
-
-        addNodesToTree(speedsToCosts, speedsToTimePoints, fromNode, toOrder, c);
+        if (speedsToTimes.values().isEmpty()) return;  // Check for early break
+        Map<Double, Double> speedsToCosts = ArcGenerator.mapSpeedsToCosts(speedsToTimes, distance, startTime, isSpot);
+        addNodesToTree(speedsToCosts, speedsToTimes, fromNode, toOrder, c);
     }
 
     private void addNodesToTree(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,
@@ -192,7 +187,7 @@ public class Tree {
         }
     }
 
-    private void addNodesDepotOrder(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,
+    private void addNodesDepotOrder(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimes,
                                     Order toOrder) {
         List<Integer> timePointsDepot = new ArrayList<>(Arrays.asList(Problem.preparationEndTime,
                 Problem.preparationEndTime, Problem.preparationEndTime));
@@ -201,7 +196,7 @@ public class Tree {
         this.setRoot(depotNode);
         for (double speed : speedsToCosts.keySet()) {
             double cost = speedsToCosts.get(speed);
-            List<Integer> timePoints = speedsToTimePoints.get(speed);
+            List<Integer> timePoints = speedsToTimes.get(speed);
             int endTime = timePoints.get(2);
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
@@ -218,11 +213,11 @@ public class Tree {
         }
     }
 
-    private void addNodesOrderOrder(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,
+    private void addNodesOrderOrder(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimes,
                                     Node fromNode, Order toOrder) {
         for (double speed : speedsToCosts.keySet()) {
             double cost = speedsToCosts.get(speed);
-            List<Integer> timePoints = speedsToTimePoints.get(speed);
+            List<Integer> timePoints = speedsToTimes.get(speed);
             int endTime = timePoints.get(2);
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
@@ -244,11 +239,11 @@ public class Tree {
         }
     }
 
-    private void addNodesOrderDepot(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimePoints,
+    private void addNodesOrderDepot(Map<Double, Double> speedsToCosts, Map<Double, List<Integer>> speedsToTimes,
                                     Node fromNode) {
         double minCostSpeed = Helpers.getKeyWithMinValue(speedsToCosts);
         double cost = speedsToCosts.get(minCostSpeed);
-        List<Integer> timePoints = speedsToTimePoints.get(minCostSpeed);
+        List<Integer> timePoints = speedsToTimes.get(minCostSpeed);
         int endTime = timePoints.get(2);
         Node existingDepotNode = getExistingNode(endTime, null);
         if (existingDepotNode == null) {
