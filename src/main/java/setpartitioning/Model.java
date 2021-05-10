@@ -26,10 +26,8 @@ public class Model {
 
     private void setUpProblem() {
         Data.makeArrays();
-
         this.numberOfOrders = Data.orders.size();
         this.numberOfVessels = Data.orderInRouteForVessel.size();
-
         this.vesselToNumberOfRoutes = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < numberOfVessels; vesselIdx++) {
             this.vesselToNumberOfRoutes.put(vesselIdx, Data.orderInRouteForVessel.get(vesselIdx).size());
@@ -117,18 +115,17 @@ public class Model {
         return new Solution(orderSequences, postponedOrders, true);
     }
 
-
     private List<List<Order>> postprocessChosenRoutes() throws GRBException {
         List<List<Order>> orderSequences = new ArrayList<>();
-        for (int vesselIdx = 0; vesselIdx < this.lambda.size(); vesselIdx++) {
+        for (int vIdx = 0; vIdx < this.lambda.size(); vIdx++) {
             orderSequences.add(new LinkedList<>());
-            for (int routeIdx = 0; routeIdx < this.lambda.get(vesselIdx).size(); routeIdx++) {
-                GRBVar routeByVessel = this.lambda.get(vesselIdx).get(routeIdx);
+            for (int routeIdx = 0; routeIdx < this.lambda.get(vIdx).size(); routeIdx++) {
+                GRBVar routeByVessel = this.lambda.get(vIdx).get(routeIdx);
                 int value = (int) routeByVessel.get(GRB.DoubleAttr.X);
                 if (value == 1) {
-                    List<Order> route = Data.routeArray.get(vesselIdx).get(routeIdx);
+                    List<Order> route = Data.routeArray.get(vIdx).get(routeIdx);
                     if (Parameters.verbose) System.out.println("Sailing route: " + route);
-                    orderSequences.set(vesselIdx, route);
+                    orderSequences.set(vIdx, route);
                 }
             }
         }
@@ -159,11 +156,8 @@ public class Model {
             this.defineSetPartitioningConstr();
             this.defineOrderAssignmentConstr();
             this.defineMandOrderConstr();
-
             model.optimize();
-
             this.newSolution = postprocess();
-
         } catch (GRBException e) {
             System.out.println("Error code: " + e.getErrorCode() + ". " +
                     e.getMessage());

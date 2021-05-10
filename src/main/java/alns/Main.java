@@ -138,7 +138,14 @@ public class Main {
     }
 
     private static void saveOrderSequences(Solution candidateSolution) {
+        /* Save order sequences in candidateSolution while not exceeding storage limits */
         for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            if (vesselToSequenceToCost.get(vIdx).keySet().size() > Parameters.poolSize) {
+                List<List<Order>> sequences = new ArrayList<>(vesselToSequenceToCost.get(vIdx).keySet());
+                Collections.shuffle(sequences, Problem.random);
+                int mappingsToDelete = Problem.getNumberOfVessels();
+                sequences.subList(0, mappingsToDelete).forEach(vesselToSequenceToCost.get(vIdx).keySet()::remove);
+            }
             List<Order> orderSequence = candidateSolution.getOrderSequence(vIdx);
             double cost = Objective.getOrderSequenceCost(orderSequence, vIdx);
             vesselToSequenceToCost.get(vIdx).put(orderSequence, cost);  // Okay if overwrite
@@ -262,11 +269,9 @@ public class Main {
         Problem.setUpProblem(fileName, false, seed);
         for (int i = 0; i < numberOfSeeds; i++) {
             System.out.println("Running with seed: " + seed);
-
             double startTime = System.nanoTime();
             Main.run();
             printSolutionInfo(startTime);
-
             seed = rn.nextInt(seedBound);
             Problem.setRandom(seed);
         }
@@ -274,6 +279,7 @@ public class Main {
 
     private static void runSimple(String fileName) {
         Problem.setUpProblem(fileName, false, 4);
+        if (Constants.SOLSTORM) Parameters.setSolstormParameters();
         double startTime = System.nanoTime();
         Main.run();
         printSolutionInfo(startTime);

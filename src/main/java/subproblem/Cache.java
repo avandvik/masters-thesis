@@ -53,9 +53,9 @@ public class Cache {
         if (hashToCostLongTerm.keySet().size() > Parameters.cacheSize) {
             List<Integer> hashes = new ArrayList<>(hashToCostLongTerm.keySet());
             Collections.shuffle(hashes, Problem.random);
-            int currentCacheSize = hashToCostCurrent.keySet().size();
-            hashes.subList(0, currentCacheSize).forEach(hashToCostLongTerm.keySet()::remove);
-            hashes.subList(0, currentCacheSize).forEach(hashToShortestPathLongTerm.keySet()::remove);
+            int mappingsToDelete = hashToCostCurrent.keySet().size();
+            hashes.subList(0, mappingsToDelete).forEach(hashToCostLongTerm.keySet()::remove);
+            hashes.subList(0, mappingsToDelete).forEach(hashToShortestPathLongTerm.keySet()::remove);
         }
         for (Map.Entry<Integer, Double> entry : hashToCostCurrent.entrySet()) {
             int hash = entry.getKey();
