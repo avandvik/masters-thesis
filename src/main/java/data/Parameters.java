@@ -42,6 +42,7 @@ public class Parameters {
     public static int maxIterSolution = 20;
     public static int setPartIter = 20;
     public static int segmentIter = 50;
+    public static int searchHistoryIter = 10;
 
     // Cache and order sequence pool size
     public static int cacheSize = 1000;

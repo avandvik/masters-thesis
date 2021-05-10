@@ -71,7 +71,7 @@ public class Constants {
     public static final String INSERTION_MAX_ORDER_SIZE_NAME = "max order size insertion";
 
     public static final String INSTANCE_NAME_KEY = "instance";
-    public static final String OBJECTIVE_VALUE_KEY = "objective";
+    public static final String OBJECTIVE_VALUE_KEY = "best_objective";
     public static final String VOYAGES_KEY = "voyages";
     public static final String SEQUENCE_KEY = "sequence";
     public static final String TIME_POINTS_KEY = "time_points";

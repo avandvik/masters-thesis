@@ -207,8 +207,10 @@ public class Main {
         for (Heuristic heuristic : heuristics) heuristic.addToScore(reward);
         if ((iteration + 1) % Parameters.segmentIter == 0) resetHeuristicScores();
         Cache.cacheLongTerm();
-        SearchHistory.setIterationToObjective(iteration, bestSolution.getObjective(false));
-        for (Heuristic heuristic : allHeuristics) SearchHistory.setIterationToWeight(heuristic, iteration);
+        if (iteration % Parameters.searchHistoryIter == 0) {
+            SearchHistory.setIterationToObjective(iteration, bestSolution.getObjective(false));
+            for (Heuristic heuristic : allHeuristics) SearchHistory.setIterationToWeight(heuristic, iteration);
+        }
     }
 
     private static void resetHeuristicScores() {
