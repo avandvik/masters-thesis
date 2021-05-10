@@ -9,6 +9,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.Cache;
 
 import java.util.*;
 
@@ -20,7 +21,7 @@ public class RemovalWorstTest {
     @DisplayName("test RemovalWorst")
     public void removalWorstTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         RemovalWorst removalWorst = new RemovalWorst(Constants.REMOVAL_WORST_NAME);
         Parameters.parallelHeuristics = false;
 

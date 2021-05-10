@@ -25,20 +25,27 @@ public class Parameters {
     public static double rnRelated = 10;
     public static double rnWorst = 10;
 
+    // K-means
+    public static int k = 2;
+    public static int kMeansAttempts = 10;
+
     // Iterations
     public static int totalIter = 1000;
     public static int maxIterSolution = 20;
     public static int setPartitioningIter = 100;
     public static int segmentIter = 50;
 
+    // Cache size
+    public static int cacheSize = 1000;
+
     // Toggles
     public static boolean setPartitioning = false;
-    public static boolean localSearch = true;
+    public static boolean localSearch = false;
+    public static boolean parallelHeuristics = false;
+    public static boolean cacheSP = true;
     public static boolean verbose = false;
     public static boolean semiVerbose = true;
     public static boolean saveSolution = false;
-    public static boolean parallelHeuristics = true;
-    public static boolean cacheSP = false;
 
 
     public static void setTemperatureAndCooling(double currentFitness) {

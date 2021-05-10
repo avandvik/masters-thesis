@@ -1,6 +1,5 @@
 package subproblem;
 
-import alns.Objective;
 import data.Parameters;
 import objects.Order;
 
@@ -33,7 +32,7 @@ public class SubProblemRemoval extends SubProblem implements Runnable {
     @Override
     public void run() {
         super.solveSubProblem();
-        addToResultsStructure(super.getVesselIdx(), this.removalIdx, super.getShortestPathCost());
-        if (Parameters.cacheSP) Objective.cacheSubProblemResults(super.hashCode(), this);
+        addToResultsStructure(super.getVesselIdx(), this.removalIdx, super.getCost());
+        if (Parameters.cacheSP) Cache.cacheCurrent(super.hashCode(), this);
     }
 }

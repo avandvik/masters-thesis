@@ -7,6 +7,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.Cache;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class OperatorSchedulePostponedTest {
     @DisplayName("test schedulePostponed")
     public void schedulePostponedTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         Solution initialSolution = SolutionGenerator.createSolutionBasicTestData(5, 8);
         Order postponeOrderOne = initialSolution.getOrderSequence(0).get(4);
         initialSolution.addPostponedOrder(postponeOrderOne);

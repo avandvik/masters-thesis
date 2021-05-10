@@ -1,6 +1,5 @@
 package subproblem;
 
-import alns.Objective;
 import data.Parameters;
 import objects.Order;
 
@@ -36,7 +35,7 @@ public class SubProblemInsertion extends SubProblem implements Runnable {
     @Override
     public void run() {
         super.solveSubProblem();
-        addToResultsStructure(this.orderToPlace, super.getVesselIdx(), this.insertionIdx, super.getShortestPathCost());
-        if (Parameters.cacheSP) Objective.cacheSubProblemResults(super.hashCode(), this);
+        addToResultsStructure(this.orderToPlace, super.getVesselIdx(), this.insertionIdx, super.getCost());
+        if (Parameters.cacheSP) Cache.cacheCurrent(super.hashCode(), this);
     }
 }

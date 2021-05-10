@@ -1,6 +1,8 @@
 package localsearch;
 
+import alns.Evaluator;
 import alns.Solution;
+import data.Messages;
 
 public class LocalSearch {
 
@@ -8,6 +10,7 @@ public class LocalSearch {
         Solution newSolution = intraVoyageImprovement(solution);
         newSolution = interVoyageImprovement(newSolution);
         newSolution = schedulePostponeImprovement(newSolution);
+        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         return newSolution;
     }
 

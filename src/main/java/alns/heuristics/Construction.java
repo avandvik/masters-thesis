@@ -30,34 +30,23 @@ public class Construction {
     }
 
     public static Solution constructGreedyInitialSolution() {
-
         InsertionGreedy insertionGreedy = new InsertionGreedy(Constants.INSERTION_GREEDY_NAME);
-
         List<List<Order>> orderSequences = Helpers.createEmptyOrderSequences();
         Set<Order> postponedOrders = new HashSet<>();
         Set<Order> unplacedOrders = new HashSet<>(Problem.orders);
         Solution emptySolution = new Solution(orderSequences, postponedOrders, unplacedOrders);
-
-        // Repair empty solution using greedy insertion heuristic
         return insertionGreedy.repair(emptySolution);
     }
 
     public static Solution constructRandomInitialSolution() {
-
-        // Create a list of ordersToPlace sorted with mandatory orders first, then optional
         List<Order> ordersToPlace = sortUnplacedOrders(Problem.orders);
-
         List<List<Order>> orderSequences = Helpers.createEmptyOrderSequences();
         Set<Order> postponedOrders = new HashSet<>();
-
         while (!ordersToPlace.isEmpty()) {
             Order orderToPlace = ordersToPlace.remove(0);
             Map<Integer, List<Integer>> feasibleInsertions = getAllFeasibleInsertions(orderSequences, orderToPlace);
-
             List<Integer> vesselNumbers = new ArrayList<>(feasibleInsertions.keySet());
             Collections.shuffle(vesselNumbers.subList(0, vesselNumbers.size() - 1), Problem.random);
-
-            // Attempt placing order in fleet vessels, then spot vessel
             boolean orderPlaced = false;
             for (int vesselNumber : vesselNumbers) {
                 List<Integer> vesselInsertions = feasibleInsertions.get(vesselNumber);
@@ -67,11 +56,8 @@ public class Construction {
                 orderPlaced = true;
                 break;
             }
-
-            // If there are no feasible insertions in any vessels, place in postponed orders
             if (!orderPlaced && !orderToPlace.isMandatory()) postponedOrders.add(orderToPlace);
         }
-
         return new Solution(orderSequences, postponedOrders, true);
     }
 

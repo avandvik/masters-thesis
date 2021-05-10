@@ -21,6 +21,7 @@ public class Solution {
 
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, boolean setFitness) {
         /* Use this constructor when generating a complete solution */
+
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
         this.unplacedOrders = new HashSet<>();  // Solutions from this constructor must have no unplaced orders
@@ -30,6 +31,7 @@ public class Solution {
 
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, Set<Order> unplacedOrders) {
         /* Use this constructor when generating a partial solution */
+
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
         this.unplacedOrders = unplacedOrders;
@@ -62,6 +64,10 @@ public class Solution {
         }
     }
 
+    public void removeFromOrderSequences(List<Order> orders) {
+        this.orderSequences.forEach(orderSequence -> orderSequence.removeAll(orders));
+    }
+
     public void removeOrderFromSequence(int vesselIdx, Order rmOrder) {
         this.orderSequences.get(vesselIdx).remove(rmOrder);
     }
@@ -76,6 +82,10 @@ public class Solution {
 
     public void removePostponedOrder(Order order) {
         this.postponedOrders.remove(order);
+    }
+
+    public void removeFromPostponedOrders(List<Order> orders) {
+        orders.forEach(this.postponedOrders::remove);
     }
 
     public Set<Order> getUnplacedOrders() {

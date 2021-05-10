@@ -8,6 +8,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.Cache;
 
 import java.util.*;
 
@@ -19,7 +20,7 @@ public class InsertionMaxPenaltyCostTest {
     @DisplayName("test InsertionMaxPenaltyCost")
     public void insertionMaxPenaltyCostTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         Parameters.parallelHeuristics = false;
         InsertionMaxPenaltyCost insertionMaxPenalty = new InsertionMaxPenaltyCost(Constants.INSERTION_MAX_PENALTY_NAME);
         // assertEquals(createExpectedSolution(), insertionMaxPenalty.repair(createInitialSolution()));

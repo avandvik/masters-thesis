@@ -1,10 +1,8 @@
 package alns.heuristics;
 
-import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
 import alns.heuristics.protocols.Repairer;
-import data.Messages;
 import objects.Order;
 import utils.Helpers;
 
@@ -19,10 +17,9 @@ public class InsertionMaxPenaltyCost extends Heuristic implements Repairer {
     @Override
     public Solution repair(Solution partialSolution) {
         Solution solution = Helpers.deepCopySolution(partialSolution);
-        List<Order> sortedOrders = sortOrders(partialSolution, true, false);
+        List<Order> sortedOrders = Helpers.sortOrders(partialSolution, true, false);
         for (Order order : sortedOrders) solution = InsertionGreedy.insertGreedilyInSolution(solution, order);
         Objective.setObjValAndSchedule(solution);
-        if (!Evaluator.isSolutionFeasible(solution)) throw new IllegalStateException(Messages.solutionInfeasible);
         return solution;
     }
 }
