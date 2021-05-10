@@ -38,9 +38,9 @@ public class Parameters {
     public static int numberOfOperators = 3;
 
     // Iterations
-    public static int totalIter = 500;
+    public static int totalIter = 100;
     public static int maxIterSolution = 20;
-    public static int setPartitioningIter = 20;
+    public static int setPartIter = 20;
     public static int segmentIter = 50;
 
     // Cache and order sequence pool size
@@ -50,11 +50,12 @@ public class Parameters {
     // Toggles
     public static boolean setPartitioning = false;
     public static boolean localSearch = true;
-    public static boolean parallelHeuristics = true;
+    public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
     public static boolean verbose = false;
     public static boolean semiVerbose = true;
-    public static boolean saveSolution = false;
+    public static boolean saveSolution = true;
+    public static boolean saveHistory = true;
 
 
     public static void setTemperatureAndCooling(double currentFitness) {
@@ -73,5 +74,6 @@ public class Parameters {
         verbose = false;
         semiVerbose = true;
         saveSolution = true;
+        saveHistory = true;
     }
 }

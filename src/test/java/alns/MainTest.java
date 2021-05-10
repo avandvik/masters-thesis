@@ -58,14 +58,14 @@ public class MainTest {
             Main.vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
         }
 
-        double rewardOne = Main.acceptSolution(solutionTwo);
+        double rewardOne = Main.acceptSolution(solutionTwo, 0);
 
         assertEquals(solutionTwo, Main.getBestSolution());
         assertEquals(solutionTwo, Main.getCurrentSolution());
         assertEquals(33.0, rewardOne, 0.0);
 
         double rewardTwo = 0.0;
-        while (Main.getCurrentSolution() != solutionThree) rewardTwo = Main.acceptSolution(solutionThree);
+        while (Main.getCurrentSolution() != solutionThree) rewardTwo = Main.acceptSolution(solutionThree, 0);
 
         assertEquals(solutionThree, Main.getCurrentSolution());
         assertEquals(9.0, rewardTwo, 0.0);
