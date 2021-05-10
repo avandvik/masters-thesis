@@ -52,6 +52,7 @@ public class Problem {
 
     // Random object
     public static Random random;
+    public static int currentSeed;
 
 
     /* =========== INSTALLATION =========== */
@@ -187,6 +188,7 @@ public class Problem {
     }
 
     public static void setRandom(int seed) {
+        Problem.currentSeed = seed;
         Problem.random = new Random(seed);
     }
 

@@ -38,9 +38,9 @@ public class Parameters {
     public static int numberOfOperators = 3;
 
     // Iterations
-    public static int totalIter = 100;
+    public static int totalIter = 50;
     public static int maxIterSolution = 20;
-    public static int setPartIter = 20;
+    public static int setPartIter = 50;
     public static int segmentIter = 50;
     public static int searchHistoryIter = 10;
 
@@ -71,7 +71,7 @@ public class Parameters {
         cacheSize = Integer.MAX_VALUE;
         poolSize = Integer.MAX_VALUE;
         parallelHeuristics = true;
-        totalIter = 5000;
+        totalIter = 10000;
         verbose = false;
         semiVerbose = true;
         saveSolution = true;

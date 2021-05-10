@@ -45,8 +45,6 @@ public class Main {
             if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
         }
-        if (Parameters.saveSolution) IO.saveSolution(bestSolution);
-        if (Parameters.saveHistory) IO.saveSearchHistory();
     }
 
     public static void initialize() {
@@ -157,7 +155,7 @@ public class Main {
     public static Double acceptSolution(Solution candidateSolution, int iter) {
         if (candidateSolution.equals(currentSolution)) {
             if (iterationsCurrentSolution > Parameters.maxIterSolution) {
-                currentSolution = Construction.constructGreedyInitialSolution();
+                currentSolution = Construction.constructRandomInitialSolution();
                 iterationsCurrentSolution = 0;
             }
         } else if (candidateSolution.getObjective(false) < bestSolution.getObjective(false)) {
@@ -270,17 +268,26 @@ public class Main {
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4] + "\r");
     }
 
-    private static void runExtensively(String fileName, int numberOfSeeds, int seedBound) {
+    private static void runExtensively(String fileName, int nbrEvaluations, int seedBound) {
         Random rn = new Random(seedBound);
         int seed = rn.nextInt(seedBound);
         Problem.setUpProblem(fileName, false, seed);
-        for (int i = 0; i < numberOfSeeds; i++) {
+        if (Constants.SOLSTORM) Parameters.setSolstormParameters();
+        for (int i = 0; i < nbrEvaluations; i++) {
             System.out.println("Running with seed: " + seed);
+            Problem.setRandom(seed);
             double startTime = System.nanoTime();
-            Main.run();
+            try {
+                Main.run();
+            } catch (IllegalStateException | NullPointerException | IndexOutOfBoundsException e) {
+                e.printStackTrace();
+                System.out.println("Continuing to another instance...\n");
+            }
+            SearchHistory.setRuntime(startTime);
+            if (Parameters.saveSolution) IO.saveSolution(bestSolution);
+            if (Parameters.saveHistory) IO.saveSearchHistory();
             printSolutionInfo(startTime);
             seed = rn.nextInt(seedBound);
-            Problem.setRandom(seed);
         }
     }
 
@@ -290,6 +297,8 @@ public class Main {
         double startTime = System.nanoTime();
         Main.run();
         SearchHistory.setRuntime(startTime);
+        if (Parameters.saveSolution) IO.saveSolution(bestSolution);
+        if (Parameters.saveHistory) IO.saveSearchHistory();
         printSolutionInfo(startTime);
     }
 
@@ -300,9 +309,12 @@ public class Main {
             System.out.println("\tFuel costs: " + Main.getBestSolution().getFuelCosts());
             System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
+        }
+        if (Parameters.verbose) {
             System.out.println("Postponed orders: " + Main.getBestSolution().getAllPostponed());
             Main.getBestSolution().printSchedules();
         }
+        System.out.println();
     }
 
     public static void main(String[] args) {
@@ -313,8 +325,8 @@ public class Main {
         for (File instance : instances) {
             String fileName = instance.getName();
             System.out.println("Running " + fileName);
-            // runExtensively(fileName, 10, 1000);
-            runSimple(fileName);
+            runExtensively(fileName, 5, 1000);
+            // runSimple(fileName);
         }
     }
 }

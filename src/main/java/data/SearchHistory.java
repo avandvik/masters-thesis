@@ -8,12 +8,14 @@ import java.util.Map;
 
 public class SearchHistory {
 
-    private static final Map<Integer, Double> iterationToObjective = new HashMap<>();
-    private static final Map<Heuristic, Map<Integer, Double>> heuristicToIterationToWeight = new HashMap<>();
+    private static Map<Integer, Double> iterationToObjective;
+    private static Map<Heuristic, Map<Integer, Double>> heuristicToIterationToWeight;
     private static int iterationBestSolutionFound;
     private static double runtime;
 
     public static void initialize(List<Heuristic> heuristics) {
+        iterationToObjective = new HashMap<>();
+        heuristicToIterationToWeight = new HashMap<>();
         for (Heuristic heuristic : heuristics) heuristicToIterationToWeight.put(heuristic, new HashMap<>());
     }
 

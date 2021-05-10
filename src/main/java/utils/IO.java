@@ -55,7 +55,7 @@ public class IO {
             }
         }
         String baseName = Problem.fileName.substring(0, Problem.fileName.lastIndexOf("."));
-        String path = Constants.OUTPUT_PATH + baseName + "_solution.json";
+        String path = Constants.OUTPUT_PATH + baseName + "_" + Problem.currentSeed + "_solution.json";
         writeToFile(path, obj);
     }
 
@@ -69,7 +69,7 @@ public class IO {
         obj.put(Constants.ITER_BEST_FOUND_KEY, SearchHistory.getIterationBestSolutionFound());
         obj.put(Constants.RUNTIME_KEY, SearchHistory.getRuntime());
         String baseName = Problem.fileName.substring(0, Problem.fileName.lastIndexOf("."));
-        String path = Constants.OUTPUT_PATH + baseName + "_history.json";
+        String path = Constants.OUTPUT_PATH + baseName + "_" + Problem.currentSeed + "_history.json";
         writeToFile(path, obj);
     }
 
