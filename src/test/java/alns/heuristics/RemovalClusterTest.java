@@ -9,6 +9,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.Cache;
 
 import java.util.*;
 
@@ -20,7 +21,7 @@ public class RemovalClusterTest {
     @DisplayName("test Removal Cluster")
     public void removalClusterTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         RemovalCluster removalCluster = new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME);
         Parameters.parallelHeuristics = false;
         assertEquals(createExpectedSolution(), removalCluster.destroy(createInitialSolution(), 3));
@@ -30,7 +31,7 @@ public class RemovalClusterTest {
     @DisplayName("test Removal Cluster Specific Data")
     public void removalClusterTestSpecificData() {
         Problem.setUpProblem("clusterOrders.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         RemovalCluster removalCluster = new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME);
         Parameters.parallelHeuristics = false;
         assertEquals(createClusteredExpectedSolution(), removalCluster.destroy(createClusteredInitialSolution(), 5));

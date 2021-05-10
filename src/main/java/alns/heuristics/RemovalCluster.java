@@ -1,9 +1,9 @@
 package alns.heuristics;
 
-import alns.Evaluator;
 import alns.Solution;
 import alns.heuristics.protocols.Destroyer;
 import data.Messages;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import utils.DistanceCalculator;
@@ -13,9 +13,6 @@ import java.util.*;
 
 public class RemovalCluster extends Heuristic implements Destroyer {
 
-    private final static int k = 2;
-    private final static int kMeansAttempts = 10;
-
     public RemovalCluster(String name) {
         super(name);
     }
@@ -23,11 +20,14 @@ public class RemovalCluster extends Heuristic implements Destroyer {
     @Override
     public Solution destroy(Solution solution, int numberOfOrders) {
         Solution newSolution = getClusterRemoval(solution, numberOfOrders);
-        if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
+        // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
+        newSolution.clearSubProblemResults();
         return newSolution;
     }
 
     private Solution getClusterRemoval(Solution solution, int numberOfOrders) {
+        /*  */
+
         Solution newSolution = Helpers.deepCopySolution(solution);
         newSolution.clearSubProblemResults();
         int removedOrders = 0;
@@ -49,8 +49,14 @@ public class RemovalCluster extends Heuristic implements Destroyer {
     }
 
     private List<List<Order>> applyKMeans(List<Order> orderSequence) {
+        if (orderSequence.size() < Parameters.k) {
+            List<List<Order>> clusters = new ArrayList<>();
+            clusters.add(orderSequence);
+            clusters.add(new ArrayList<>());
+            return clusters;
+        }
         List<List<Order>> clusters = new ArrayList<>();
-        for (int attempt = 0; attempt < kMeansAttempts; attempt++) {
+        for (int attempt = 0; attempt < Parameters.kMeansAttempts; attempt++) {
             clusters = kMeans(orderSequence);
             if (!containsEmptyCluster(clusters)) break;
         }
@@ -77,16 +83,16 @@ public class RemovalCluster extends Heuristic implements Destroyer {
     private List<Order> getRandomCentroids(List<Order> orderSequence) {
         List<Order> copyOfOrderSequence = Helpers.deepCopyList(orderSequence, false);
         Collections.shuffle(copyOfOrderSequence, Problem.random);
-        return copyOfOrderSequence.subList(0, k);
+        return copyOfOrderSequence.subList(0, Parameters.k);
     }
 
     private List<List<Order>> getClusters(List<Order> orderSequence, List<List<Double>> centroids) {
         List<List<Order>> newClusters = new ArrayList<>();
-        for (int centroidIdx = 0; centroidIdx < k; centroidIdx++) newClusters.add(new ArrayList<>());
+        for (int centroidIdx = 0; centroidIdx < Parameters.k; centroidIdx++) newClusters.add(new ArrayList<>());
         for (Order order : orderSequence) {
             double minSqDistance = Double.POSITIVE_INFINITY;
             int bestCentroidIdx = 0;
-            for (int centroidIdx = 0; centroidIdx < k; centroidIdx++) {
+            for (int centroidIdx = 0; centroidIdx < Parameters.k; centroidIdx++) {
                 if (centroids.get(centroidIdx) == null) continue;
                 double latCentroid = centroids.get(centroidIdx).get(0);
                 double lonCentroid = centroids.get(centroidIdx).get(1);
@@ -140,6 +146,8 @@ public class RemovalCluster extends Heuristic implements Destroyer {
         List<Order> ordersToRemove = new ArrayList<>();
         for (Order order : cluster) ordersToRemove.addAll(getOrdersToRemove(order));
         for (List<Order> orderSequence : newSolution.getOrderSequences()) orderSequence.removeAll(ordersToRemove);
+        // newSolution.removeFromOrderSequences(ordersToRemove);
+        newSolution.removeFromPostponedOrders(ordersToRemove);
         newSolution.getUnplacedOrders().addAll(ordersToRemove);
     }
 }

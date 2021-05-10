@@ -1,6 +1,5 @@
 package subproblem;
 
-import alns.Objective;
 import data.Messages;
 import data.Parameters;
 import data.Problem;
@@ -14,8 +13,8 @@ public class SubProblem implements Runnable {
     private final List<Order> orderSequence;
     private final int vesselIdx;
     private final boolean isSpotVessel;
+    private double cost;
     private List<Node> shortestPath;
-    private double shortestPathCost;
 
     // vesselIdx -> objective value
     public static Map<Integer, Double> vesselToObjective;
@@ -39,15 +38,23 @@ public class SubProblem implements Runnable {
     @Override
     public void run() {
         this.solveSubProblem();
-        addToResultsStructure(vesselIdx, this.shortestPathCost);
-        if (Parameters.cacheSP) Objective.cacheSubProblemResults(this.hashCode(), this);
+        addToResultsStructure(vesselIdx, this.cost);
+        if (Parameters.cacheSP) Cache.cacheCurrent(this.hashCode(), this);
     }
 
     public void solveSubProblem() {
         Tree tree = new Tree(this.vesselIdx);
         tree.generateTree(this.orderSequence, this.isSpotVessel);
         this.shortestPath = tree.findShortestPath();
-        this.shortestPathCost = tree.getGlobalBestCost();
+        this.cost = tree.getGlobalBestCost();
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 
     public List<Node> getShortestPath() {
@@ -56,14 +63,6 @@ public class SubProblem implements Runnable {
 
     public void setShortestPath(List<Node> shortestPath) {
         this.shortestPath = shortestPath;
-    }
-
-    public double getShortestPathCost() {
-        return shortestPathCost;
-    }
-
-    public void setShortestPathCost(double shortestPathCost) {
-        this.shortestPathCost = shortestPathCost;
     }
 
     public List<Order> getOrderSequence() {

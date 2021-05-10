@@ -1,9 +1,7 @@
 package alns.heuristics;
 
-import alns.Evaluator;
 import alns.Solution;
 import alns.heuristics.protocols.Destroyer;
-import data.Messages;
 import data.Problem;
 import objects.Order;
 import utils.Helpers;
@@ -20,21 +18,21 @@ public class RemovalRandom extends Heuristic implements Destroyer {
     public Solution destroy(Solution solution, int numberOfOrders) {
         Solution newSolution = solution;
         while (newSolution.getUnplacedOrders().size() < numberOfOrders) newSolution = getRandomRemoval(newSolution);
-        if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
+        // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;
     }
 
     public Solution getRandomRemoval(Solution solution) {
+        /*  */
+
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
         Set<Order> postponedOrders = newSolution.getAllPostponed();
         Set<Order> unplacedOrders = newSolution.getUnplacedOrders();
-
         List<Order> ordersToRemove = findRandomOrdersToRemove(orderSequences, postponedOrders);
-
         unplacedOrders.addAll(ordersToRemove);
-        postponedOrders.removeAll(ordersToRemove);
+        ordersToRemove.forEach(postponedOrders::remove);
         for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
         return newSolution;
     }

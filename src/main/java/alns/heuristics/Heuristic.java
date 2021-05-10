@@ -1,6 +1,5 @@
 package alns.heuristics;
 
-import alns.Solution;
 import data.Parameters;
 import data.Problem;
 import objects.Installation;
@@ -59,26 +58,6 @@ public abstract class Heuristic {
             return mandOrder != null && unplacedOrders.contains(mandOrder);
         }
         return false;
-    }
-
-    static List<Order> sortOrders(Solution partialSolution, boolean penalty, boolean size) {
-        List<Order> sortedOrders = new ArrayList<>();
-        List<Order> optionalOrders = new ArrayList<>();
-        for (Order order : partialSolution.getUnplacedOrders()) {
-            if (order.isMandatory()) {
-                sortedOrders.add(order);
-            } else {
-                optionalOrders.add(order);
-            }
-        }
-        Collections.sort(sortedOrders);  // Sort MD orders by id for predictability in test
-        if (penalty) {
-            optionalOrders.sort(Comparator.comparing((Order::getNoisyPenalty)).reversed());  // Noise to break ties
-        } else if (size) {
-            optionalOrders.sort(Comparator.comparing((Order::getNoisySize)).reversed());  // Noise to break ties
-        }
-        sortedOrders.addAll(optionalOrders);
-        return sortedOrders;
     }
 
     @Override

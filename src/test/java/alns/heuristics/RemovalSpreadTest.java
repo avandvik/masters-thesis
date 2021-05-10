@@ -9,6 +9,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.Cache;
 
 import java.util.*;
 
@@ -20,7 +21,7 @@ public class RemovalSpreadTest {
     @DisplayName("test Removal Spread")
     public void removalSpreadTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         RemovalSpread removalSpread = new RemovalSpread(Constants.REMOVAL_SPREAD_NAME);
         Parameters.parallelHeuristics = false;
         assertEquals(createExpectedSolution(), removalSpread.destroy(createInitialSolution(), 3));

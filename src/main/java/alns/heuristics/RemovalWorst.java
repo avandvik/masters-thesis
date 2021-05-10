@@ -1,10 +1,8 @@
 package alns.heuristics;
 
-import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
 import alns.heuristics.protocols.Destroyer;
-import data.Messages;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
@@ -26,7 +24,7 @@ public class RemovalWorst extends Heuristic implements Destroyer {
     public Solution destroy(Solution solution, int numberOfOrders) {
         Solution newSolution = solution;
         while (newSolution.getUnplacedOrders().size() < numberOfOrders) newSolution = getWorstRemoval(newSolution);
-        if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
+        // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;
     }
@@ -48,7 +46,7 @@ public class RemovalWorst extends Heuristic implements Destroyer {
 
         List<Order> ordersToRemove = findOrdersToRemove();
         newSolution.getUnplacedOrders().addAll(ordersToRemove);
-        newSolution.getAllPostponed().removeAll(ordersToRemove);
+        ordersToRemove.forEach(newSolution.getAllPostponed()::remove);
         for (List<Order> orderSequence : orderSequences) orderSequence.removeAll(ordersToRemove);
 
         return newSolution;
@@ -85,15 +83,10 @@ public class RemovalWorst extends Heuristic implements Destroyer {
     }
 
     private List<Order> findOrdersToRemove() {
-
-        // Sort orderToDecrease in descending order
         List<Map.Entry<Order, Double>> ordersWithDecrease = new ArrayList<>(this.orderToDecrease.entrySet());
         ordersWithDecrease.sort(Comparator.comparing(Map.Entry<Order, Double>::getValue));
         Collections.reverse(ordersWithDecrease);
-
         int removeIdx = (int) (Math.pow(Problem.random.nextDouble(), Parameters.rnWorst) * ordersWithDecrease.size());
-
-        // Find order to remove and other orders that must be removed with it
         Order worstRemovalOrder = ordersWithDecrease.get(removeIdx).getKey();
         return getOrdersToRemove(worstRemovalOrder);
     }

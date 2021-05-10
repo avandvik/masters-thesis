@@ -98,6 +98,8 @@ public class Constants {
     public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
     public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
 
+    public static boolean SOLSTORM = false;
+
     public static void overwritePathsSolstorm(String outputDir) {
         Constants.OUTPUT_PATH = "/storage/users/anderhva/" + outputDir + "/";
         Constants.PATH_TO_INSTANCES = "/home/anderhva/masters-thesis/instances/";
@@ -105,5 +107,6 @@ public class Constants {
         Constants.VESSEL_FILE = Constants.PATH_TO_CONSTANT + "vessels.json";
         Constants.INSTALLATION_FILE = Constants.PATH_TO_CONSTANT + "installations.json";
         Constants.WEATHER_FILE = Constants.PATH_TO_CONSTANT + "weather.json";
+        Constants.SOLSTORM = true;
     }
 }

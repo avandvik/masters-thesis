@@ -1,10 +1,8 @@
 package alns.heuristics;
 
-import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
 import alns.heuristics.protocols.Repairer;
-import data.Messages;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
@@ -25,7 +23,6 @@ public class InsertionRegret extends Heuristic implements Repairer {
         Solution solution = partialSolution;
         while (!solution.getUnplacedOrders().isEmpty()) solution = getRegretSolution(solution);
         Objective.setObjValAndSchedule(solution);
-        if (!Evaluator.isSolutionFeasible(solution)) throw new IllegalStateException(Messages.solutionInfeasible);
         return solution;
     }
 

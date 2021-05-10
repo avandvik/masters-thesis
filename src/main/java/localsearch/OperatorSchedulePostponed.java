@@ -3,7 +3,6 @@ package localsearch;
 import alns.Evaluator;
 import alns.Objective;
 import alns.Solution;
-import data.Messages;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
@@ -39,7 +38,6 @@ public class OperatorSchedulePostponed extends Operator {
             }
             greatestDecrease = 0.0;
         }
-        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         Objective.setObjValAndSchedule(newSolution);
         return newSolution;
     }

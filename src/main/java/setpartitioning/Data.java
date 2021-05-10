@@ -33,12 +33,18 @@ public class Data {
 
     public static void makeArrays() {
         if (Main.vesselToSequenceToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
-
+        addEmptyVoyageForEachVessel();
         makeOrdersArray();
         makeRouteArray();
         makeCostOfRouteForVessel();
         makePostponedOrderCosts();
         makeOrderInRouteForVessel();
+    }
+
+    private static void addEmptyVoyageForEachVessel() {
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            Main.vesselToSequenceToCost.get(vIdx).put(new LinkedList<>(), 0.0);
+        }
     }
 
     private static void makeOrdersArray() {

@@ -8,6 +8,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.Cache;
 
 import java.util.*;
 
@@ -19,7 +20,7 @@ public class InsertionMaxOrderSizeTest {
     @DisplayName("test InsertionMaxOrderSize")
     public void insertionMaxOrderSize() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         Parameters.parallelHeuristics = false;
         InsertionMaxOrderSize insertionMaxOrderSize = new InsertionMaxOrderSize(Constants.INSERTION_MAX_ORDER_SIZE_NAME);
         // assertEquals(createExpectedSolution(), insertionMaxOrderSize.repair(createInitialSolution()));

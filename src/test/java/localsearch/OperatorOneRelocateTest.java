@@ -7,6 +7,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.Cache;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class OperatorOneRelocateTest {
     @DisplayName("test oneRelocate")
     public void oneRelocateTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         Solution solution = SolutionGenerator.createSolutionBasicTestData(3, 8);
         Objective.setObjValAndSchedule(solution);
         Solution newSolution = OperatorOneRelocate.oneRelocate(solution);

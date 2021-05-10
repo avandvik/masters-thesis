@@ -5,6 +5,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.Cache;
 
 import java.util.*;
 
@@ -30,7 +31,7 @@ public class MainTest {
     @DisplayName("test acceptSolution")
     public void acceptSolutionTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         Main.initialize();
 
         Solution solutionOne = createFeasibleSolution(2, Problem.getNumberOfOrders());

@@ -7,6 +7,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import subproblem.Cache;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class ConstructionTest {
     @DisplayName("test getFeasibleInsertions")
     public void getFeasibleInsertionsTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         List<List<Order>> orderSequences = new ArrayList<>();
         for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
         for (int i = 0; i < 2; i++) orderSequences.get(0).add(Problem.getOrder(i));
@@ -103,7 +104,7 @@ public class ConstructionTest {
     @DisplayName("test constructGreedyInitialSolution")
     public void constructGreedyInitialSolutionTest() {
         Problem.setUpProblem("basicTestData.json",true, 10);
-        Objective.initializeCache();
+        Cache.initialize();
         Parameters.parallelHeuristics = false;
         assertEquals(createExpectedGreedySolution(), Construction.constructGreedyInitialSolution());
     }
