@@ -1,8 +1,10 @@
 package utils;
 
+import alns.Main;
 import alns.Solution;
 import data.Constants;
 import data.Problem;
+import data.SearchHistory;
 import objects.Installation;
 import objects.Order;
 import objects.Vessel;
@@ -23,11 +25,9 @@ public class IO {
     @SuppressWarnings("unchecked")
     public static void saveSolution(Solution solution) {
         JSONObject obj = new JSONObject();
-
         obj.put(Constants.INSTANCE_NAME_KEY, Problem.fileName);
         obj.put(Constants.OBJECTIVE_VALUE_KEY, solution.getObjective(false));
         obj.put(Constants.VOYAGES_KEY, new JSONObject());
-
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             Vessel vessel = Problem.getVessel(vesselIdx);
             ((JSONObject) obj.get(Constants.VOYAGES_KEY)).put(vessel, new JSONObject());
@@ -36,7 +36,6 @@ public class IO {
             JSONObject vesselObj = ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel));
             vesselObj.put(Constants.SEQUENCE_KEY, orderSequence);
             vesselObj.put(Constants.TIME_POINTS_KEY, new JSONObject());
-
             Node prevNode = null;
             for (Node node : solution.getShortestPaths().get(vesselIdx)) {
                 JSONObject timePoints = new JSONObject();
@@ -55,9 +54,24 @@ public class IO {
                 prevNode = node;
             }
         }
-        writeToFile(Constants.OUTPUT_PATH + Problem.fileName, obj);
+        String baseName = Problem.fileName.substring(0, Problem.fileName.lastIndexOf("."));
+        String path = Constants.OUTPUT_PATH + baseName + "_solution.json";
+        writeToFile(path, obj);
     }
 
+    @SuppressWarnings("unchecked")
+    public static void saveSearchHistory() {
+        JSONObject obj = new JSONObject();
+        obj.put(Constants.INSTANCE_NAME_KEY, Problem.fileName);
+        obj.put(Constants.OBJECTIVE_VALUE_KEY, Main.getBestSolution().getObjective(false));
+        obj.put(Constants.ITER_TO_OBJ_KEY, SearchHistory.getIterationToObjective());
+        obj.put(Constants.HEURISTIC_TO_ITER_TO_WEIGHT_KEY, SearchHistory.getHeuristicToIterationToWeight());
+        obj.put(Constants.ITER_BEST_FOUND_KEY, SearchHistory.getIterationBestSolutionFound());
+        obj.put(Constants.RUNTIME_KEY, SearchHistory.getRuntime());
+        String baseName = Problem.fileName.substring(0, Problem.fileName.lastIndexOf("."));
+        String path = Constants.OUTPUT_PATH + baseName + "_history.json";
+        writeToFile(path, obj);
+    }
 
     public static void writeToFile(String path, JSONObject obj) {
         try {
@@ -69,7 +83,6 @@ public class IO {
             e.printStackTrace();
         }
     }
-
 
     public static void setUpInstallations() {
         Problem.installations = new ArrayList<>();
