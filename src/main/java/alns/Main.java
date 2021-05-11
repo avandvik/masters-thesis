@@ -172,6 +172,7 @@ public class Main {
         visitedSolutions.add(candidateSolution.hashCode());
         iterationsCurrentSolution = 0;
         SearchHistory.setIterationBestSolutionFound(iter);
+        SearchHistory.setBestSolutionFound(candidateSolution);
         return Parameters.newGlobalBest;
     }
 

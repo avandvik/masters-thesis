@@ -1,6 +1,5 @@
 package utils;
 
-import alns.Main;
 import alns.Solution;
 import data.Constants;
 import data.Parameters;
@@ -64,7 +63,7 @@ public class IO {
     public static void saveSearchHistory() {
         JSONObject obj = new JSONObject();
         obj.put(Constants.INSTANCE_NAME_KEY, Problem.fileName);
-        obj.put(Constants.OBJECTIVE_VALUE_KEY, Main.getBestSolution().getObjective(false));
+        obj.put(Constants.OBJECTIVE_VALUE_KEY, SearchHistory.getBestObjective());
         obj.put(Constants.ITER_TO_OBJ_KEY, SearchHistory.getIterationToObjective());
         obj.put(Constants.HEURISTIC_TO_ITER_TO_WEIGHT_KEY, SearchHistory.getHeuristicToIterationToWeight());
         obj.put(Constants.ITER_BEST_FOUND_KEY, SearchHistory.getIterationBestSolutionFound());

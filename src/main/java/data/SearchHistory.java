@@ -1,5 +1,6 @@
 package data;
 
+import alns.Solution;
 import alns.heuristics.Heuristic;
 
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 public class SearchHistory {
 
+    private static Solution bestSolution;
     private static Map<Integer, Double> iterationToObjective;
     private static Map<Heuristic, Map<Integer, Double>> heuristicToIterationToWeight;
     private static int iterationBestSolutionFound;
@@ -37,6 +39,14 @@ public class SearchHistory {
 
     public static void setIterationBestSolutionFound(int iter) {
         iterationBestSolutionFound = iter;
+    }
+
+    public static void setBestSolutionFound(Solution solution) {
+        bestSolution = solution;
+    }
+
+    public static double getBestObjective() {
+        return bestSolution.getObjective(false);
     }
 
     public static int getIterationBestSolutionFound() {
