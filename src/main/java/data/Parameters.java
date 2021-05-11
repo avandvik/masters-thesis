@@ -23,7 +23,7 @@ public class Parameters {
     private static final double probAcceptCandidateXPercentWorse = 0.5;
 
     // Removal parameters
-    public static int nbrOrdersRemove = 3;
+    public static int nbrOrdersRemove = 3;  // TODO: Implement as percentage
     public static int regretParameter = 4;
     public static double rnRelated = 10;
     public static double rnWorst = 10;
@@ -34,8 +34,9 @@ public class Parameters {
 
     // Local search
     public static boolean exhaustiveLocalSearch = false;
-    public static boolean randomLocalSearch = true;
-    public static int numberOfOperators = 3;
+    public static double localSearchCondition = 0.2;  // TODO: Rename
+    public static boolean randomLocalSearch = true;  // TODO: Remove when condition for running local search is added
+    public static int numberOfOperators = 3;  // TODO: Remove when condition for running local search is added
 
     // Iterations
     public static int totalIter = 50;
@@ -49,8 +50,8 @@ public class Parameters {
     public static int poolSize = 200;  // Pool size is per vessel
 
     // Toggles
-    public static boolean setPartitioning = false;
     public static boolean localSearch = true;
+    public static boolean setPartitioning = false;
     public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
     public static boolean verbose = false;
@@ -68,8 +69,8 @@ public class Parameters {
 
     public static void setSolstormParameters() {
         cacheSP = true;
-        cacheSize = Integer.MAX_VALUE;
-        poolSize = Integer.MAX_VALUE;
+        cacheSize = 100000;
+        poolSize = 40000;
         parallelHeuristics = true;
         totalIter = 10000;
         verbose = false;

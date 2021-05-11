@@ -59,16 +59,16 @@ public class Constants {
     public static final String SPEED_IMPACT_KEY = "speed_impact";
     public static final String SERVICE_IMPACT_KEY = "service_impact";
 
-    public static final String REMOVAL_RANDOM_NAME = "random removal";
-    public static final String REMOVAL_RELATED_NAME = "related removal";
-    public static final String REMOVAL_WORST_NAME = "worst removal";
-    public static final String REMOVAL_SPOT_NAME = "spot removal";
-    public static final String REMOVAL_SPREAD_NAME = "spread removal";
-    public static final String REMOVAL_CLUSTER_NAME = "cluster removal";
-    public static final String INSERTION_GREEDY_NAME = "greedy insertion";
-    public static final String INSERTION_REGRET_NAME = "regret insertion";
-    public static final String INSERTION_MAX_PENALTY_NAME = "max penalty cost insertion";
-    public static final String INSERTION_MAX_ORDER_SIZE_NAME = "max order size insertion";
+    public static final String REMOVAL_RANDOM_NAME = "random_removal";
+    public static final String REMOVAL_RELATED_NAME = "related_removal";
+    public static final String REMOVAL_WORST_NAME = "worst_removal";
+    public static final String REMOVAL_SPOT_NAME = "spot_removal";
+    public static final String REMOVAL_SPREAD_NAME = "spread_removal";
+    public static final String REMOVAL_CLUSTER_NAME = "cluster_removal";
+    public static final String INSERTION_GREEDY_NAME = "greedy_insertion";
+    public static final String INSERTION_REGRET_NAME = "regret_insertion";
+    public static final String INSERTION_MAX_PENALTY_NAME = "max_penalty_cost_insertion";
+    public static final String INSERTION_MAX_ORDER_SIZE_NAME = "max_order_size_insertion";
 
     public static final String INSTANCE_NAME_KEY = "instance";
     public static final String OBJECTIVE_VALUE_KEY = "best_objective";
@@ -82,6 +82,29 @@ public class Constants {
     public static final String HEURISTIC_TO_ITER_TO_WEIGHT_KEY = "heuristic_to_iteration_to_weight";
     public static final String ITER_BEST_FOUND_KEY = "best_sol_found_in_iteration";
     public static final String RUNTIME_KEY = "runtime";
+    public static final String PARAMETERS_KEY = "parameters";
+    public static final String NOISE_CONTROL_KEY = "noise_control";
+    public static final String NEW_GLOBAL_SCORE_KEY = "new_global_score";
+    public static final String NEW_LOCAL_SCORE_KEY = "new_local_score";
+    public static final String NEW_SOLUTION_SCORE_KEY = "new_solution_score";
+    public static final String REACTION_KEY = "reaction";
+    public static final String START_TEMPERATURE_KEY = "start_temperature";
+    public static final String COOLING_RATE_KEY = "cooling_rate";
+    public static final String REMOVAL_UPPER_PERCENTAGE_KEY = "removal_upper_percentage";
+    public static final String REMOVAL_LOWER_PERCENTAGE_KEY = "removal_lower_percentage";
+    public static final String REGRET_KEY = "regret_k";
+    public static final String DETERMINISM_RELATED_KEY = "determinism_related";
+    public static final String DETERMINISM_WORST_KEY = "determinism_worst";
+    public static final String LOCAL_SEARCH_CONDITION_KEY = "local_search_condition";
+    public static final String LOWER_WEIGHT_THRESHOLD_KEY = "lower_weight_threshold";
+    public static final String PREDETERMINED_ITERATIONS_KEY = "predetermined_iterations";
+    public static final String MAX_ITERATIONS_SOLUTION_KEY = "max_iterations_solution";
+    public static final String SET_PARTITIONING_ITERATIONS_KEY = "set_partitioning_iterations";
+    public static final String SEGMENT_ITERATIONS_KEY = "segment_iterations";
+    public static final String CACHE_SIZE_KEY = "cache_size";
+    public static final String POOL_SIZE_KEY = "pool_size";
+    public static final String LOCAL_SEARCH_KEY = "local_search";
+    public static final String SET_PARTITIONING_KEY = "set_partitioning";
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GREEN = "\u001B[32m";
