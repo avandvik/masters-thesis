@@ -41,7 +41,7 @@ public class Parameters {
     // Iterations
     public static int totalIter = 50;
     public static int maxIterSolution = 20;
-    public static int setPartIter = 50;
+    public static int setPartIter = 10;
     public static int segmentIter = 50;
     public static int searchHistoryIter = 10;
 
@@ -51,7 +51,7 @@ public class Parameters {
 
     // Toggles
     public static boolean localSearch = true;
-    public static boolean setPartitioning = false;
+    public static boolean setPartitioning = true;
     public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
     public static boolean verbose = false;
@@ -72,7 +72,7 @@ public class Parameters {
         cacheSize = 100000;
         poolSize = 40000;
         parallelHeuristics = true;
-        totalIter = 10000;
+        totalIter = 1000;
         verbose = false;
         semiVerbose = true;
         saveSolution = true;

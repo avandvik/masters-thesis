@@ -76,6 +76,18 @@ public class Problem {
         return maxDistance;
     }
 
+    public static boolean instHasODOP(Installation inst) {
+        List<Order> orders = getOrdersFromInstallation(inst);
+        boolean hasOD = false;
+        boolean hasOP = false;
+        for (Order order : orders) {
+            if (order.isMandatory()) return false;
+            if (!order.isMandatory() && order.isDelivery()) hasOD = true;
+            if (!order.isMandatory() && !order.isDelivery()) hasOP = true;
+        }
+        return hasOD && hasOP;
+    }
+
     /* =========== ORDERS =========== */
 
     public static Order getOrder(int orderIndex) {

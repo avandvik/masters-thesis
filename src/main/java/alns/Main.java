@@ -282,6 +282,7 @@ public class Main {
             double startTime = System.nanoTime();
             try {
                 Main.run();
+                // TODO: Add / change exceptions to make sense
             } catch (IllegalStateException | NullPointerException | IndexOutOfBoundsException e) {
                 e.printStackTrace();
                 System.out.println("Continuing to another instance...\n");
@@ -328,7 +329,7 @@ public class Main {
         for (File instance : instances) {
             String fileName = instance.getName();
             System.out.println("Running " + fileName);
-            runExtensively(fileName, 5, 1000);
+            runExtensively(fileName, 20, 1000);
             // runSimple(fileName);
         }
     }
