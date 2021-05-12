@@ -267,7 +267,8 @@ public class Main {
     private static void printSubtle(int iteration, Solution candidateSolution) {
         int percentage = (int) (((iteration + 1) / (double) Parameters.totalIter) * 100);
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4]
-                + "\t\t(" + Cache.getCacheSize() + ")" + "\r");
+                + "\t\t" + Math.round(bestSolution.getObjective(false))
+                + "\t|\t" + Cache.getCacheSize() + "\r");
     }
 
     private static void runExtensively(String fileName, int nbrEvaluations, int seedBound) {
