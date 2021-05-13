@@ -2,6 +2,7 @@ package setpartitioning;
 
 import alns.Solution;
 import data.Parameters;
+import data.Problem;
 import gurobi.*;
 import objects.Installation;
 import objects.Order;
@@ -150,6 +151,36 @@ public class Model {
         return postponedOrders;
     }
 
+    private void debugVoyagePool() {
+        for (int vIdx = 0; vIdx < Data.nbrVessels; vIdx++) {
+            System.out.println(Problem.getVessel(vIdx));
+            for (int voyageIdx = 0; voyageIdx < Data.vesselToNbrVoyages.get(vIdx); voyageIdx++) {
+                List<Order> voyage = Data.vesselToVoyageIdxToVoyage.get(vIdx).get(voyageIdx);
+                System.out.println("\t\tvoyageIdx " + voyageIdx + ": " + voyage);
+            }
+        }
+    }
+
+    private void debugSplitVoyagePool() {
+        for (int instIdx = 0; instIdx < Data.installationsWithODOP.size(); instIdx++) {
+            System.out.println(Data.installationsWithODOP.get(instIdx));
+            for (int vIdx = 0; vIdx < Data.nbrVessels; vIdx++) {
+                System.out.println("\t" + Problem.getVessel(vIdx));
+                for (int voyageIdx : Data.voyageODOPArray.get(instIdx).get(vIdx)) {
+                    List<Order> voyage = Data.vesselToVoyageIdxToVoyage.get(vIdx).get(voyageIdx);
+                    System.out.println("\t\tvoyageIdx " + voyageIdx + ": " + voyage);
+                }
+            }
+        }
+    }
+
+    private void debugChosenVoyages(List<List<Order>> orderSequences, Set<Order> postponedOrders) {
+        for (int vIdx = 0; vIdx < Data.nbrVessels; vIdx++) {
+            System.out.println(Problem.getVessel(vIdx) + ": " + orderSequences.get(vIdx));
+        }
+        System.out.println("postponedOrders: " + postponedOrders);
+    }
+
     public void run() {
         try {
             this.setUpProblem();
@@ -165,8 +196,7 @@ public class Model {
             this.newSolution = postprocess();
         } catch (GRBException e) {
             System.out.println(this.newSolution);
-            System.out.println("Error code: " + e.getErrorCode() + ". " +
-                    e.getMessage());
+            System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
         }
     }
 }

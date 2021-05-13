@@ -10,4 +10,5 @@ public class Messages {
     public static String invalidVesselIdx = "Invalid vesselIdx passed to SubProblem!";
     public static String errorInAvgLatLon = "Error in calculation of average latitude or longitude!";
     public static String emptyCluster = "Could not cluster and find only non-empty clusters!";
+    public static String errorInSetPartitioning = "Error in set partitioning model, discarding null solution";
 }

@@ -52,7 +52,6 @@ public class Data {
 
     public static void makeArrays() {
         if (Main.vesselToSequenceToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
-        addEmptyVoyageForEachVessel();
         makeOrdersArray();
         makeInstallationsArray();
         makeVesselToVoyageIndices();
@@ -61,12 +60,6 @@ public class Data {
         makeCostOfVoyageForVessel();
         makeOrdersPostponeCosts();
         makeOrderInVoyageForVessel();
-    }
-
-    private static void addEmptyVoyageForEachVessel() {
-        for (int vIdx = 0; vIdx < nbrVessels; vIdx++) {
-            Main.vesselToSequenceToCost.get(vIdx).put(new LinkedList<>(), 0.0);
-        }
     }
 
     private static void makeOrdersArray() {
@@ -147,21 +140,12 @@ public class Data {
         costOfVoyageForVessel = new ArrayList<>();
         for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
             costOfVoyageForVessel.add(new ArrayList<>(Collections.nCopies(vesselToNbrVoyages.get(vIdx), 0.0)));
-
             Map<List<Order>, Double> voyageToCost = Main.vesselToSequenceToCost.get(vIdx);
             for (int voyageIdx = 0; voyageIdx < Data.vesselToNbrVoyages.get(vIdx); voyageIdx++) {
                 List<Order> voyage = vesselToVoyageIdxToVoyage.get(vIdx).get(voyageIdx);
                 double cost = voyageToCost.get(voyage);
                 costOfVoyageForVessel.get(vIdx).add(voyageIdx, cost);
             }
-            /*
-            Map<List<Order>, Double> voyageToCost = Main.vesselToSequenceToCost.get(vIdx);
-            List<List<Order>> voyages = new ArrayList<>(voyageToCost.keySet());
-            for (List<Order> voyage : voyages) {
-                double cost = voyageToCost.get(voyage);
-                costOfVoyageForVessel.get(vIdx).add(cost);
-            }
-             */
         }
     }
 
@@ -176,9 +160,6 @@ public class Data {
         orderInVoyageForVessel = new ArrayList<>();
         for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
             orderInVoyageForVessel.add(new ArrayList<>());
-
-            // Map<List<Order>, Double> voyageToCost = Main.vesselToSequenceToCost.get(vIdx);
-            // List<List<Order>> voyages = new ArrayList<>(voyageToCost.keySet());
             for (int voyageIdx = 0; voyageIdx < Data.vesselToNbrVoyages.get(vIdx); voyageIdx++) {
                 List<Order> voyage = vesselToVoyageIdxToVoyage.get(vIdx).get(voyageIdx);
                 orderInVoyageForVessel.get(vIdx).add(new ArrayList<>(Collections.nCopies(orders.size(), 0.0)));
@@ -189,19 +170,6 @@ public class Data {
                     }
                 }
             }
-
-            /*
-            for (int voyageIdx = 0; voyageIdx < voyages.size(); voyageIdx++) {
-                List<Order> voyage = voyages.get(voyageIdx);
-                orderInVoyageForVessel.get(vIdx).add(new ArrayList<>(Collections.nCopies(orders.size(), 0.0)));
-                for (Order order : Data.orders) {
-                    if (voyage.contains(order)) {
-                        int idx = order.getOrderId();
-                        orderInVoyageForVessel.get(vIdx).get(voyageIdx).set(idx, 1.0);
-                    }
-                }
-            }
-             */
         }
     }
 }

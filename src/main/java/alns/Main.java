@@ -92,7 +92,9 @@ public class Main {
     private static void initializeSequenceSaving() {
         vesselToSequenceToCost = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
+            Map<List<Order>, Double> emptySequence = new HashMap<>();
+            emptySequence.put(new LinkedList<>(), 0.0);
+            vesselToSequenceToCost.put(vesselIdx, emptySequence);
         }
     }
 
@@ -193,7 +195,13 @@ public class Main {
     private static void runSetPartitioning(int iter) {
         Model model = new Model();
         model.run();
-        Solution candidateSolution = model.getNewSolution();
+        Solution candidateSolution;
+        try {
+            candidateSolution = model.getNewSolution();
+        } catch (NullPointerException e) {
+            System.out.println(Messages.errorInSetPartitioning);
+            return;
+        }
         acceptSolution(candidateSolution, iter);  // Reward is ignored
     }
 
