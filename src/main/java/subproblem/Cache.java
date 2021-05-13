@@ -43,6 +43,10 @@ public class Cache {
         return hashToShortestPathLongTerm.get(hash);
     }
 
+    public static int getCacheSize() {
+        return hashToCostLongTerm.keySet().size();
+    }
+
     public static void cacheCurrent(int hash, SubProblem subProblem) {
         hashToCostCurrent.put(hash, subProblem.getCost());
         hashToShortestPathCurrent.put(hash, subProblem.getShortestPath());

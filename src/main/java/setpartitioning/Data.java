@@ -5,21 +5,31 @@ import data.Problem;
 import gurobi.GRB;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
+import objects.Installation;
 import objects.Order;
 import utils.Helpers;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Data {
 
     public static GRBEnv gurobiEnv;
 
-    public static List<Order> orders;
-    public static List<List<Double>> costOfRouteForVessel;
-    public static List<Double> costOfPostponedOrders;
-    public static List<List<List<Double>>> orderInRouteForVessel;
+    public static int nbrOrders;
+    public static int nbrVessels;
+    public static Map<Integer, Integer> vesselToNbrVoyages;
 
-    public static List<List<List<Order>>> routeArray;
+    public static List<Order> orders;
+    public static List<Installation> installationsWithODOP;
+    public static List<List<Double>> costOfVoyageForVessel;
+    public static List<Double> ordersPostponeCost;
+    public static List<List<List<Double>>> orderInVoyageForVessel;
+
+    public static List<List<List<Order>>> voyageArray;  // vessel -> voyage
+    public static List<List<List<Integer>>> voyageODOPArray;  // inst -> vessel -> voyageIdx
+
+    public static Map<Integer, Map<Integer, List<Order>>> vesselToVoyageIdxToVoyage;
 
     public static void initializeGurobiEnv() {
         try {
@@ -31,70 +41,132 @@ public class Data {
         }
     }
 
-    public static void makeArrays() {
-        if (Main.vesselToSequenceToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
-        addEmptyVoyageForEachVessel();
-        makeOrdersArray();
-        makeRouteArray();
-        makeCostOfRouteForVessel();
-        makePostponedOrderCosts();
-        makeOrderInRouteForVessel();
+    public static void makeConstants() {
+        nbrOrders = Problem.orders.size();
+        nbrVessels = Problem.getNumberOfVessels();
+        vesselToNbrVoyages = new HashMap<>();
+        for (int vIdx = 0; vIdx < nbrVessels; vIdx++) {
+            vesselToNbrVoyages.put(vIdx, Main.vesselToSequenceToCost.get(vIdx).size());
+        }
     }
 
-    private static void addEmptyVoyageForEachVessel() {
-        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
-            Main.vesselToSequenceToCost.get(vIdx).put(new LinkedList<>(), 0.0);
-        }
+    public static void makeArrays() {
+        if (Main.vesselToSequenceToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
+        makeOrdersArray();
+        makeInstallationsArray();
+        makeVesselToVoyageIndices();
+        makeVoyageArray();
+        makeVoyageODOPArray();
+        makeCostOfVoyageForVessel();
+        makeOrdersPostponeCosts();
+        makeOrderInVoyageForVessel();
     }
 
     private static void makeOrdersArray() {
         orders = Helpers.deepCopyList(Problem.orders, false);
     }
 
-    private static void makeRouteArray() {
-        routeArray = new ArrayList<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            routeArray.add(new ArrayList<>());
-            List<List<Order>> routes = new ArrayList<>(Main.vesselToSequenceToCost.get(vesselIdx).keySet());
-            for (List<Order> route : routes) {
-                routeArray.get(vesselIdx).add(new LinkedList<>(route));
+    private static void makeInstallationsArray() {
+        installationsWithODOP = new ArrayList<>();
+        for (Installation inst : Problem.installations) {
+            if (Problem.instHasODOP(inst)) installationsWithODOP.add(inst);
+        }
+    }
+
+    private static void makeVesselToVoyageIndices() {
+        vesselToVoyageIdxToVoyage = new HashMap<>();
+        for (int vIdx = 0; vIdx < nbrVessels; vIdx++) {
+            vesselToVoyageIdxToVoyage.put(vIdx, new HashMap<>());
+            int voyageIdx = 0;
+            for (List<Order> voyage : Main.vesselToSequenceToCost.get(vIdx).keySet()) {
+                vesselToVoyageIdxToVoyage.get(vIdx).put(voyageIdx, voyage);
+                voyageIdx++;
             }
         }
     }
 
-    private static void makeCostOfRouteForVessel() {
-        costOfRouteForVessel = new ArrayList<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            costOfRouteForVessel.add(new ArrayList<>());
-            Map<List<Order>, Double> routeToCost = Main.vesselToSequenceToCost.get(vesselIdx);
-            List<List<Order>> routes = new ArrayList<>(routeToCost.keySet());
-            for (List<Order> route : routes) {
-                double cost = routeToCost.get(route);
-                costOfRouteForVessel.get(vesselIdx).add(cost);
+    private static void makeVoyageArray() {
+        voyageArray = new ArrayList<>();
+        for (int vIdx = 0; vIdx < nbrVessels; vIdx++) {
+            voyageArray.add(new ArrayList<>(Collections.nCopies(vesselToNbrVoyages.get(vIdx), null)));
+            for (int voyageIdx = 0; voyageIdx < vesselToNbrVoyages.get(vIdx); voyageIdx++) {
+                List<Order> voyage = vesselToVoyageIdxToVoyage.get(vIdx).get(voyageIdx);
+                voyageArray.get(vIdx).add(voyageIdx, new LinkedList<>(voyage));
             }
         }
     }
 
-    private static void makePostponedOrderCosts() {
-        costOfPostponedOrders = new ArrayList<>();
-        for (Order postponeOrder : Data.orders) {
-            costOfPostponedOrders.add(postponeOrder.getPostponementPenalty());
+    private static void makeVoyageODOPArray() {
+        voyageODOPArray = new ArrayList<>();
+        for (int instIdx = 0; instIdx < installationsWithODOP.size(); instIdx++) {  // NB! Not instId!
+            Installation inst = installationsWithODOP.get(instIdx);
+            voyageODOPArray.add(new ArrayList<>());
+            for (int vIdx = 0; vIdx < nbrVessels; vIdx++) {
+                voyageODOPArray.get(instIdx).add(new ArrayList<>());
+                for (int voyageIdx = 0; voyageIdx < vesselToNbrVoyages.get(vIdx); voyageIdx++) {
+                    List<Order> voyage = vesselToVoyageIdxToVoyage.get(vIdx).get(voyageIdx);
+                    List<Installation> splitInstallations = getInstallationsBeingSplit(voyage);
+                    for (Installation splitInst : splitInstallations) {
+                        if (splitInst.equals(inst)) {
+                            voyageODOPArray.get(instIdx).get(vIdx).add(voyageIdx);
+                        }
+                    }
+                }
+            }
         }
     }
 
-    private static void makeOrderInRouteForVessel() {
-        orderInRouteForVessel = new ArrayList<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            orderInRouteForVessel.add(new ArrayList<>());
-            Map<List<Order>, Double> routeToCost = Main.vesselToSequenceToCost.get(vesselIdx);
-            List<List<Order>> routes = new ArrayList<>(routeToCost.keySet());
-            for (int routeIdx = 0; routeIdx < routes.size(); routeIdx++) {
-                List<Order> route = routes.get(routeIdx);
-                orderInRouteForVessel.get(vesselIdx).add(new ArrayList<>(Collections.nCopies(orders.size(), 0.0)));
+    private static List<Installation> getInstallationsBeingSplit(List<Order> voyage) {
+        List<Installation> instSequence = Helpers.getInstSequence(voyage);
+        List<Installation> splitInstallations = instSequence.stream()
+                .filter(inst -> installationsWithODOP.contains(inst)).collect(Collectors.toList());
+        splitInstallations.removeIf(inst -> voyageServicesODOP(voyage, inst));
+        return splitInstallations;
+    }
+
+    private static boolean voyageServicesODOP(List<Order> voyage, Installation inst) {
+        boolean containsOD = false;
+        boolean containsOP = false;
+        for (Order order : voyage) {
+            if (Problem.getInstallation(order).equals(inst)) {
+                if (!order.isMandatory() && order.isDelivery()) containsOD = true;
+                if (!order.isMandatory() && !order.isDelivery()) containsOP = true;
+            }
+        }
+        return containsOD && containsOP;
+    }
+
+    private static void makeCostOfVoyageForVessel() {
+        costOfVoyageForVessel = new ArrayList<>();
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            costOfVoyageForVessel.add(new ArrayList<>(Collections.nCopies(vesselToNbrVoyages.get(vIdx), 0.0)));
+            Map<List<Order>, Double> voyageToCost = Main.vesselToSequenceToCost.get(vIdx);
+            for (int voyageIdx = 0; voyageIdx < Data.vesselToNbrVoyages.get(vIdx); voyageIdx++) {
+                List<Order> voyage = vesselToVoyageIdxToVoyage.get(vIdx).get(voyageIdx);
+                double cost = voyageToCost.get(voyage);
+                costOfVoyageForVessel.get(vIdx).add(voyageIdx, cost);
+            }
+        }
+    }
+
+    private static void makeOrdersPostponeCosts() {
+        ordersPostponeCost = new ArrayList<>();
+        for (Order order : Data.orders) {
+            ordersPostponeCost.add(order.getPostponementPenalty());
+        }
+    }
+
+    private static void makeOrderInVoyageForVessel() {
+        orderInVoyageForVessel = new ArrayList<>();
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            orderInVoyageForVessel.add(new ArrayList<>());
+            for (int voyageIdx = 0; voyageIdx < Data.vesselToNbrVoyages.get(vIdx); voyageIdx++) {
+                List<Order> voyage = vesselToVoyageIdxToVoyage.get(vIdx).get(voyageIdx);
+                orderInVoyageForVessel.get(vIdx).add(new ArrayList<>(Collections.nCopies(orders.size(), 0.0)));
                 for (Order order : Data.orders) {
-                    if (route.contains(order)) {
+                    if (voyage.contains(order)) {
                         int idx = order.getOrderId();
-                        orderInRouteForVessel.get(vesselIdx).get(routeIdx).set(idx, 1.0);
+                        orderInVoyageForVessel.get(vIdx).get(voyageIdx).set(idx, 1.0);
                     }
                 }
             }

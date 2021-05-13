@@ -23,7 +23,7 @@ public class Parameters {
     private static final double probAcceptCandidateXPercentWorse = 0.5;
 
     // Removal parameters
-    public static int nbrOrdersRemove = 3;
+    public static int nbrOrdersRemove = 3;  // TODO: Implement as percentage
     public static int regretParameter = 4;
     public static double rnRelated = 10;
     public static double rnWorst = 10;
@@ -34,27 +34,30 @@ public class Parameters {
 
     // Local search
     public static boolean exhaustiveLocalSearch = false;
-    public static boolean randomLocalSearch = true;
-    public static int numberOfOperators = 3;
+    public static double localSearchCondition = 0.2;  // TODO: Rename
+    public static boolean randomLocalSearch = true;  // TODO: Remove when condition for running local search is added
+    public static int numberOfOperators = 3;  // TODO: Remove when condition for running local search is added
 
     // Iterations
-    public static int totalIter = 500;
+    public static int totalIter = 50;
     public static int maxIterSolution = 20;
-    public static int setPartitioningIter = 20;
+    public static int setPartIter = 10;
     public static int segmentIter = 50;
+    public static int searchHistoryIter = 10;
 
     // Cache and order sequence pool size
     public static int cacheSize = 1000;
     public static int poolSize = 200;  // Pool size is per vessel
 
     // Toggles
-    public static boolean setPartitioning = false;
     public static boolean localSearch = true;
-    public static boolean parallelHeuristics = true;
+    public static boolean setPartitioning = true;
+    public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
     public static boolean verbose = false;
     public static boolean semiVerbose = true;
-    public static boolean saveSolution = false;
+    public static boolean saveSolution = true;
+    public static boolean saveHistory = true;
 
 
     public static void setTemperatureAndCooling(double currentFitness) {
@@ -66,12 +69,13 @@ public class Parameters {
 
     public static void setSolstormParameters() {
         cacheSP = true;
-        cacheSize = Integer.MAX_VALUE;
-        poolSize = Integer.MAX_VALUE;
+        cacheSize = 50000;
+        poolSize = 30000;
         parallelHeuristics = true;
         totalIter = 5000;
         verbose = false;
         semiVerbose = true;
         saveSolution = true;
+        saveHistory = true;
     }
 }

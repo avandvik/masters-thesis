@@ -3,10 +3,7 @@ package alns;
 import alns.heuristics.*;
 import alns.heuristics.protocols.Destroyer;
 import alns.heuristics.protocols.Repairer;
-import data.Constants;
-import data.Messages;
-import data.Parameters;
-import data.Problem;
+import data.*;
 import localsearch.LocalSearch;
 import objects.Order;
 import setpartitioning.Data;
@@ -22,6 +19,7 @@ public class Main {
 
     private static final char[] animationChars = new char[]{'|', '/', '-', '\\'};
 
+    private static List<Heuristic> allHeuristics;
     private static List<Heuristic> destroyHeuristics;
     private static List<Heuristic> repairHeuristics;
 
@@ -39,15 +37,20 @@ public class Main {
         for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
-            Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
-            if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution);
+            Solution candidateSolution;
+            try {
+                candidateSolution = applyHeuristics(currentSolution, heuristics);
+                if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                continue;
+            }
             if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
             printIterationInfo(iter, candidateSolution);
-            double reward = acceptSolution(candidateSolution);
-            if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartitioningIter == 0) runSetPartitioning();
+            double reward = acceptSolution(candidateSolution, iter);
+            if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
         }
-        if (Parameters.saveSolution) IO.saveSolution(bestSolution);
     }
 
     public static void initialize() {
@@ -57,6 +60,7 @@ public class Main {
         initializeSolutionFields();
         initializeSimulatedAnnealing();
         initializeSequenceSaving();
+        SearchHistory.initialize(allHeuristics);
     }
 
     private static void initializeHeuristics() {
@@ -74,6 +78,8 @@ public class Main {
         repairHeuristics.add(new InsertionMaxOrderSize(Constants.INSERTION_MAX_ORDER_SIZE_NAME));
         for (Heuristic heuristic : destroyHeuristics) heuristic.setWeight(Parameters.initialWeight);
         for (Heuristic heuristic : repairHeuristics) heuristic.setWeight(Parameters.initialWeight);
+        allHeuristics = new ArrayList<>(destroyHeuristics);
+        allHeuristics.addAll(repairHeuristics);
     }
 
     private static void initializeSolutionFields() {
@@ -92,7 +98,9 @@ public class Main {
     private static void initializeSequenceSaving() {
         vesselToSequenceToCost = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
+            Map<List<Order>, Double> emptySequence = new HashMap<>();
+            emptySequence.put(new LinkedList<>(), 0.0);
+            vesselToSequenceToCost.put(vesselIdx, emptySequence);
         }
     }
 
@@ -152,25 +160,27 @@ public class Main {
         }
     }
 
-    public static Double acceptSolution(Solution candidateSolution) {
+    public static Double acceptSolution(Solution candidateSolution, int iter) {
         if (candidateSolution.equals(currentSolution)) {
             if (iterationsCurrentSolution > Parameters.maxIterSolution) {
-                currentSolution = Construction.constructGreedyInitialSolution();
+                currentSolution = Construction.constructRandomInitialSolution();
                 iterationsCurrentSolution = 0;
             }
         } else if (candidateSolution.getObjective(false) < bestSolution.getObjective(false)) {
-            return doGlobalBestUpdates(candidateSolution);
+            return doGlobalBestUpdates(candidateSolution, iter);
         } else if (simulatedAnnealing(currentSolution.getObjective(false), candidateSolution.getObjective(false))) {
             return doLocalUpdates(candidateSolution);
         }
         return 0.0;
     }
 
-    private static double doGlobalBestUpdates(Solution candidateSolution) {
+    private static double doGlobalBestUpdates(Solution candidateSolution, int iter) {
         bestSolution = candidateSolution;
         currentSolution = candidateSolution;
         visitedSolutions.add(candidateSolution.hashCode());
         iterationsCurrentSolution = 0;
+        SearchHistory.setIterationBestSolutionFound(iter);
+        SearchHistory.setBestSolutionFound(candidateSolution);
         return Parameters.newGlobalBest;
     }
 
@@ -188,11 +198,17 @@ public class Main {
         return 0.0;  // No reward if solution has been visited before, but current solution is updated
     }
 
-    private static void runSetPartitioning() {
+    private static void runSetPartitioning(int iter) {
         Model model = new Model();
         model.run();
-        Solution candidateSolution = model.getNewSolution();
-        acceptSolution(candidateSolution);  // Reward is ignored
+        Solution candidateSolution;
+        try {
+            candidateSolution = model.getNewSolution();
+        } catch (NullPointerException e) {
+            System.out.println(Messages.errorInSetPartitioning);
+            return;
+        }
+        acceptSolution(candidateSolution, iter);  // Reward is ignored
     }
 
     private static boolean simulatedAnnealing(double currentFitness, double candidateFitness) {
@@ -204,6 +220,10 @@ public class Main {
         for (Heuristic heuristic : heuristics) heuristic.addToScore(reward);
         if ((iteration + 1) % Parameters.segmentIter == 0) resetHeuristicScores();
         Cache.cacheLongTerm();
+        if (iteration % Parameters.searchHistoryIter == 0) {
+            SearchHistory.setIterationToObjective(iteration, bestSolution.getObjective(false));
+            for (Heuristic heuristic : allHeuristics) SearchHistory.setIterationToWeight(heuristic, iteration);
+        }
     }
 
     private static void resetHeuristicScores() {
@@ -260,20 +280,32 @@ public class Main {
 
     private static void printSubtle(int iteration, Solution candidateSolution) {
         int percentage = (int) (((iteration + 1) / (double) Parameters.totalIter) * 100);
-        System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4] + "\r");
+        System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4]
+                + "\t\t" + Math.round(bestSolution.getObjective(false))
+                + "\t|\t" + Cache.getCacheSize() + "\r");
     }
 
-    private static void runExtensively(String fileName, int numberOfSeeds, int seedBound) {
+    private static void runExtensively(String fileName, int nbrEvaluations, int seedBound) {
         Random rn = new Random(seedBound);
         int seed = rn.nextInt(seedBound);
         Problem.setUpProblem(fileName, false, seed);
-        for (int i = 0; i < numberOfSeeds; i++) {
+        if (Constants.SOLSTORM) Parameters.setSolstormParameters();
+        for (int i = 0; i < nbrEvaluations; i++) {
             System.out.println("Running with seed: " + seed);
+            Problem.setRandom(seed);
             double startTime = System.nanoTime();
-            Main.run();
+            try {
+                Main.run();
+                // TODO: Add / change exceptions to make sense
+            } catch (IllegalStateException | NullPointerException | IndexOutOfBoundsException e) {
+                e.printStackTrace();
+                System.out.println("Continuing to another instance...\n");
+            }
+            SearchHistory.setRuntime(startTime);
+            if (Parameters.saveSolution) IO.saveSolution(bestSolution);
+            if (Parameters.saveHistory) IO.saveSearchHistory();
             printSolutionInfo(startTime);
             seed = rn.nextInt(seedBound);
-            Problem.setRandom(seed);
         }
     }
 
@@ -282,6 +314,9 @@ public class Main {
         if (Constants.SOLSTORM) Parameters.setSolstormParameters();
         double startTime = System.nanoTime();
         Main.run();
+        SearchHistory.setRuntime(startTime);
+        if (Parameters.saveSolution) IO.saveSolution(bestSolution);
+        if (Parameters.saveHistory) IO.saveSearchHistory();
         printSolutionInfo(startTime);
     }
 
@@ -292,9 +327,12 @@ public class Main {
             System.out.println("\tFuel costs: " + Main.getBestSolution().getFuelCosts());
             System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
+        }
+        if (Parameters.verbose) {
             System.out.println("Postponed orders: " + Main.getBestSolution().getAllPostponed());
             Main.getBestSolution().printSchedules();
         }
+        System.out.println();
     }
 
     public static void main(String[] args) {
@@ -305,8 +343,8 @@ public class Main {
         for (File instance : instances) {
             String fileName = instance.getName();
             System.out.println("Running " + fileName);
-            // runExtensively(fileName, 10, 1000);
-            runSimple(fileName);
+            runExtensively(fileName, 20, 1000);
+            // runSimple(fileName);
         }
     }
 }

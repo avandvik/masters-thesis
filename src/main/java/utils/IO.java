@@ -2,7 +2,9 @@ package utils;
 
 import alns.Solution;
 import data.Constants;
+import data.Parameters;
 import data.Problem;
+import data.SearchHistory;
 import objects.Installation;
 import objects.Order;
 import objects.Vessel;
@@ -23,11 +25,9 @@ public class IO {
     @SuppressWarnings("unchecked")
     public static void saveSolution(Solution solution) {
         JSONObject obj = new JSONObject();
-
         obj.put(Constants.INSTANCE_NAME_KEY, Problem.fileName);
         obj.put(Constants.OBJECTIVE_VALUE_KEY, solution.getObjective(false));
         obj.put(Constants.VOYAGES_KEY, new JSONObject());
-
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             Vessel vessel = Problem.getVessel(vesselIdx);
             ((JSONObject) obj.get(Constants.VOYAGES_KEY)).put(vessel, new JSONObject());
@@ -36,7 +36,6 @@ public class IO {
             JSONObject vesselObj = ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel));
             vesselObj.put(Constants.SEQUENCE_KEY, orderSequence);
             vesselObj.put(Constants.TIME_POINTS_KEY, new JSONObject());
-
             Node prevNode = null;
             for (Node node : solution.getShortestPaths().get(vesselIdx)) {
                 JSONObject timePoints = new JSONObject();
@@ -55,9 +54,50 @@ public class IO {
                 prevNode = node;
             }
         }
-        writeToFile(Constants.OUTPUT_PATH + Problem.fileName, obj);
+        String baseName = Problem.fileName.substring(0, Problem.fileName.lastIndexOf("."));
+        String path = Constants.OUTPUT_PATH + baseName + "_" + Problem.currentSeed + "_solution.json";
+        writeToFile(path, obj);
     }
 
+    @SuppressWarnings("unchecked")
+    public static void saveSearchHistory() {
+        JSONObject obj = new JSONObject();
+        obj.put(Constants.INSTANCE_NAME_KEY, Problem.fileName);
+        obj.put(Constants.OBJECTIVE_VALUE_KEY, SearchHistory.getBestObjective());
+        obj.put(Constants.ITER_TO_OBJ_KEY, SearchHistory.getIterationToObjective());
+        obj.put(Constants.HEURISTIC_TO_ITER_TO_WEIGHT_KEY, SearchHistory.getHeuristicToIterationToWeight());
+        obj.put(Constants.ITER_BEST_FOUND_KEY, SearchHistory.getIterationBestSolutionFound());
+        obj.put(Constants.RUNTIME_KEY, SearchHistory.getRuntime());
+
+        JSONObject parametersObj = new JSONObject();
+        parametersObj.put(Constants.NOISE_CONTROL_KEY, Parameters.noiseRate);
+        parametersObj.put(Constants.NEW_GLOBAL_SCORE_KEY, Parameters.newGlobalBest);
+        parametersObj.put(Constants.NEW_LOCAL_SCORE_KEY, Parameters.newLocalImprovement);
+        parametersObj.put(Constants.NEW_SOLUTION_SCORE_KEY, Parameters.newLocal);
+        parametersObj.put(Constants.LOWER_WEIGHT_THRESHOLD_KEY, Parameters.initialWeight);
+        parametersObj.put(Constants.REACTION_KEY, Parameters.reaction);
+        parametersObj.put(Constants.START_TEMPERATURE_KEY, Parameters.startTemperature);
+        parametersObj.put(Constants.COOLING_RATE_KEY, Parameters.coolingRate);
+        parametersObj.put(Constants.REMOVAL_UPPER_PERCENTAGE_KEY, 0.5);
+        parametersObj.put(Constants.REMOVAL_LOWER_PERCENTAGE_KEY, 0.0);
+        parametersObj.put(Constants.REGRET_KEY, Parameters.regretParameter);
+        parametersObj.put(Constants.DETERMINISM_RELATED_KEY, Parameters.rnRelated);
+        parametersObj.put(Constants.DETERMINISM_WORST_KEY, Parameters.rnWorst);
+        parametersObj.put(Constants.LOCAL_SEARCH_CONDITION_KEY, Parameters.localSearchCondition);
+        parametersObj.put(Constants.PREDETERMINED_ITERATIONS_KEY, Parameters.totalIter);
+        parametersObj.put(Constants.MAX_ITERATIONS_SOLUTION_KEY, Parameters.maxIterSolution);
+        parametersObj.put(Constants.SET_PARTITIONING_ITERATIONS_KEY, Parameters.setPartIter);
+        parametersObj.put(Constants.SEGMENT_ITERATIONS_KEY, Parameters.segmentIter);
+        parametersObj.put(Constants.CACHE_SIZE_KEY, Parameters.cacheSize);
+        parametersObj.put(Constants.POOL_SIZE_KEY, Parameters.poolSize);
+        parametersObj.put(Constants.LOCAL_SEARCH_KEY, Parameters.localSearch);
+        parametersObj.put(Constants.SET_PARTITIONING_KEY, Parameters.setPartitioning);
+        obj.put(Constants.PARAMETERS_KEY, parametersObj);
+
+        String baseName = Problem.fileName.substring(0, Problem.fileName.lastIndexOf("."));
+        String path = Constants.OUTPUT_PATH + baseName + "_" + Problem.currentSeed + "_history.json";
+        writeToFile(path, obj);
+    }
 
     public static void writeToFile(String path, JSONObject obj) {
         try {
@@ -69,7 +109,6 @@ public class IO {
             e.printStackTrace();
         }
     }
-
 
     public static void setUpInstallations() {
         Problem.installations = new ArrayList<>();
