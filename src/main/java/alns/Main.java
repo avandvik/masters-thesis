@@ -37,8 +37,14 @@ public class Main {
         for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
-            Solution candidateSolution = applyHeuristics(currentSolution, heuristics);
-            if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution);
+            Solution candidateSolution;
+            try {
+                candidateSolution = applyHeuristics(currentSolution, heuristics);
+                if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                continue;
+            }
             if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
             printIterationInfo(iter, candidateSolution);
             double reward = acceptSolution(candidateSolution, iter);

@@ -69,10 +69,10 @@ public class Parameters {
 
     public static void setSolstormParameters() {
         cacheSP = true;
-        cacheSize = 100000;
-        poolSize = 40000;
+        cacheSize = 50000;
+        poolSize = 30000;
         parallelHeuristics = true;
-        totalIter = 1000;
+        totalIter = 5000;
         verbose = false;
         semiVerbose = true;
         saveSolution = true;
