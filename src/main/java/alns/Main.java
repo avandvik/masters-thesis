@@ -36,14 +36,8 @@ public class Main {
         for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
-            Solution candidateSolution;
-            try {
-                candidateSolution = applyHeuristics(currentSolution, heuristics);
-                if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution);
-            } catch (IllegalStateException e) {
-                System.out.println("\n" + e.getMessage());
-                continue;
-            }
+            Solution candidateSolution = generateCandidate(heuristics);
+            if (candidateSolution == null) continue;
             if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
             printIterationInfo(iter, candidateSolution);
             double reward = acceptSolution(candidateSolution, iter);
@@ -125,7 +119,18 @@ public class Main {
         return rouletteWheel.higherEntry(Problem.random.nextDouble()).getValue();
     }
 
-    public static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
+    public static Solution generateCandidate(List<Heuristic> heuristics) {
+        Solution candidateSolution = null;
+        try {
+            candidateSolution = applyHeuristics(currentSolution, heuristics);
+            if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution, bestSolution);
+        } catch (IllegalStateException e) {
+            System.out.println("\n" + e.getMessage());
+        }
+        return candidateSolution;
+    }
+
+    private static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
         Destroyer destroyer = (Destroyer) heuristics.get(0);
         Solution partialSolution = destroyer.destroy(solution, Parameters.nbrOrdersRemove);
         Repairer repairer = (Repairer) heuristics.get(1);

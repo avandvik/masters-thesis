@@ -33,10 +33,7 @@ public class Parameters {
     public static int kMeansAttempts = 10;
 
     // Local search
-    public static boolean exhaustiveLocalSearch = false;
-    public static double localSearchCondition = 0.2;  // TODO: Rename
-    public static boolean randomLocalSearch = true;  // TODO: Remove when condition for running local search is added
-    public static int numberOfOperators = 3;  // TODO: Remove when condition for running local search is added
+    public static double lsThresh = 1.2;
 
     // Iterations
     public static int totalIter = 50;
