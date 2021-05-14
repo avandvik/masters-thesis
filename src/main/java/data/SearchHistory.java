@@ -14,6 +14,7 @@ public class SearchHistory {
     private static Map<Heuristic, Map<Integer, Double>> heuristicToIterationToWeight;
     private static int iterationBestSolutionFound;
     private static double runtime;
+    private static int nbrIterations;
 
     public static void initialize(List<Heuristic> heuristics) {
         iterationToObjective = new HashMap<>();
@@ -59,5 +60,13 @@ public class SearchHistory {
 
     public static double getRuntime() {
         return runtime;
+    }
+
+    public static void setNbrIterations(int iter) {
+        nbrIterations = iter;
+    }
+
+    public static int getNbrIterations() {
+        return nbrIterations;
     }
 }

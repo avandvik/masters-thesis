@@ -13,10 +13,6 @@ import java.util.stream.Collectors;
 public class Problem {
 
     /* =========== PROBLEM PARAMETERS =========== */
-    // Filename and path to instance
-    public static String fileName;
-    public static String pathToInstanceFile;
-
     // Instance objects
     public static List<Installation> installations;
     public static List<Order> orders;
@@ -208,8 +204,7 @@ public class Problem {
     /* =========== SETUP =========== */
 
     public static void setUpProblem(String fileName, boolean isTest, int randomSeed) {
-        Problem.fileName = fileName;
-        Problem.pathToInstanceFile = (isTest ? Constants.PATH_TO_TEST : Constants.PATH_TO_INSTANCES) + fileName;
+        Constants.PATH_TO_INSTANCE = (isTest ? Constants.PATH_TO_TEST_DIR : Constants.PATH_TO_INSTANCES_DIR) + fileName;
         IO.setUpInstanceInfo();
         IO.setUpInstallations();
         IO.setUpVesselInfo();

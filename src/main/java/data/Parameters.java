@@ -41,7 +41,7 @@ public class Parameters {
     // Iterations
     public static int totalIter = 50;
     public static int maxIterSolution = 20;
-    public static int setPartIter = 10;
+    public static int setPartIter = 500;
     public static int segmentIter = 50;
     public static int searchHistoryIter = 10;
 
@@ -59,6 +59,9 @@ public class Parameters {
     public static boolean saveSolution = true;
     public static boolean saveHistory = true;
 
+    // Other
+    public static final int seedBound = 1000;
+    public static final int maxRunTime = 600;
 
     public static void setTemperatureAndCooling(double currentFitness) {
         double candidateFitness = currentFitness * (1 + XPercent);
@@ -69,7 +72,7 @@ public class Parameters {
 
     public static void setSolstormParameters() {
         cacheSP = true;
-        cacheSize = 50000;
+        cacheSize = 200000;
         poolSize = 30000;
         parallelHeuristics = true;
         totalIter = 5000;
