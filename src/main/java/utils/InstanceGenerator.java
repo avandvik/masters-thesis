@@ -86,7 +86,7 @@ public class InstanceGenerator {
     }
 
     private static void mapInstIdToOrderSizes() {
-        JSONObject jsonInstallations = IO.getJSONObject(Constants.INSTALLATION_FILE);
+        JSONObject jsonInstallations = IO.getJSONObject(Constants.PATH_TO_INSTALLATIONS);
         for (Object key : jsonInstallations.keySet()) {
             JSONObject jsonInstallation = (JSONObject) jsonInstallations.get(key);
             int id = Math.toIntExact((long) jsonInstallation.get(Constants.ID_KEY));
@@ -198,7 +198,7 @@ public class InstanceGenerator {
 
         // Initialize fields
         double fleetCapacity = 0.0;
-        JSONObject jsonFleet = (JSONObject) IO.getJSONObject(Constants.VESSEL_FILE).get(Constants.FLEET_KEY);
+        JSONObject jsonFleet = (JSONObject) IO.getJSONObject(Constants.PATH_TO_VESSELS).get(Constants.FLEET_KEY);
         List<String> vessels = new ArrayList<String>(jsonFleet.keySet());
         vessels.remove(Constants.SPOT_VESSEL_KEY);  // To not add spot vessel twice
         Collections.sort(vessels);  // To add PSV_1 first, then PSV_2, etc.

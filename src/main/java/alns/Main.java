@@ -11,7 +11,6 @@ import setpartitioning.Model;
 import subproblem.Cache;
 import utils.IO;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,7 @@ public class Main {
 
     public static Map<Integer, Map<List<Order>, Double>> vesselToSequenceToCost;
 
-    public static void run() {
+    public static void alns() {
         initialize();
         for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
@@ -239,6 +238,14 @@ public class Main {
         return bestSolution;
     }
 
+    public static int getNumberOfSavedSequences() {
+        int nbrSequences = 0;
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            nbrSequences += vesselToSequenceToCost.get(vIdx).size();
+        }
+        return nbrSequences;
+    }
+
     public static void setCurrentSolution(Solution solution) {
         currentSolution = solution;
     }
@@ -255,7 +262,7 @@ public class Main {
         if (Parameters.verbose) {
             printHeavy(iteration, candidateSolution);
         } else if (Parameters.semiVerbose) {
-            printSubtle(iteration, candidateSolution);
+            printSubtle(iteration);
         }
     }
 
@@ -278,52 +285,21 @@ public class Main {
         System.out.println();
     }
 
-    private static void printSubtle(int iteration, Solution candidateSolution) {
+    private static void printSubtle(int iteration) {
+        double heapFreeSize = Math.round(Runtime.getRuntime().freeMemory() / 1e9 * 100.0) / 100.0;
         int percentage = (int) (((iteration + 1) / (double) Parameters.totalIter) * 100);
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4]
-                + "\t\t" + Math.round(bestSolution.getObjective(false))
-                + "\t|\t" + Cache.getCacheSize() + "\r");
-    }
-
-    private static void runExtensively(String fileName, int nbrEvaluations, int seedBound) {
-        Random rn = new Random(seedBound);
-        int seed = rn.nextInt(seedBound);
-        Problem.setUpProblem(fileName, false, seed);
-        if (Constants.SOLSTORM) Parameters.setSolstormParameters();
-        for (int i = 0; i < nbrEvaluations; i++) {
-            System.out.println("Running with seed: " + seed);
-            Problem.setRandom(seed);
-            double startTime = System.nanoTime();
-            try {
-                Main.run();
-                // TODO: Add / change exceptions to make sense
-            } catch (IllegalStateException | NullPointerException | IndexOutOfBoundsException e) {
-                e.printStackTrace();
-                System.out.println("Continuing to another instance...\n");
-            }
-            SearchHistory.setRuntime(startTime);
-            if (Parameters.saveSolution) IO.saveSolution(bestSolution);
-            if (Parameters.saveHistory) IO.saveSearchHistory();
-            printSolutionInfo(startTime);
-            seed = rn.nextInt(seedBound);
-        }
-    }
-
-    private static void runSimple(String fileName) {
-        Problem.setUpProblem(fileName, false, 4);
-        if (Constants.SOLSTORM) Parameters.setSolstormParameters();
-        double startTime = System.nanoTime();
-        Main.run();
-        SearchHistory.setRuntime(startTime);
-        if (Parameters.saveSolution) IO.saveSolution(bestSolution);
-        if (Parameters.saveHistory) IO.saveSearchHistory();
-        printSolutionInfo(startTime);
+                + "     " + Math.round(bestSolution.getObjective(false))
+                + "  |  " + Cache.getCacheSize()
+                + "  |  " + getNumberOfSavedSequences()
+                + "  |  " + (Constants.MAX_HEAP_SIZE - heapFreeSize) + "/" + Constants.MAX_HEAP_SIZE
+                + "\r");
     }
 
     private static void printSolutionInfo(double startTime) {
         if (Parameters.semiVerbose) {
             double timeElapsed = (System.nanoTime() - startTime) / 1e9;
-            System.out.println("Best objective: " + Main.getBestSolution().getObjective(false));
+            System.out.println("\nBest objective: " + Main.getBestSolution().getObjective(false));
             System.out.println("\tFuel costs: " + Main.getBestSolution().getFuelCosts());
             System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
@@ -335,16 +311,29 @@ public class Main {
         System.out.println();
     }
 
-    public static void main(String[] args) {
-        File[] instances;
-        if (args.length > 0) Constants.overwritePathsSolstorm(args[0]);
-        instances = new File(Constants.PATH_TO_INSTANCES).listFiles();
-        if (instances == null) throw new IllegalStateException("No instances to run!");
-        for (File instance : instances) {
-            String fileName = instance.getName();
-            System.out.println("Running " + fileName);
-            runExtensively(fileName, 20, 1000);
-            // runSimple(fileName);
+    private static void run() {
+        Random rn = new Random();
+        int seed = rn.nextInt(Parameters.seedBound);
+        Problem.setUpProblem(Constants.FILE_NAME, false, seed);
+        if (Constants.SOLSTORM) Parameters.setSolstormParameters();
+        Problem.setRandom(seed);
+        System.out.println("Running with seed: " + seed);
+        double startTime = System.nanoTime();
+        try {
+            Main.alns();
+            SearchHistory.setRuntime(startTime);
+            if (Parameters.saveSolution) IO.saveSolution(bestSolution);
+            if (Parameters.saveHistory) IO.saveSearchHistory();
+            printSolutionInfo(startTime);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            System.out.println("Caught RuntimeException, exiting...\n");
         }
+    }
+
+    public static void main(String[] args) {
+        Constants.FILE_NAME = "17-22-3-1.json";  // If running locally (will be overwritten on Solstorm)
+        if (args.length > 0) Constants.setSolstormConstants(args[0], args[1]);
+        Main.run();
     }
 }

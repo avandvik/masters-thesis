@@ -25,7 +25,7 @@ public class IO {
     @SuppressWarnings("unchecked")
     public static void saveSolution(Solution solution) {
         JSONObject obj = new JSONObject();
-        obj.put(Constants.INSTANCE_NAME_KEY, Problem.fileName);
+        obj.put(Constants.INSTANCE_NAME_KEY, Constants.FILE_NAME);
         obj.put(Constants.OBJECTIVE_VALUE_KEY, solution.getObjective(false));
         obj.put(Constants.VOYAGES_KEY, new JSONObject());
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
@@ -54,7 +54,7 @@ public class IO {
                 prevNode = node;
             }
         }
-        String baseName = Problem.fileName.substring(0, Problem.fileName.lastIndexOf("."));
+        String baseName = Constants.FILE_NAME.substring(0, Constants.FILE_NAME.lastIndexOf("."));
         String path = Constants.OUTPUT_PATH + baseName + "_" + Problem.currentSeed + "_solution.json";
         writeToFile(path, obj);
     }
@@ -62,7 +62,7 @@ public class IO {
     @SuppressWarnings("unchecked")
     public static void saveSearchHistory() {
         JSONObject obj = new JSONObject();
-        obj.put(Constants.INSTANCE_NAME_KEY, Problem.fileName);
+        obj.put(Constants.INSTANCE_NAME_KEY, Constants.FILE_NAME);
         obj.put(Constants.OBJECTIVE_VALUE_KEY, SearchHistory.getBestObjective());
         obj.put(Constants.ITER_TO_OBJ_KEY, SearchHistory.getIterationToObjective());
         obj.put(Constants.HEURISTIC_TO_ITER_TO_WEIGHT_KEY, SearchHistory.getHeuristicToIterationToWeight());
@@ -94,7 +94,7 @@ public class IO {
         parametersObj.put(Constants.SET_PARTITIONING_KEY, Parameters.setPartitioning);
         obj.put(Constants.PARAMETERS_KEY, parametersObj);
 
-        String baseName = Problem.fileName.substring(0, Problem.fileName.lastIndexOf("."));
+        String baseName = Constants.FILE_NAME.substring(0, Constants.FILE_NAME.lastIndexOf("."));
         String path = Constants.OUTPUT_PATH + baseName + "_" + Problem.currentSeed + "_history.json";
         writeToFile(path, obj);
     }
@@ -112,7 +112,7 @@ public class IO {
 
     public static void setUpInstallations() {
         Problem.installations = new ArrayList<>();
-        JSONObject jsonInstallations = getJSONObject(Constants.INSTALLATION_FILE);
+        JSONObject jsonInstallations = getJSONObject(Constants.PATH_TO_INSTALLATIONS);
         for (Object key : jsonInstallations.keySet()) {
             JSONObject jsonInstallation = (JSONObject) jsonInstallations.get(key);
             String name = (String) key;
@@ -129,7 +129,7 @@ public class IO {
 
     public static void setUpOrders() {
         Problem.orders = new ArrayList<>();
-        JSONObject jsonOrders = (JSONObject) getJSONObject(Problem.pathToInstanceFile).get(Constants.ORDERS_KEY);
+        JSONObject jsonOrders = (JSONObject) getJSONObject(Constants.PATH_TO_INSTANCE).get(Constants.ORDERS_KEY);
         for (Object key : jsonOrders.keySet()) {
             JSONObject jsonOrder = (JSONObject) jsonOrders.get(key);
             int orderId = Integer.parseInt((String) key);
@@ -146,8 +146,8 @@ public class IO {
 
     public static void setUpVessels() {
         Problem.vessels = new ArrayList<>();
-        String vesselPath = Constants.VESSEL_FILE;
-        String instancePath = Problem.pathToInstanceFile;
+        String vesselPath = Constants.PATH_TO_VESSELS;
+        String instancePath = Constants.PATH_TO_INSTANCE;
         JSONObject vessels = (JSONObject) getJSONObject(vesselPath).get(Constants.FLEET_KEY);
         JSONObject availVessels = (JSONObject) getJSONObject(instancePath).get(Constants.AVAILABLE_VESSELS_KEY);
         for (Object key : availVessels.keySet()) {
@@ -165,7 +165,7 @@ public class IO {
     }
 
     public static void setUpInstanceInfo() {
-        JSONObject jsonInstanceInfo = getJSONObject(Problem.pathToInstanceFile);
+        JSONObject jsonInstanceInfo = getJSONObject(Constants.PATH_TO_INSTANCE);
         Problem.planningPeriodHours = ((int) ((double) jsonInstanceInfo.get(Constants.PLANNING_PERIOD_KEY)));
         Problem.discretizationParam = ((int) ((double) jsonInstanceInfo.get(Constants.DISCRETIZATION_KEY)));
         Problem.timeUnit = (double) 1 / Problem.discretizationParam;
@@ -175,7 +175,7 @@ public class IO {
     }
 
     public static void setUpVesselInfo() {
-        JSONObject jsonVesselInfo = getJSONObject(Constants.VESSEL_FILE);
+        JSONObject jsonVesselInfo = getJSONObject(Constants.PATH_TO_VESSELS);
         Problem.minSpeed = (double) jsonVesselInfo.get(Constants.MIN_SPEED_KEY);
         Problem.designSpeed = (double) jsonVesselInfo.get(Constants.DESIGN_SPEED_KEY);
         Problem.maxSpeed = (double) jsonVesselInfo.get(Constants.MAX_SPEED_KEY);
@@ -194,7 +194,7 @@ public class IO {
     public static void setUpWeather() {
         Problem.wsToSpeedImpact = new HashMap<>();
         Problem.wsToServiceImpact = new HashMap<>();
-        JSONObject jsonWeather = getJSONObject(Constants.WEATHER_FILE);
+        JSONObject jsonWeather = getJSONObject(Constants.PATH_TO_WEATHER);
         Problem.worstWeatherState = Math.toIntExact((long) jsonWeather.get(Constants.WORST_WEATHER_KEY));
         JSONObject jsonWS = (JSONObject) jsonWeather.get(Constants.SCENARIOS_KEY);
         JSONArray jsonWeatherForecast = (JSONArray) jsonWS.get(Problem.weatherScenario);

@@ -1,18 +1,21 @@
 package data;
 
 public class Constants {
-    public static final String ROOT_PATH = System.getProperty("user.dir");
 
+    public static String FILE_NAME;
+
+    public static final String ROOT_PATH = System.getProperty("user.dir");
     public static String OUTPUT_PATH = ROOT_PATH + "/output/local/";
     public static String GENERATOR_PATH = ROOT_PATH + "/src/main/resources/generated/";
+    public static String PATH_TO_INSTANCES_DIR = ROOT_PATH + "/src/main/resources/instances/";
+    public static String PATH_TO_INSTANCE = PATH_TO_INSTANCES_DIR + FILE_NAME;
+    public static String PATH_TO_CONSTANT_DIR = ROOT_PATH + "/src/main/resources/constant/";
+    public static String PATH_TO_TEST_DIR = ROOT_PATH + "/src/main/resources/test/";
+    public static String PATH_TO_VESSELS = Constants.PATH_TO_CONSTANT_DIR + "vessels.json";
+    public static String PATH_TO_INSTALLATIONS = Constants.PATH_TO_CONSTANT_DIR + "installations.json";
+    public static String PATH_TO_WEATHER = Constants.PATH_TO_CONSTANT_DIR + "weather.json";
 
-    public static String PATH_TO_INSTANCES = ROOT_PATH + "/src/main/resources/instances/";
-    public static String PATH_TO_CONSTANT = ROOT_PATH + "/src/main/resources/constant/";
-    public static String PATH_TO_TEST = ROOT_PATH + "/src/main/resources/test/";
-
-    public static String VESSEL_FILE = Constants.PATH_TO_CONSTANT + "vessels.json";
-    public static String INSTALLATION_FILE = Constants.PATH_TO_CONSTANT + "installations.json";
-    public static String WEATHER_FILE = Constants.PATH_TO_CONSTANT + "weather.json";
+    public static final double MAX_HEAP_SIZE = Math.round(Runtime.getRuntime().maxMemory() / 1e9 * 100.0) / 100.0;
 
     public static final String ID_KEY = "id";
     public static final String OPENING_HOUR_KEY = "opening_hour";
@@ -113,13 +116,14 @@ public class Constants {
 
     public static boolean SOLSTORM = false;
 
-    public static void overwritePathsSolstorm(String outputDir) {
+    public static void setSolstormConstants(String outputDir, String fileName) {
+        Constants.FILE_NAME = fileName;
         Constants.OUTPUT_PATH = "/storage/users/anderhva/" + outputDir + "/";
-        Constants.PATH_TO_INSTANCES = "/home/anderhva/masters-thesis/instances/";
-        Constants.PATH_TO_CONSTANT = "/home/anderhva/masters-thesis/constant/";
-        Constants.VESSEL_FILE = Constants.PATH_TO_CONSTANT + "vessels.json";
-        Constants.INSTALLATION_FILE = Constants.PATH_TO_CONSTANT + "installations.json";
-        Constants.WEATHER_FILE = Constants.PATH_TO_CONSTANT + "weather.json";
+        Constants.PATH_TO_INSTANCES_DIR = "/home/anderhva/masters-thesis/instances/";
+        Constants.PATH_TO_CONSTANT_DIR = "/home/anderhva/masters-thesis/constant/";
+        Constants.PATH_TO_VESSELS = Constants.PATH_TO_CONSTANT_DIR + "vessels.json";
+        Constants.PATH_TO_INSTALLATIONS = Constants.PATH_TO_CONSTANT_DIR + "installations.json";
+        Constants.PATH_TO_WEATHER = Constants.PATH_TO_CONSTANT_DIR + "weather.json";
         Constants.SOLSTORM = true;
     }
 }

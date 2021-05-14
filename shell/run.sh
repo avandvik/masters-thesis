@@ -10,4 +10,15 @@ cd /home/anderhva/masters-thesis || exit
 module load Java/11.0.2
 module load gurobi/9.1
 
-java -jar masters-thesis.jar "$current_time"
+nbr_sims="$1"
+export nbr_sims
+
+for file_path in ./instances/*
+do
+  for i in $(seq "$nbr_sims" $END)
+  do
+    file_name="$(basename -- "$file_path")"
+    echo "Running $file_name ($i/$nbr_sims)"
+    java -Xmx384g -jar masters-thesis.jar "$current_time" "$file_name"
+  done
+done
