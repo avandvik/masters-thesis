@@ -31,7 +31,7 @@ public class Main {
 
     public static Map<Integer, Map<List<Order>, Double>> vesselToSequenceToCost;
 
-    public static void alns() {
+    public static void alns(double startTime) {
         initialize();
         for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
@@ -41,7 +41,7 @@ public class Main {
                 candidateSolution = applyHeuristics(currentSolution, heuristics);
                 if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution);
             } catch (IllegalStateException e) {
-                e.printStackTrace();
+                System.out.println("\n" + e.getMessage());
                 continue;
             }
             if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
@@ -49,6 +49,7 @@ public class Main {
             double reward = acceptSolution(candidateSolution, iter);
             if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
+            if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime) break;
         }
     }
 
@@ -287,12 +288,13 @@ public class Main {
 
     private static void printSubtle(int iteration) {
         double heapFreeSize = Math.round(Runtime.getRuntime().freeMemory() / 1e9 * 100.0) / 100.0;
+        double heapUtilization = Math.round((Constants.MAX_HEAP_SIZE - heapFreeSize) * 100.0) / 100.0;
         int percentage = (int) (((iteration + 1) / (double) Parameters.totalIter) * 100);
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4]
                 + "     " + Math.round(bestSolution.getObjective(false))
                 + "  |  " + Cache.getCacheSize()
                 + "  |  " + getNumberOfSavedSequences()
-                + "  |  " + (Constants.MAX_HEAP_SIZE - heapFreeSize) + "/" + Constants.MAX_HEAP_SIZE
+                + "  |  " + heapUtilization + "/" + Constants.MAX_HEAP_SIZE
                 + "\r");
     }
 
@@ -320,7 +322,7 @@ public class Main {
         System.out.println("Running with seed: " + seed);
         double startTime = System.nanoTime();
         try {
-            Main.alns();
+            Main.alns(startTime);
             SearchHistory.setRuntime(startTime);
             if (Parameters.saveSolution) IO.saveSolution(bestSolution);
             if (Parameters.saveHistory) IO.saveSearchHistory();

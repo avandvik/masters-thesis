@@ -68,6 +68,7 @@ public class IO {
         obj.put(Constants.HEURISTIC_TO_ITER_TO_WEIGHT_KEY, SearchHistory.getHeuristicToIterationToWeight());
         obj.put(Constants.ITER_BEST_FOUND_KEY, SearchHistory.getIterationBestSolutionFound());
         obj.put(Constants.RUNTIME_KEY, SearchHistory.getRuntime());
+        obj.put(Constants.NBR_ITERATIONS_KEY, SearchHistory.getNbrIterations());
 
         JSONObject parametersObj = new JSONObject();
         parametersObj.put(Constants.NOISE_CONTROL_KEY, Parameters.noiseRate);

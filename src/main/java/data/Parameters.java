@@ -61,6 +61,7 @@ public class Parameters {
 
     // Other
     public static final int seedBound = 1000;
+    public static final int maxRunTime = 600;
 
     public static void setTemperatureAndCooling(double currentFitness) {
         double candidateFitness = currentFitness * (1 + XPercent);
@@ -71,10 +72,10 @@ public class Parameters {
 
     public static void setSolstormParameters() {
         cacheSP = true;
-        cacheSize = 500000;
+        cacheSize = 200000;
         poolSize = 30000;
         parallelHeuristics = true;
-        totalIter = 10000;
+        totalIter = 5000;
         verbose = false;
         semiVerbose = true;
         saveSolution = true;

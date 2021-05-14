@@ -23,7 +23,8 @@ public class MainTest {
         Parameters.maxIterSolution = 20;
         Parameters.noiseRate = 0.5;
         Parameters.saveSolution = false;
-        Main.alns();
+        double startTime = System.nanoTime() / 1e9;
+        Main.alns(startTime);
     }
 
 
