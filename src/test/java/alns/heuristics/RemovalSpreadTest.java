@@ -1,6 +1,5 @@
 package alns.heuristics;
 
-import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
 import data.Constants;
@@ -24,7 +23,8 @@ public class RemovalSpreadTest {
         Cache.initialize();
         RemovalSpread removalSpread = new RemovalSpread(Constants.REMOVAL_SPREAD_NAME);
         Parameters.parallelHeuristics = false;
-        assertEquals(createExpectedSolution(), removalSpread.destroy(createInitialSolution(), 3));
+        Parameters.percentageOrdersRemove = 0.5;
+        assertEquals(createExpectedSolution(), removalSpread.destroy(createInitialSolution()));
     }
 
     private Solution createInitialSolution() {

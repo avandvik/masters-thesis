@@ -24,6 +24,8 @@ public class Parameters {
 
     // Removal parameters
     public static int nbrOrdersRemove = 3;  // TODO: Implement as percentage
+    public static int minOrdersRemove = 2;
+    public static double percentageOrdersRemove = 0.2;
     public static int regretParameter = 4;
     public static double rnRelated = 10;
     public static double rnWorst = 10;

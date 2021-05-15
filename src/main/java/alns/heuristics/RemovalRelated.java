@@ -20,8 +20,8 @@ public class RemovalRelated extends Heuristic implements Destroyer {
     }
 
     @Override
-    public Solution destroy(Solution solution, int numberOfOrders) {
-        this.numberOfOrders = numberOfOrders;
+    public Solution destroy(Solution solution) {
+        numberOfOrders = getNbrOrdersToRemove(solution);
         Solution newSolution = solution;
         while (newSolution.getUnplacedOrders().size() < numberOfOrders) newSolution = getRelatedRemoval(newSolution);
         // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);

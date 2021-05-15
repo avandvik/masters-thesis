@@ -1,5 +1,6 @@
 package alns.heuristics;
 
+import alns.Solution;
 import data.Parameters;
 import data.Problem;
 import objects.Installation;
@@ -49,6 +50,15 @@ public abstract class Heuristic {
 
     private void smoothenWeights() {
         this.weight = (1 - Parameters.reaction) * this.weight + Parameters.reaction * (this.score / this.selections);
+    }
+
+    static int getNbrOrdersToRemove(Solution solution) {
+        int nbrScheduledOrders = 0;
+        for (List<Order> orderSequence : solution.getOrderSequences()) {
+            nbrScheduledOrders += orderSequence.size();
+        }
+        int nbrOrdersToRemove = (int) Math.ceil((nbrScheduledOrders * Parameters.percentageOrdersRemove));
+        return Math.max(Parameters.minOrdersRemove, nbrOrdersToRemove);
     }
 
     static List<Order> getOrdersToRemove(Order orderToRemove) {

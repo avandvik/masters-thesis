@@ -3,6 +3,7 @@ package alns.heuristics;
 import alns.Solution;
 import alns.SolutionGenerator;
 import data.Constants;
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -27,22 +28,26 @@ public class RemovalRandomTest {
     }
 
     private void testNumberOfRemovals(RemovalRandom removalRandom, Solution solution) {
+        Parameters.percentageOrdersRemove = 0.2;
         int ordersToRemove = 2;
         int ordersBefore = 0;
         int ordersAfter = 0;
         for (List<Order> orderSequence : solution.getOrderSequences()) ordersBefore += orderSequence.size();
-        Solution partialSolution = removalRandom.destroy(solution, ordersToRemove);
+        Solution partialSolution = removalRandom.destroy(solution);
         for (List<Order> orderSequence : partialSolution.getOrderSequences()) ordersAfter += orderSequence.size();
         assertEquals(ordersBefore, ordersAfter + ordersToRemove + 1);  // One more is removed
     }
 
     private void testNoRemovals(RemovalRandom removalRandom, Solution solution) {
-        Solution partialSolution = removalRandom.destroy(solution, 0);
+        Parameters.percentageOrdersRemove = 0.0;
+        Parameters.minOrdersRemove = 0;
+        Solution partialSolution = removalRandom.destroy(solution);
         assertEquals(solution, partialSolution);
     }
 
     private void testRemovalsAsExpected(RemovalRandom removalRandom, Solution solution) {
-        Solution partialSolution = removalRandom.destroy(solution, 3);
+        Parameters.percentageOrdersRemove = 0.3;
+        Solution partialSolution = removalRandom.destroy(solution);
         Solution expectedSolution = createExpectedSolutionThree();
         assertEquals(expectedSolution, partialSolution);
     }

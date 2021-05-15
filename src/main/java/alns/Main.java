@@ -132,7 +132,7 @@ public class Main {
 
     private static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
         Destroyer destroyer = (Destroyer) heuristics.get(0);
-        Solution partialSolution = destroyer.destroy(solution, Parameters.nbrOrdersRemove);
+        Solution partialSolution = destroyer.destroy(solution);
         Repairer repairer = (Repairer) heuristics.get(1);
         Solution candidateSolution = repairer.repair(partialSolution);
         if (!Evaluator.isSolutionFeasible(candidateSolution)) {

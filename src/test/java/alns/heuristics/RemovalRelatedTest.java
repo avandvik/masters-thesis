@@ -35,25 +35,26 @@ public class RemovalRelatedTest {
     }
 
     private void testNoRandomness(RemovalRelated removalRelated, Solution solution) {
-        int ordersToRemove = 3;
         Parameters.rnRelated = 100;
+        Parameters.percentageOrdersRemove = 0.5;
 
-        Solution partialSolution = removalRelated.destroy(solution, ordersToRemove);
+        Solution partialSolution = removalRelated.destroy(solution);
         assertEquals(createExpectedSolutionNoRandomness(), partialSolution);
     }
 
     private void testRandomness(RemovalRelated removalRelated, Solution solution) {
-        int ordersToRemove = 3;
         Parameters.rnRelated = 1;
+        Parameters.percentageOrdersRemove = 0.5;
 
-        Solution partialSolution = removalRelated.destroy(solution, ordersToRemove);
+        Solution partialSolution = removalRelated.destroy(solution);
         assertEquals(createExpectedSolutionRandomness(), partialSolution);
     }
 
     private void testNoRemovals(RemovalRelated removalRelated, Solution solution) {
-        int ordersToRemove = 0;
+        Parameters.percentageOrdersRemove = 0.0;
+        Parameters.minOrdersRemove = 0;
 
-        Solution partialSolution = removalRelated.destroy(solution, ordersToRemove);
+        Solution partialSolution = removalRelated.destroy(solution);
         assertEquals(solution, partialSolution);
     }
 

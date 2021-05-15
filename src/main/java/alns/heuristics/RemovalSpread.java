@@ -16,8 +16,9 @@ public class RemovalSpread extends Heuristic implements Destroyer {
     }
 
     @Override
-    public Solution destroy(Solution solution, int numberOfOrders) {
-        Solution newSolution = getSpreadRemoval(solution, numberOfOrders);
+    public Solution destroy(Solution solution) {
+        int nbrOrders = getNbrOrdersToRemove(solution);
+        Solution newSolution = getSpreadRemoval(solution, nbrOrders);
         // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;

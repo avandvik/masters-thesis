@@ -18,8 +18,9 @@ public class RemovalCluster extends Heuristic implements Destroyer {
     }
 
     @Override
-    public Solution destroy(Solution solution, int numberOfOrders) {
-        Solution newSolution = getClusterRemoval(solution, numberOfOrders);
+    public Solution destroy(Solution solution) {
+        int nbrOrders = getNbrOrdersToRemove(solution);
+        Solution newSolution = getClusterRemoval(solution, nbrOrders);
         // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;

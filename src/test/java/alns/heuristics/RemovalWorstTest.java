@@ -1,6 +1,5 @@
 package alns.heuristics;
 
-import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
 import data.Constants;
@@ -35,30 +34,32 @@ public class RemovalWorstTest {
     }
 
     private void testRemovalsWithRandomness(RemovalWorst removalWorst, Solution solution) {
+        Parameters.percentageOrdersRemove = 0.5;
         Parameters.rnWorst = 1;
-        int ordersToRemove = 3;
 
         Parameters.parallelHeuristics = false;
-        Solution seqSolution = removalWorst.destroy(solution, ordersToRemove);
+        Solution seqSolution = removalWorst.destroy(solution);
 
         assertEquals(createExpectedSolutionRandomness(), seqSolution);
     }
 
     private void testNoRemovals(RemovalWorst removalWorst, Solution solution) {
-        Solution partialSolution = removalWorst.destroy(solution, 0);
+        Parameters.percentageOrdersRemove = 0.0;
+        Parameters.minOrdersRemove = 0;
+        Solution partialSolution = removalWorst.destroy(solution);
         assertEquals(solution, partialSolution);
     }
 
     private void testRemovalsAsExpectedHighPenalty(RemovalWorst removalWorst, Solution solution) {
         Parameters.rnWorst = 100;
-        int ordersToRemove = 3;
+        Parameters.percentageOrdersRemove = 0.5;
 
         Solution expectedSolution = createExpectedSolutionHighPenalty();
 
         Parameters.parallelHeuristics = false;
-        Solution seqSolution = removalWorst.destroy(solution, ordersToRemove);
+        Solution seqSolution = removalWorst.destroy(solution);
         Parameters.parallelHeuristics = true;
-        Solution parSolution = removalWorst.destroy(solution, ordersToRemove);
+        Solution parSolution = removalWorst.destroy(solution);
 
         assertEquals(expectedSolution, seqSolution);
         assertEquals(expectedSolution, parSolution);
@@ -66,14 +67,14 @@ public class RemovalWorstTest {
 
     private void testRemovalsAsExpectedLowPenalty(RemovalWorst removalWorst, Solution solution) {
         Parameters.rnWorst = 100;
-        int ordersToRemove = 3;
+        Parameters.percentageOrdersRemove = 0.5;
 
         Solution expectedSolution = createExpectedSolutionLowPenalty();
 
         Parameters.parallelHeuristics = false;
-        Solution seqSolution = removalWorst.destroy(solution, ordersToRemove);
+        Solution seqSolution = removalWorst.destroy(solution);
         Parameters.parallelHeuristics = true;
-        Solution parSolution = removalWorst.destroy(solution, ordersToRemove);
+        Solution parSolution = removalWorst.destroy(solution);
 
         assertEquals(expectedSolution, seqSolution);
         assertEquals(expectedSolution, parSolution);

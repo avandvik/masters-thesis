@@ -1,6 +1,5 @@
 package alns.heuristics;
 
-import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
 import data.Constants;
@@ -24,7 +23,8 @@ public class RemovalClusterTest {
         Cache.initialize();
         RemovalCluster removalCluster = new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME);
         Parameters.parallelHeuristics = false;
-        assertEquals(createExpectedSolution(), removalCluster.destroy(createInitialSolution(), 3));
+        Parameters.percentageOrdersRemove = 0.5;
+        assertEquals(createExpectedSolution(), removalCluster.destroy(createInitialSolution()));
     }
 
     @Test
@@ -34,7 +34,8 @@ public class RemovalClusterTest {
         Cache.initialize();
         RemovalCluster removalCluster = new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME);
         Parameters.parallelHeuristics = false;
-        assertEquals(createClusteredExpectedSolution(), removalCluster.destroy(createClusteredInitialSolution(), 5));
+        Parameters.percentageOrdersRemove = 0.5;
+        assertEquals(createClusteredExpectedSolution(), removalCluster.destroy(createClusteredInitialSolution()));
     }
 
     private Solution createClusteredInitialSolution() {
