@@ -66,9 +66,11 @@ public class IO {
         obj.put(Constants.OBJECTIVE_VALUE_KEY, SearchHistory.getBestObjective());
         obj.put(Constants.ITER_TO_OBJ_KEY, SearchHistory.getIterationToObjective());
         obj.put(Constants.HEURISTIC_TO_ITER_TO_WEIGHT_KEY, SearchHistory.getHeuristicToIterationToWeight());
+        obj.put(Constants.HEURISTIC_TO_SELECTIONS_KEY, SearchHistory.getHeuristicToSelections());
         obj.put(Constants.ITER_BEST_FOUND_KEY, SearchHistory.getIterationBestSolutionFound());
         obj.put(Constants.RUNTIME_KEY, SearchHistory.getRuntime());
         obj.put(Constants.NBR_ITERATIONS_KEY, SearchHistory.getNbrIterations());
+        obj.put(Constants.NBR_LOCAL_SEARCH_RUNS_KEY, SearchHistory.getNbrLocalSearchRuns());
 
         JSONObject parametersObj = new JSONObject();
         parametersObj.put(Constants.NOISE_CONTROL_KEY, Parameters.noiseRate);

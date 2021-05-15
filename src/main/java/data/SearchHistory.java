@@ -11,15 +11,19 @@ public class SearchHistory {
 
     private static Solution bestSolution;
     private static Map<Integer, Double> iterationToObjective;
+    private static List<Heuristic> heuristicsUsedInSearch;
     private static Map<Heuristic, Map<Integer, Double>> heuristicToIterationToWeight;
     private static int iterationBestSolutionFound;
     private static double runtime;
     private static int nbrIterations;
+    private static int nbrLocalSearchRuns;
 
     public static void initialize(List<Heuristic> heuristics) {
         iterationToObjective = new HashMap<>();
         heuristicToIterationToWeight = new HashMap<>();
-        for (Heuristic heuristic : heuristics) heuristicToIterationToWeight.put(heuristic, new HashMap<>());
+        heuristicsUsedInSearch = heuristics;
+        for (Heuristic heuristic : heuristicsUsedInSearch) heuristicToIterationToWeight.put(heuristic, new HashMap<>());
+        nbrLocalSearchRuns = 0;
     }
 
     public static void setIterationToObjective(int iter, double objective) {
@@ -36,6 +40,14 @@ public class SearchHistory {
 
     public static Map<Heuristic, Map<Integer, Double>> getHeuristicToIterationToWeight() {
         return heuristicToIterationToWeight;
+    }
+
+    public static Map<Heuristic, Integer> getHeuristicToSelections() {
+        Map<Heuristic, Integer> heuristicToSelections = new HashMap<>();
+        for (Heuristic heuristic : heuristicsUsedInSearch) {
+            heuristicToSelections.put(heuristic, heuristic.getSelections());
+        }
+        return heuristicToSelections;
     }
 
     public static void setIterationBestSolutionFound(int iter) {
@@ -68,5 +80,13 @@ public class SearchHistory {
 
     public static int getNbrIterations() {
         return nbrIterations;
+    }
+
+    public static void incrementLocalSearchRuns() {
+        nbrLocalSearchRuns++;
+    }
+
+    public static int getNbrLocalSearchRuns() {
+        return nbrLocalSearchRuns;
     }
 }

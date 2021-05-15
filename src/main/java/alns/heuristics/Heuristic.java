@@ -39,6 +39,10 @@ public abstract class Heuristic {
         this.selections++;
     }
 
+    public int getSelections() {
+        return this.selections;
+    }
+
     public String getName() {
         return name;
     }

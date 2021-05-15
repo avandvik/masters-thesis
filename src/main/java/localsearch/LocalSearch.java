@@ -4,6 +4,7 @@ import alns.Evaluator;
 import alns.Solution;
 import data.Messages;
 import data.Parameters;
+import data.SearchHistory;
 import utils.Helpers;
 
 public class LocalSearch {
@@ -16,6 +17,7 @@ public class LocalSearch {
         newSolution = interVoyageImprovement(newSolution);
         newSolution = schedulePostponeImprovement(newSolution);
         if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
+        SearchHistory.incrementLocalSearchRuns();
         return newSolution;
     }
 

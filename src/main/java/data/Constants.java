@@ -83,9 +83,11 @@ public class Constants {
     public static final String END_TIME_KEY = "end_time";
     public static final String ITER_TO_OBJ_KEY = "iteration_to_objective";
     public static final String HEURISTIC_TO_ITER_TO_WEIGHT_KEY = "heuristic_to_iteration_to_weight";
+    public static final String HEURISTIC_TO_SELECTIONS_KEY = "heuristic_to_selections";
     public static final String ITER_BEST_FOUND_KEY = "best_sol_found_in_iteration";
     public static final String RUNTIME_KEY = "runtime";
     public static final String NBR_ITERATIONS_KEY = "number_of_iterations";
+    public static final String NBR_LOCAL_SEARCH_RUNS_KEY = "number_of_local_search_runs";
     public static final String PARAMETERS_KEY = "parameters";
     public static final String NOISE_CONTROL_KEY = "noise_control";
     public static final String NEW_GLOBAL_SCORE_KEY = "new_global_score";
