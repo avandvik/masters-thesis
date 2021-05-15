@@ -49,7 +49,9 @@ public abstract class Heuristic {
     }
 
     private void smoothenWeights() {
-        this.weight = (1 - Parameters.reaction) * this.weight + Parameters.reaction * (this.score / this.selections);
+        if (this.selections == 0) return;
+        double nWeight = (1 - Parameters.reaction) * this.weight + Parameters.reaction * (this.score / this.selections);
+        this.weight = Math.max(nWeight, Parameters.initialWeight);
     }
 
     static int getNbrOrdersToRemove(Solution solution) {

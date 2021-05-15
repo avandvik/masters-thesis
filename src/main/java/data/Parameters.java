@@ -23,7 +23,6 @@ public class Parameters {
     private static final double probAcceptCandidateXPercentWorse = 0.5;
 
     // Removal parameters
-    public static int nbrOrdersRemove = 3;  // TODO: Implement as percentage
     public static int minOrdersRemove = 2;
     public static double percentageOrdersRemove = 0.2;
     public static int regretParameter = 4;
@@ -41,7 +40,7 @@ public class Parameters {
     public static int totalIter = 50;
     public static int maxIterSolution = 20;
     public static int setPartIter = 500;
-    public static int segmentIter = 50;
+    public static int segmentIter = 5;
     public static int searchHistoryIter = 10;
 
     // Cache and order sequence pool size
@@ -74,7 +73,7 @@ public class Parameters {
         cacheSize = 200000;
         poolSize = 30000;
         parallelHeuristics = true;
-        totalIter = 5000;
+        totalIter = 10000;
         verbose = false;
         semiVerbose = true;
         saveSolution = true;

@@ -100,13 +100,15 @@ public class Main {
 
     private static List<Heuristic> chooseHeuristics() {
         Heuristic chosenDestroyer = rouletteWheelSelection(destroyHeuristics);
+        System.out.println(chosenDestroyer);
         Heuristic chosenRepairer = rouletteWheelSelection(repairHeuristics);
+        System.out.println(chosenRepairer);
+        System.out.println();
         chosenDestroyer.incrementSelections();
         chosenRepairer.incrementSelections();
         return new ArrayList<>(Arrays.asList(chosenDestroyer, chosenRepairer));
     }
 
-    // TODO: Must be verified when there are more heuristics to choose from
     private static Heuristic rouletteWheelSelection(List<Heuristic> heuristics) {
         double weights = heuristics.stream().mapToDouble(Heuristic::getWeight).sum();
         List<Double> probabilities = heuristics.stream().map(o -> o.getWeight() / weights).collect(Collectors.toList());
@@ -135,18 +137,7 @@ public class Main {
         Solution partialSolution = destroyer.destroy(solution);
         Repairer repairer = (Repairer) heuristics.get(1);
         Solution candidateSolution = repairer.repair(partialSolution);
-        if (!Evaluator.isSolutionFeasible(candidateSolution)) {
-            /*
-            System.out.println(candidateSolution);
-            System.out.println("Load: " + Evaluator.isFeasibleLoad(candidateSolution.getOrderSequences()));
-            System.out.println("Duration: " + Evaluator.isFeasibleDuration(candidateSolution.getOrderSequences()));
-            System.out.println("Visits: " + Evaluator.isFeasibleVisits(candidateSolution.getOrderSequences()));
-            System.out.println("Completeness: " + Evaluator.isSolutionComplete(candidateSolution));
-            System.out.println("Each order occurs once: " + Evaluator.eachOrderOccursOnce(candidateSolution));
-            System.out.println("Heuristics used: " + heuristics);
-             */
-            throw new IllegalStateException(Messages.solInfeasible);
-        }
+        if (!Evaluator.isSolutionFeasible(candidateSolution)) throw new IllegalStateException(Messages.solInfeasible);
         return candidateSolution;
     }
 
