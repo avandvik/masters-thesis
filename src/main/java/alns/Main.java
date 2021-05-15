@@ -103,10 +103,7 @@ public class Main {
 
     private static List<Heuristic> chooseHeuristics() {
         Heuristic chosenDestroyer = rouletteWheelSelection(destroyHeuristics);
-        System.out.println(chosenDestroyer);
         Heuristic chosenRepairer = rouletteWheelSelection(repairHeuristics);
-        System.out.println(chosenRepairer);
-        System.out.println();
         chosenDestroyer.incrementSelections();
         chosenRepairer.incrementSelections();
         return new ArrayList<>(Arrays.asList(chosenDestroyer, chosenRepairer));
