@@ -88,6 +88,8 @@ public class Constants {
     public static final String RUNTIME_KEY = "runtime";
     public static final String NBR_ITERATIONS_KEY = "number_of_iterations";
     public static final String NBR_LOCAL_SEARCH_RUNS_KEY = "number_of_local_search_runs";
+    public static final String AVG_LOCAL_SEARCH_IMPROVEMENT_KEY = "avg_improvement_local_search";
+    public static final String NBR_IMPROVEMENTS_SET_PART_KEY = "number_of_improvements_by_set_partitioning";
     public static final String PARAMETERS_KEY = "parameters";
     public static final String NOISE_CONTROL_KEY = "noise_control";
     public static final String NEW_GLOBAL_SCORE_KEY = "new_global_score";

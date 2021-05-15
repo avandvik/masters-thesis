@@ -71,6 +71,8 @@ public class IO {
         obj.put(Constants.RUNTIME_KEY, SearchHistory.getRuntime());
         obj.put(Constants.NBR_ITERATIONS_KEY, SearchHistory.getNbrIterations());
         obj.put(Constants.NBR_LOCAL_SEARCH_RUNS_KEY, SearchHistory.getNbrLocalSearchRuns());
+        obj.put(Constants.AVG_LOCAL_SEARCH_IMPROVEMENT_KEY, SearchHistory.getAvgLocalSearchImprovement());
+        obj.put(Constants.NBR_IMPROVEMENTS_SET_PART_KEY, SearchHistory.getNbrImprovementsBySetPartitioning());
 
         JSONObject parametersObj = new JSONObject();
         parametersObj.put(Constants.NOISE_CONTROL_KEY, Parameters.noiseRate);

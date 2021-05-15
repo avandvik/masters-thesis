@@ -17,6 +17,8 @@ public class SearchHistory {
     private static double runtime;
     private static int nbrIterations;
     private static int nbrLocalSearchRuns;
+    private static double accLocalSearchImprovement;
+    private static int nbrImprovementsBySetPartitioning;
 
     public static void initialize(List<Heuristic> heuristics) {
         iterationToObjective = new HashMap<>();
@@ -24,6 +26,7 @@ public class SearchHistory {
         heuristicsUsedInSearch = heuristics;
         for (Heuristic heuristic : heuristicsUsedInSearch) heuristicToIterationToWeight.put(heuristic, new HashMap<>());
         nbrLocalSearchRuns = 0;
+        nbrImprovementsBySetPartitioning = 0;
     }
 
     public static void setIterationToObjective(int iter, double objective) {
@@ -88,5 +91,24 @@ public class SearchHistory {
 
     public static int getNbrLocalSearchRuns() {
         return nbrLocalSearchRuns;
+    }
+
+    public static void addToAccLocalSearchImprovement(Solution candidate, Solution best) {
+        double candidateObj = candidate.getObjective(false);
+        double bestObj = best.getObjective(false);
+        double improvement = (bestObj - candidateObj) / bestObj;
+        accLocalSearchImprovement += improvement;
+    }
+
+    public static double getAvgLocalSearchImprovement() {
+        return accLocalSearchImprovement / nbrLocalSearchRuns;
+    }
+
+    public static void incrementNbrImprovementsBySetPartitioning() {
+        nbrImprovementsBySetPartitioning++;
+    }
+
+    public static int getNbrImprovementsBySetPartitioning() {
+        return nbrImprovementsBySetPartitioning;
     }
 }

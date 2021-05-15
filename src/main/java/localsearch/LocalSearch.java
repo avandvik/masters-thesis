@@ -10,15 +10,22 @@ import utils.Helpers;
 public class LocalSearch {
 
     public static Solution localSearch(Solution candidateSolution, Solution bestSolution) {
-        double objDeviation = candidateSolution.getObjective(false) / bestSolution.getObjective(false);
-        if (objDeviation > Parameters.lsThresh) return candidateSolution;
+        if (notWorthRunningLS(candidateSolution, bestSolution)) return candidateSolution;
         Solution newSolution = Helpers.deepCopySolution(candidateSolution);
         newSolution = intraVoyageImprovement(newSolution);
         newSolution = interVoyageImprovement(newSolution);
         newSolution = schedulePostponeImprovement(newSolution);
         if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         SearchHistory.incrementLocalSearchRuns();
+        SearchHistory.addToAccLocalSearchImprovement(candidateSolution, bestSolution);
         return newSolution;
+    }
+
+    private static boolean notWorthRunningLS(Solution candidateSolution, Solution bestSolution) {
+        double candidateObj = candidateSolution.getObjective(false);
+        double bestObj = bestSolution.getObjective(false);
+        double gapToBest = (candidateObj - bestObj) / bestObj;
+        return gapToBest > Parameters.lsThresh;
     }
 
     private static Solution intraVoyageImprovement(Solution solution) {

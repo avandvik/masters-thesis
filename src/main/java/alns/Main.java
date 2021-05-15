@@ -43,7 +43,10 @@ public class Main {
             double reward = acceptSolution(candidateSolution, iter);
             if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
-            if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime) break;
+            if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime) {
+                SearchHistory.setNbrIterations(iter);
+                break;
+            }
         }
     }
 
@@ -203,6 +206,9 @@ public class Main {
         } catch (NullPointerException e) {
             System.out.println(Messages.errorInSetPartitioning);
             return;
+        }
+        if (candidateSolution.getObjective(false) < bestSolution.getObjective(false)) {
+            SearchHistory.incrementNbrImprovementsBySetPartitioning();
         }
         acceptSolution(candidateSolution, iter);  // Reward is ignored
     }
