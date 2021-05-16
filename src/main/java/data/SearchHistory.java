@@ -65,6 +65,14 @@ public class SearchHistory {
         return bestSolution.getObjective(false);
     }
 
+    public static double getBestFuelCosts() {
+        return bestSolution.getFuelCosts();
+    }
+
+    public static double getBestPenaltyCosts() {
+        return bestSolution.getPenaltyCosts();
+    }
+
     public static int getIterationBestSolutionFound() {
         return iterationBestSolutionFound;
     }
@@ -93,10 +101,10 @@ public class SearchHistory {
         return nbrLocalSearchRuns;
     }
 
-    public static void addToAccLocalSearchImprovement(Solution candidate, Solution best) {
-        double candidateObj = candidate.getObjective(false);
-        double bestObj = best.getObjective(false);
-        double improvement = (bestObj - candidateObj) / bestObj;
+    public static void addToAccLocalSearchImprovement(Solution newSolution, Solution candidateSolution) {
+        double newObj = newSolution.getObjective(false);
+        double candidateObj = candidateSolution.getObjective(false);
+        double improvement = (candidateObj - newObj) / candidateObj;
         accLocalSearchImprovement += improvement;
     }
 

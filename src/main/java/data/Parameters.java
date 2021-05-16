@@ -34,7 +34,7 @@ public class Parameters {
     public static int kMeansAttempts = 10;
 
     // Local search
-    public static double lsThresh = 0.2;
+    public static double lsThresh = 0.2;  // TODO: Set according to run
 
     // Iterations
     public static int totalIter = 50;

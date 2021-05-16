@@ -64,6 +64,8 @@ public class IO {
         JSONObject obj = new JSONObject();
         obj.put(Constants.INSTANCE_NAME_KEY, Constants.FILE_NAME);
         obj.put(Constants.OBJECTIVE_VALUE_KEY, SearchHistory.getBestObjective());
+        obj.put(Constants.FUEL_COSTS_KEY, SearchHistory.getBestFuelCosts());
+        obj.put(Constants.PENALTY_COSTS_KEY, SearchHistory.getBestPenaltyCosts());
         obj.put(Constants.ITER_TO_OBJ_KEY, SearchHistory.getIterationToObjective());
         obj.put(Constants.HEURISTIC_TO_ITER_TO_WEIGHT_KEY, SearchHistory.getHeuristicToIterationToWeight());
         obj.put(Constants.HEURISTIC_TO_SELECTIONS_KEY, SearchHistory.getHeuristicToSelections());

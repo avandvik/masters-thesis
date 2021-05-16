@@ -75,6 +75,8 @@ public class Constants {
 
     public static final String INSTANCE_NAME_KEY = "instance";
     public static final String OBJECTIVE_VALUE_KEY = "best_objective";
+    public static final String FUEL_COSTS_KEY = "best_objective_fuel_costs";
+    public static final String PENALTY_COSTS_KEY = "best_objective_penalty_costs";
     public static final String VOYAGES_KEY = "voyages";
     public static final String SEQUENCE_KEY = "sequence";
     public static final String TIME_POINTS_KEY = "time_points";
