@@ -1,5 +1,7 @@
 sims=-g
 export sims
+jar=-g
+export jar
 
 test:
 	mvn clean test -P local-simple
@@ -14,10 +16,10 @@ coverage-report:
 	mvn clean test -P local-coverage
 
 upload:
-	./shell/upload.sh
+	./shell/upload.sh $(jar)
 
 run:
-	./run.sh $(sims)
+	./run.sh $(sims) $(jar)
 
 get-results:
 	scp -r anderhva@solstorm-login.iot.ntnu.no:/storage/users/anderhva/* /Users/andersvandvik/Repositories/masters-thesis/output/solstorm/

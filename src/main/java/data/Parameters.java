@@ -23,18 +23,18 @@ public class Parameters {
     private static final double probAcceptCandidateXPercentWorse = 0.5;
 
     // Removal parameters
-    public static int minOrdersRemove = 2;
+    public static int minOrdersRemove = 2;  // No tuning
     public static double minPercentage = 0.05;  // Initial 0.05
-    public static double maxPercentage = 0.30;  // Initial 0.30
-    public static int regretParameter = 4;
+    public static double maxPercentage = 0.15;  // Initial 0.30
+    public static int regretParameter = 3;  // No tuning
     public static double p = 5;  // Initial 5
 
     // K-means
-    public static int k = 2;
-    public static int kMeansAttempts = 10;
+    public static int k = 2;  // No tuning
+    public static int kMeansAttempts = 10;  // No tuning
 
     // Local search
-    public static double lsThresh = 0.2;
+    public static double lsThresh = 0.2;  // No tuning
 
     // Iterations
     public static int totalIter = 100;

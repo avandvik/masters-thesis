@@ -9,6 +9,8 @@ scp -q shell/run.sh anderhva@solstorm-login.iot.ntnu.no:/home/anderhva/masters-t
 scp -q Makefile anderhva@solstorm-login.iot.ntnu.no:/home/anderhva/masters-thesis/
 
 # Make and upload jar
+jar="$1"
+export jar
 cd ~/Repositories/masters-thesis || exit
 mvn clean package -P local-complete
-scp -q target/masters-thesis.jar anderhva@solstorm-login.iot.ntnu.no:/home/anderhva/masters-thesis
+scp -q target/"$jar" anderhva@solstorm-login.iot.ntnu.no:/home/anderhva/masters-thesis
