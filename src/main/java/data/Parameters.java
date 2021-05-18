@@ -3,17 +3,17 @@ package data;
 public class Parameters {
 
     // Noise in objective
-    public static double noiseRate = 0.5;
+    public static double noiseRate = 0.25;  // Initial 0.25
     public static double maxNoise = Problem.findMaxDistance() * noiseRate;
 
     // Rewards for heuristics
-    public static double newGlobalBest = 33.0;
-    public static double newLocalImprovement = 9.0;
-    public static double newLocal = 9.0;
+    public static double newGlobalBest = 33.0;  // Initial 33.0
+    public static double newLocalImprovement = 9.0;  // Initial 9.0
+    public static double newLocal = 13.0;  // Initial 13.0
 
     // Weights for heuristics
-    public static double initialWeight = 0.2;
-    public static double reaction = 0.2;
+    public static double initialWeight = 0.2;  // Initial 0.2
+    public static double reaction = 0.1;  // Initial 0.1
 
     // Simulated annealing
     public static double startTemperature;
@@ -24,19 +24,17 @@ public class Parameters {
 
     // Removal parameters
     public static int minOrdersRemove = 2;
-    public static double percentageOrdersRemove = 0.2;
-    public static double minPercentage = 0.2;
-    public static double maxPercentage = 0.5;
+    public static double minPercentage = 0.05;  // Initial 0.05
+    public static double maxPercentage = 0.30;  // Initial 0.30
     public static int regretParameter = 4;
-    public static double rnRelated = 10;
-    public static double rnWorst = 10;
+    public static double p = 5;  // Initial 5
 
     // K-means
     public static int k = 2;
     public static int kMeansAttempts = 10;
 
     // Local search
-    public static double lsThresh = 0.3;  // TODO: Set according to run
+    public static double lsThresh = 0.2;
 
     // Iterations
     public static int totalIter = 100;

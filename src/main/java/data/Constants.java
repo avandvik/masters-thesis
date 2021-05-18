@@ -104,8 +104,7 @@ public class Constants {
     public static final String REMOVAL_UPPER_PERCENTAGE_KEY = "removal_upper_percentage";
     public static final String REMOVAL_LOWER_PERCENTAGE_KEY = "removal_lower_percentage";
     public static final String REGRET_KEY = "regret_k";
-    public static final String DETERMINISM_RELATED_KEY = "determinism_related";
-    public static final String DETERMINISM_WORST_KEY = "determinism_worst";
+    public static final String DETERMINISM_KEY = "determinism";
     public static final String LOCAL_SEARCH_CONDITION_KEY = "local_search_condition";
     public static final String LOWER_WEIGHT_THRESHOLD_KEY = "lower_weight_threshold";
     public static final String PREDETERMINED_ITERATIONS_KEY = "predetermined_iterations";

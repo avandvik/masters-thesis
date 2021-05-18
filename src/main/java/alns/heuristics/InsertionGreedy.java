@@ -67,6 +67,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
             for (Map.Entry<List<Integer>, Double> entry : insertionToObj.entrySet()) {
                 List<Integer> insertion = entry.getKey();
                 double obj = entry.getValue();
+                obj += Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise);
                 double increase = obj - SubProblem.vesselToObjective.get(insertion.get(0));
                 if (increase < this.leastIncrease) {
                     if (instHasMandUnplacedOrder(order, ordersToPlace)) continue outer;
@@ -91,7 +92,9 @@ public class InsertionGreedy extends Heuristic implements Repairer {
                 for (int insertionIdx : insertions.get(vesselIdx)) {
                     List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
                     orderSequenceCopy.add(insertionIdx, order);
-                    double increase = Objective.runSP(orderSequenceCopy, vesselIdx) - currentObjective;
+                    double obj = Objective.runSP(orderSequenceCopy, vesselIdx);
+                    obj += Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise);
+                    double increase = obj - currentObjective;
                     if (increase < this.leastIncrease) {
                         if (instHasMandUnplacedOrder(order, ordersToPlace)) continue outer;
                         this.leastIncrease = increase;

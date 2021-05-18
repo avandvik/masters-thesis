@@ -72,7 +72,7 @@ public class RemovalRelated extends Heuristic implements Destroyer {
     private List<Order> findRelatedOrdersToRemove() {
         List<Map.Entry<Order, Double>> ordersRelatedness = new ArrayList<>(this.orderToRelatedness.entrySet());
         ordersRelatedness.sort(Comparator.comparing(Map.Entry<Order, Double>::getValue));
-        int removeIdx = (int) (Math.pow(Problem.random.nextDouble(), Parameters.rnRelated) * ordersRelatedness.size());
+        int removeIdx = (int) (Math.pow(Problem.random.nextDouble(), Parameters.p) * ordersRelatedness.size());
         Order relatedOrder = ordersRelatedness.get(removeIdx).getKey();
         return getOrdersToRemove(relatedOrder);
     }

@@ -34,7 +34,7 @@ public class RemovalRelatedTest {
     }
 
     private void testNoRandomness(RemovalRelated removalRelated, Solution solution) {
-        Parameters.rnRelated = 100;
+        Parameters.p = 100;
         Parameters.minPercentage = 0.5;
         Parameters.maxPercentage = 0.5;
         Solution partialSolution = removalRelated.destroy(solution);
@@ -42,7 +42,7 @@ public class RemovalRelatedTest {
     }
 
     private void testRandomness(RemovalRelated removalRelated, Solution solution) {
-        Parameters.rnRelated = 1;
+        Parameters.p = 1;
         Parameters.minPercentage = 0.5;
         Parameters.maxPercentage = 0.5;
         Solution partialSolution = removalRelated.destroy(solution);

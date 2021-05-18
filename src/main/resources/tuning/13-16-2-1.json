@@ -1,0 +1,116 @@
+{
+  "available_vessels": {
+    "PSV_1": {
+      "return_time": 80
+    },
+    "PSV_2": {
+      "return_time": 80
+    },
+    "SPOT": {
+      "return_time": 80
+    }
+  },
+  "discretization_parameter": 4.0,
+  "installation_ordering": "random",
+  "orders": {
+    "0": {
+      "installation": 24,
+      "mandatory": "True",
+      "size": 83.0,
+      "transport": "delivery"
+    },
+    "1": {
+      "installation": 5,
+      "mandatory": "True",
+      "size": 140.0,
+      "transport": "delivery"
+    },
+    "2": {
+      "installation": 26,
+      "mandatory": "True",
+      "size": 194.0,
+      "transport": "delivery"
+    },
+    "3": {
+      "installation": 20,
+      "mandatory": "True",
+      "size": 187.0,
+      "transport": "delivery"
+    },
+    "4": {
+      "installation": 2,
+      "mandatory": "True",
+      "size": 181.0,
+      "transport": "delivery"
+    },
+    "5": {
+      "installation": 15,
+      "mandatory": "True",
+      "size": 222.0,
+      "transport": "delivery"
+    },
+    "6": {
+      "installation": 4,
+      "mandatory": "True",
+      "size": 122.0,
+      "transport": "delivery"
+    },
+    "7": {
+      "installation": 7,
+      "mandatory": "True",
+      "size": 254.0,
+      "transport": "delivery"
+    },
+    "8": {
+      "installation": 11,
+      "mandatory": "True",
+      "size": 99.0,
+      "transport": "delivery"
+    },
+    "9": {
+      "installation": 13,
+      "mandatory": "False",
+      "size": 78.0,
+      "transport": "delivery"
+    },
+    "10": {
+      "installation": 25,
+      "mandatory": "False",
+      "size": 81.0,
+      "transport": "delivery"
+    },
+    "11": {
+      "installation": 6,
+      "mandatory": "False",
+      "size": 72.0,
+      "transport": "delivery"
+    },
+    "12": {
+      "installation": 10,
+      "mandatory": "False",
+      "size": 32.0,
+      "transport": "delivery"
+    },
+    "13": {
+      "installation": 10,
+      "mandatory": "False",
+      "size": 114.0,
+      "transport": "pickup"
+    },
+    "14": {
+      "installation": 26,
+      "mandatory": "False",
+      "size": 222.0,
+      "transport": "pickup"
+    },
+    "15": {
+      "installation": 4,
+      "mandatory": "False",
+      "size": 266.0,
+      "transport": "pickup"
+    }
+  },
+  "planning_period_hours": 80.0,
+  "random_seed": 1003,
+  "weather_scenario": "perfect"
+}

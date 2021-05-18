@@ -35,7 +35,7 @@ public class RemovalWorstTest {
     private void testRemovalsWithRandomness(RemovalWorst removalWorst, Solution solution) {
         Parameters.maxPercentage = 0.5;
         Parameters.minPercentage = 0.5;
-        Parameters.rnWorst = 1;
+        Parameters.p = 1;
         Parameters.parallelHeuristics = false;
         Solution seqSolution = removalWorst.destroy(solution);
         assertEquals(createExpectedSolutionRandomness(), seqSolution);
@@ -50,7 +50,7 @@ public class RemovalWorstTest {
     }
 
     private void testRemovalsAsExpectedHighPenalty(RemovalWorst removalWorst, Solution solution) {
-        Parameters.rnWorst = 100;
+        Parameters.p = 100;
         Parameters.maxPercentage = 0.5;
         Parameters.minPercentage = 0.5;
         Solution expectedSolution = createExpectedSolutionHighPenalty();
@@ -63,7 +63,7 @@ public class RemovalWorstTest {
     }
 
     private void testRemovalsAsExpectedLowPenalty(RemovalWorst removalWorst, Solution solution) {
-        Parameters.rnWorst = 100;
+        Parameters.p = 100;
         Parameters.maxPercentage = 0.5;
         Parameters.minPercentage = 0.5;
         Solution expectedSolution = createExpectedSolutionLowPenalty();
