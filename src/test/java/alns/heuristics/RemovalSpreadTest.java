@@ -23,7 +23,8 @@ public class RemovalSpreadTest {
         Cache.initialize();
         RemovalSpread removalSpread = new RemovalSpread(Constants.REMOVAL_SPREAD_NAME);
         Parameters.parallelHeuristics = false;
-        Parameters.percentageOrdersRemove = 0.5;
+        Parameters.maxPercentage = 0.5;
+        Parameters.minPercentage = 0.5;
         assertEquals(createExpectedSolution(), removalSpread.destroy(createInitialSolution()));
     }
 

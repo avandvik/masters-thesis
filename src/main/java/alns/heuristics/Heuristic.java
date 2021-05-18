@@ -59,7 +59,9 @@ public abstract class Heuristic {
         for (List<Order> orderSequence : solution.getOrderSequences()) {
             nbrScheduledOrders += orderSequence.size();
         }
-        int nbrOrdersToRemove = (int) Math.ceil((nbrScheduledOrders * Parameters.percentageOrdersRemove));
+        double span = Parameters.maxPercentage - Parameters.minPercentage;
+        double percentage = Parameters.minPercentage + span * Problem.random.nextDouble();
+        int nbrOrdersToRemove = (int) Math.ceil(nbrScheduledOrders * percentage);
         return Math.max(Parameters.minOrdersRemove, nbrOrdersToRemove);
     }
 

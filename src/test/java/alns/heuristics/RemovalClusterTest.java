@@ -23,7 +23,8 @@ public class RemovalClusterTest {
         Cache.initialize();
         RemovalCluster removalCluster = new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME);
         Parameters.parallelHeuristics = false;
-        Parameters.percentageOrdersRemove = 0.5;
+        Parameters.minPercentage = 0.5;
+        Parameters.maxPercentage = 0.5;
         assertEquals(createExpectedSolution(), removalCluster.destroy(createInitialSolution()));
     }
 
@@ -34,7 +35,8 @@ public class RemovalClusterTest {
         Cache.initialize();
         RemovalCluster removalCluster = new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME);
         Parameters.parallelHeuristics = false;
-        Parameters.percentageOrdersRemove = 0.5;
+        Parameters.minPercentage = 0.5;
+        Parameters.maxPercentage = 0.5;
         assertEquals(createClusteredExpectedSolution(), removalCluster.destroy(createClusteredInitialSolution()));
     }
 
@@ -54,24 +56,24 @@ public class RemovalClusterTest {
     private Solution createExpectedSolution() {
         List<List<Order>> orderSequences = new ArrayList<>();
         orderSequences.add(new LinkedList<>());
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(2), Problem.getOrder(3),
-                Problem.getOrder(4), Problem.getOrder(5))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4),
+                Problem.getOrder(6), Problem.getOrder(7))));
         orderSequences.add(new LinkedList<>());
         Set<Order> postponedOrders = new HashSet<>();
-        Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(1),
-                Problem.getOrder(7), Problem.getOrder(6)));
+        Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(1), Problem.getOrder(5),
+                Problem.getOrder(2), Problem.getOrder(0)));
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
 
     private Solution createClusteredExpectedSolution() {
         List<List<Order>> orderSequences = new ArrayList<>();
         Set<Order> postponedOrders = new HashSet<>();
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(1),
-                Problem.getOrder(2))));
-        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(8), Problem.getOrder(9))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4),
+                Problem.getOrder(5))));
+        orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(6), Problem.getOrder(7))));
         orderSequences.add(new LinkedList<>());
-        Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(7), Problem.getOrder(3),
-                Problem.getOrder(6), Problem.getOrder(4), Problem.getOrder(5)));
+        Set<Order> unplacedOrders = new HashSet<>(Arrays.asList(Problem.getOrder(9), Problem.getOrder(8),
+                Problem.getOrder(1), Problem.getOrder(2), Problem.getOrder(0)));
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
 }
