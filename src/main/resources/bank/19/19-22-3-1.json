@@ -77,7 +77,7 @@
       "transport": "delivery"
     },
     "10": {
-      "installation": 22,
+      "installation": 19,
       "mandatory": "False",
       "size": 43.0,
       "transport": "delivery"
@@ -107,7 +107,7 @@
       "transport": "delivery"
     },
     "15": {
-      "installation": 23,
+      "installation": 19,
       "mandatory": "False",
       "size": 140.0,
       "transport": "pickup"

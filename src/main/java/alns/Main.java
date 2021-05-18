@@ -82,6 +82,7 @@ public class Main {
     private static void initializeSolutionFields() {
         currentSolution = Construction.constructGreedyInitialSolution();
         bestSolution = currentSolution;
+        SearchHistory.setBestSolutionFound(currentSolution);
         visitedSolutions = new ArrayList<>();
         visitedSolutions.add(currentSolution.hashCode());
         iterationsCurrentSolution = 0;
@@ -333,7 +334,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Constants.FILE_NAME = "27-37-5-1.json";  // If running locally (will be overwritten on Solstorm)
+        Constants.FILE_NAME = "7-8-1-1.json";  // If running locally (will be overwritten on Solstorm)
         if (args.length > 0) Constants.setSolstormConstants(args[0], args[1]);
         Main.run();
     }

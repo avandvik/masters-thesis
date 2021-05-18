@@ -98,19 +98,19 @@
       "transport": "delivery"
     },
     "13": {
-      "installation": 26,
+      "installation": 23,
       "mandatory": "False",
       "size": 83.0,
       "transport": "delivery"
     },
     "14": {
-      "installation": 13,
+      "installation": 12,
       "mandatory": "False",
       "size": 104.0,
       "transport": "delivery"
     },
     "15": {
-      "installation": 1,
+      "installation": 2,
       "mandatory": "False",
       "size": 96.0,
       "transport": "delivery"
@@ -128,7 +128,7 @@
       "transport": "delivery"
     },
     "18": {
-      "installation": 21,
+      "installation": 23,
       "mandatory": "False",
       "size": 201.0,
       "transport": "pickup"

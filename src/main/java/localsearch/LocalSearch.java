@@ -17,7 +17,7 @@ public class LocalSearch {
         newSolution = schedulePostponeImprovement(newSolution);
         if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
         SearchHistory.incrementLocalSearchRuns();
-        SearchHistory.addToAccLocalSearchImprovement(newSolution, candidateSolution);
+        SearchHistory.updateLocalSearchImprovementData(newSolution, candidateSolution);
         return newSolution;
     }
 

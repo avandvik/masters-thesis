@@ -34,10 +34,10 @@ public class Parameters {
     public static int kMeansAttempts = 10;
 
     // Local search
-    public static double lsThresh = 0.2;  // TODO: Set according to run
+    public static double lsThresh = 0.3;  // TODO: Set according to run
 
     // Iterations
-    public static int totalIter = 50;
+    public static int totalIter = 100;
     public static int maxIterSolution = 20;
     public static int setPartIter = 500;
     public static int segmentIter = 50;
@@ -52,7 +52,7 @@ public class Parameters {
     public static boolean setPartitioning = true;
     public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
-    public static boolean verbose = false;
+    public static boolean verbose = true;
     public static boolean semiVerbose = true;
     public static boolean saveSolution = true;
     public static boolean saveHistory = true;
@@ -73,7 +73,7 @@ public class Parameters {
         cacheSize = 200000;
         poolSize = 30000;
         parallelHeuristics = true;
-        totalIter = 10000;
+        totalIter = 5000;
         verbose = false;
         semiVerbose = true;
         saveSolution = true;

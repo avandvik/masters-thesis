@@ -31,7 +31,7 @@
     "1": {
       "installation": 18,
       "mandatory": "True",
-      "size": 324.0,
+      "size": 228.0,
       "transport": "delivery"
     },
     "2": {
@@ -113,7 +113,7 @@
       "transport": "delivery"
     },
     "15": {
-      "installation": 24,
+      "installation": 18,
       "mandatory": "False",
       "size": 117.0,
       "transport": "delivery"
@@ -137,7 +137,7 @@
       "transport": "delivery"
     },
     "19": {
-      "installation": 14,
+      "installation": 3,
       "mandatory": "False",
       "size": 87.0,
       "transport": "delivery"
@@ -149,13 +149,13 @@
       "transport": "delivery"
     },
     "21": {
-      "installation": 20,
+      "installation": 26,
       "mandatory": "False",
       "size": 66.0,
       "transport": "delivery"
     },
     "22": {
-      "installation": 12,
+      "installation": 26,
       "mandatory": "False",
       "size": 163.0,
       "transport": "pickup"
