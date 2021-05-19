@@ -23,7 +23,7 @@ do
   do
     file_name="$(basename -- "$file_path")"
     echo "Running $file_name ($i/$nbr_sims)"
-    java -Xmx384g -jar "$jar" "$current_time" "$file_name"
+    java -Xmx330g -jar "$jar" "$current_time" "$file_name"
     echo "Sleeping for $cool_down seconds to cool down..."
     sleep "$cool_down"
   done
