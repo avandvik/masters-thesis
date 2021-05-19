@@ -1,10 +1,12 @@
 package alns.heuristics;
 
+import alns.Objective;
 import alns.Solution;
 import data.Parameters;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
+import utils.Helpers;
 
 import java.util.*;
 
@@ -76,6 +78,14 @@ public abstract class Heuristic {
             return mandOrder != null && unplacedOrders.contains(mandOrder);
         }
         return false;
+    }
+
+    static double calculateIncrease(List<Order> orderSequence, Order order, int vIdx, int iIdx, double currentObj) {
+        List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
+        orderSequenceCopy.add(iIdx, order);
+        double obj = Objective.runSP(orderSequenceCopy, vIdx);
+        obj += Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise);
+        return obj - currentObj;
     }
 
     @Override
