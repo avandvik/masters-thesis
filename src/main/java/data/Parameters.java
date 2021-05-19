@@ -54,6 +54,7 @@ public class Parameters {
     public static boolean cacheSP = true;
     public static boolean verbose = true;
     public static boolean semiVerbose = true;
+    public static boolean printSolution = true;
     public static boolean saveSolution = true;
     public static boolean saveHistory = true;
 

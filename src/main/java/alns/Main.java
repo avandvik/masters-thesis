@@ -306,7 +306,7 @@ public class Main {
             System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
         }
-        if (Parameters.verbose) {
+        if (Parameters.printSolution) {
             System.out.println("Postponed orders: " + Main.getBestSolution().getAllPostponed());
             Main.getBestSolution().printSchedules();
         }
@@ -334,7 +334,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Constants.FILE_NAME = "7-8-1-1.json";  // If running locally (will be overwritten on Solstorm)
+        Constants.FILE_NAME = "9-9-1-1.json";  // If running locally (will be overwritten on Solstorm)
         if (args.length > 0) Constants.setSolstormConstants(args[0], args[1]);
         Main.run();
     }
