@@ -18,13 +18,13 @@ public class ArcGeneratorTest {
     public void testGetSpeeds() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         ArcGenerator.setVessel(0);
-        List<Double> expectedSpeeds = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0));
+        List<Double> expectedSpeeds = new ArrayList<>(Arrays.asList(10.0, 11.0, 12.0, 13.0, 14.0));
         double distance = 30.0;
         int startTime = 145;
         assertEquals(expectedSpeeds, ArcGenerator.getSpeeds(distance, startTime));
         Problem.setUpProblem("criticalWeather.json", true, 10);
         double avgMaxSpeed = ArcGenerator.calculateAverageMaxSpeed(startTime, distance);
-        List<Double> expectedSpeedsTwo = new ArrayList<>(Arrays.asList(7.0, 8.0, 9.0, 10.0, 11.0, avgMaxSpeed));
+        List<Double> expectedSpeedsTwo = new ArrayList<>(Arrays.asList(10.0, 11.0, avgMaxSpeed));
         assertEquals(expectedSpeedsTwo, ArcGenerator.getSpeeds(distance, startTime));
     }
 

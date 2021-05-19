@@ -24,8 +24,8 @@ public class Parameters {
 
     // Removal parameters
     public static int minOrdersRemove = 2;  // No tuning
-    public static double minPercentage = 0.05;  // Initial 0.05
-    public static double maxPercentage = 0.15;  // Initial 0.30
+    public static double minPercentage = 0.30;  // Initial 0.05
+    public static double maxPercentage = 0.50;  // Initial 0.15
     public static int regretParameter = 3;  // No tuning
     public static double p = 5;  // Initial 5
 

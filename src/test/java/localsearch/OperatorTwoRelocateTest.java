@@ -30,8 +30,8 @@ public class OperatorTwoRelocateTest {
         List<List<Order>> orderSequences = new ArrayList<>();
         orderSequences.add(new LinkedList<>(Collections.singletonList(Problem.getOrder(2))));
         orderSequences.add(new LinkedList<>(Arrays.asList(Problem.getOrder(3), Problem.getOrder(4),
-                Problem.getOrder(5), Problem.getOrder(0), Problem.getOrder(1),
-                Problem.getOrder(6), Problem.getOrder(7))));
+                Problem.getOrder(5), Problem.getOrder(6), Problem.getOrder(0),
+                Problem.getOrder(1), Problem.getOrder(7))));
         orderSequences.add(new LinkedList<>());
         Set<Order> postponedOrders = new HashSet<>();
         Set<Order> unplacedOrders = new HashSet<>();
