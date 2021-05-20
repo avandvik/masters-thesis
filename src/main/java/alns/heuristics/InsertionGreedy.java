@@ -67,6 +67,7 @@ public class InsertionGreedy extends Heuristic implements Repairer {
             for (Map.Entry<List<Integer>, Double> entry : insertionToObj.entrySet()) {
                 List<Integer> insertion = entry.getKey();
                 double obj = entry.getValue();
+                obj += Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise);
                 double increase = obj - SubProblem.vesselToObjective.get(insertion.get(0));
                 if (increase < this.leastIncrease) {
                     if (instHasMandUnplacedOrder(order, ordersToPlace)) continue outer;
@@ -85,17 +86,15 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         outer:
         for (Order order : ordersToPlace) {
             Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
-            for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-                List<Order> orderSequence = orderSequences.get(vesselIdx);
-                double currentObjective = Objective.runSP(orderSequence, vesselIdx);
-                for (int insertionIdx : insertions.get(vesselIdx)) {
-                    List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
-                    orderSequenceCopy.add(insertionIdx, order);
-                    double increase = Objective.runSP(orderSequenceCopy, vesselIdx) - currentObjective;
+            for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+                List<Order> orderSequence = orderSequences.get(vIdx);
+                double currentObj = Objective.runSP(orderSequence, vIdx);
+                for (int insertionIdx : insertions.get(vIdx)) {
+                    double increase = calculateIncrease(orderSequence, order, vIdx, insertionIdx, currentObj);
                     if (increase < this.leastIncrease) {
                         if (instHasMandUnplacedOrder(order, ordersToPlace)) continue outer;
                         this.leastIncrease = increase;
-                        this.bestInsertion = new ArrayList<>(Arrays.asList(vesselIdx, insertionIdx));
+                        this.bestInsertion = new ArrayList<>(Arrays.asList(vIdx, insertionIdx));
                         this.bestOrder = order;
                     }
                 }
@@ -123,16 +122,16 @@ public class InsertionGreedy extends Heuristic implements Repairer {
         Solution newSolution = Helpers.deepCopySolution(partialSolution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
         Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = orderSequences.get(vesselIdx);
-            double currentObjective = Objective.runSP(orderSequence, vesselIdx);
-            for (int insertionIdx : insertions.get(vesselIdx)) {
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            List<Order> orderSequence = orderSequences.get(vIdx);
+            double currentObj = Objective.runSP(orderSequence, vIdx);
+            for (int insertionIdx : insertions.get(vIdx)) {
+                double increase = calculateIncrease(orderSequence, order, vIdx, insertionIdx, currentObj);
                 List<Order> newOrderSequence = Helpers.deepCopyList(orderSequence, true);
                 newOrderSequence.add(insertionIdx, order);
-                double increase = Objective.runSP(newOrderSequence, vesselIdx) - currentObjective;
                 if (increase < leastIncrease) {
                     leastIncrease = increase;
-                    bestVesselIdx = vesselIdx;
+                    bestVesselIdx = vIdx;
                     bestOrderSequence = newOrderSequence;
                 }
             }

@@ -15,7 +15,7 @@ public class RemovalSpot extends Heuristic implements Destroyer {
     }
 
     @Override
-    public Solution destroy(Solution solution, int numberOfOrders) {
+    public Solution destroy(Solution solution) {
         return removeSpotVesselOrders(solution);
     }
 

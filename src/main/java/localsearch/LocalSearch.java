@@ -4,30 +4,28 @@ import alns.Evaluator;
 import alns.Solution;
 import data.Messages;
 import data.Parameters;
+import data.SearchHistory;
 import utils.Helpers;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class LocalSearch {
 
-    public static Solution localSearch(Solution solution) {
-        Solution newSolution = Helpers.deepCopySolution(solution);
-        if (Parameters.exhaustiveLocalSearch) {
-            newSolution = intraVoyageImprovement(newSolution);
-            newSolution = interVoyageImprovement(newSolution);
-            newSolution = schedulePostponeImprovement(newSolution);
-        } else if (Parameters.randomLocalSearch) {
-            List<Integer> operatorNumbers = IntStream.rangeClosed(1, 6).boxed().collect(Collectors.toList());
-            Collections.shuffle(operatorNumbers);
-            for (int i = 0; i < Parameters.numberOfOperators; i++) {
-                newSolution = applyOperator(operatorNumbers.get(i), newSolution);
-            }
-        }
+    public static Solution localSearch(Solution candidateSolution, Solution bestSolution) {
+        if (notWorthRunningLS(candidateSolution, bestSolution)) return candidateSolution;
+        Solution newSolution = Helpers.deepCopySolution(candidateSolution);
+        newSolution = intraVoyageImprovement(newSolution);
+        newSolution = interVoyageImprovement(newSolution);
+        newSolution = schedulePostponeImprovement(newSolution);
         if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
+        SearchHistory.incrementLocalSearchRuns();
+        SearchHistory.updateLocalSearchImprovementData(newSolution, candidateSolution);
         return newSolution;
+    }
+
+    private static boolean notWorthRunningLS(Solution candidateSolution, Solution bestSolution) {
+        double candidateObj = candidateSolution.getObjective(false);
+        double bestObj = bestSolution.getObjective(false);
+        double gapToBest = (candidateObj - bestObj) / bestObj;
+        return gapToBest > Parameters.lsThresh;
     }
 
     private static Solution intraVoyageImprovement(Solution solution) {

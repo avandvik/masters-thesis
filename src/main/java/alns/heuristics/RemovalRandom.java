@@ -15,9 +15,10 @@ public class RemovalRandom extends Heuristic implements Destroyer {
     }
 
     @Override
-    public Solution destroy(Solution solution, int numberOfOrders) {
+    public Solution destroy(Solution solution) {
+        int nbrOrders = getNbrOrdersToRemove(solution);
         Solution newSolution = solution;
-        while (newSolution.getUnplacedOrders().size() < numberOfOrders) newSolution = getRandomRemoval(newSolution);
+        while (newSolution.getUnplacedOrders().size() < nbrOrders) newSolution = getRandomRemoval(newSolution);
         // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;

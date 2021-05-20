@@ -75,6 +75,8 @@ public class Constants {
 
     public static final String INSTANCE_NAME_KEY = "instance";
     public static final String OBJECTIVE_VALUE_KEY = "best_objective";
+    public static final String FUEL_COSTS_KEY = "best_objective_fuel_costs";
+    public static final String PENALTY_COSTS_KEY = "best_objective_penalty_costs";
     public static final String VOYAGES_KEY = "voyages";
     public static final String SEQUENCE_KEY = "sequence";
     public static final String TIME_POINTS_KEY = "time_points";
@@ -83,9 +85,14 @@ public class Constants {
     public static final String END_TIME_KEY = "end_time";
     public static final String ITER_TO_OBJ_KEY = "iteration_to_objective";
     public static final String HEURISTIC_TO_ITER_TO_WEIGHT_KEY = "heuristic_to_iteration_to_weight";
+    public static final String HEURISTIC_TO_SELECTIONS_KEY = "heuristic_to_selections";
     public static final String ITER_BEST_FOUND_KEY = "best_sol_found_in_iteration";
     public static final String RUNTIME_KEY = "runtime";
     public static final String NBR_ITERATIONS_KEY = "number_of_iterations";
+    public static final String NBR_LOCAL_SEARCH_RUNS_KEY = "number_of_local_search_runs";
+    public static final String AVG_LOCAL_SEARCH_IMPROVEMENT_KEY = "avg_improvement_local_search";
+    public static final String BEST_LOCAL_SEARCH_IMPROVEMENT_KEY = "best_improvement_local_search";
+    public static final String NBR_IMPROVEMENTS_SET_PART_KEY = "number_of_improvements_by_set_partitioning";
     public static final String PARAMETERS_KEY = "parameters";
     public static final String NOISE_CONTROL_KEY = "noise_control";
     public static final String NEW_GLOBAL_SCORE_KEY = "new_global_score";
@@ -97,8 +104,7 @@ public class Constants {
     public static final String REMOVAL_UPPER_PERCENTAGE_KEY = "removal_upper_percentage";
     public static final String REMOVAL_LOWER_PERCENTAGE_KEY = "removal_lower_percentage";
     public static final String REGRET_KEY = "regret_k";
-    public static final String DETERMINISM_RELATED_KEY = "determinism_related";
-    public static final String DETERMINISM_WORST_KEY = "determinism_worst";
+    public static final String DETERMINISM_KEY = "determinism";
     public static final String LOCAL_SEARCH_CONDITION_KEY = "local_search_condition";
     public static final String LOWER_WEIGHT_THRESHOLD_KEY = "lower_weight_threshold";
     public static final String PREDETERMINED_ITERATIONS_KEY = "predetermined_iterations";

@@ -76,15 +76,15 @@ public class TreeTest {
         assertEquals(134, thirdNode.getDiscreteTime());
         Node fourthNode = shortestPath.get(3);
         assertEquals(orderSequence.get(2), fourthNode.getOrder());
-        assertEquals(180, fourthNode.getDiscreteTime());
+        assertEquals(170, fourthNode.getDiscreteTime());
         Node fifthNode = shortestPath.get(4);
         assertEquals(orderSequence.get(3), fifthNode.getOrder());
-        assertEquals(211, fifthNode.getDiscreteTime());
+        assertEquals(194, fifthNode.getDiscreteTime());
         Node sixthNode = shortestPath.get(5);
         assertEquals(orderSequence.get(4), sixthNode.getOrder());
-        assertEquals(217, sixthNode.getDiscreteTime());
+        assertEquals(200, sixthNode.getDiscreteTime());
         Node seventhNode = shortestPath.get(6);
         assertNull(seventhNode.getOrder());
-        assertEquals(236, seventhNode.getDiscreteTime());
+        assertEquals(213, seventhNode.getDiscreteTime());
     }
 }

@@ -37,7 +37,7 @@
       "fc_design_speed": 645.0
     }
   },
-  "min_speed": 7.0,
+  "min_speed": 10.0,
   "design_speed": 12.0,
   "max_speed": 14.0,
   "fc_depot": 45.0,

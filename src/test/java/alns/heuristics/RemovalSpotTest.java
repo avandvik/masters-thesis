@@ -1,6 +1,5 @@
 package alns.heuristics;
 
-import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
 import data.Constants;
@@ -24,10 +23,11 @@ public class RemovalSpotTest {
         Cache.initialize();
         RemovalSpot removalSpot = new RemovalSpot(Constants.REMOVAL_SPOT_NAME);
         Parameters.parallelHeuristics = false;
-
+        Parameters.minPercentage = 0.2;
+        Parameters.maxPercentage = 0.5;
         Solution solution = createInitialSolution();
         // numberOfOrders is set randomly as it is not relevant for the heuristic
-        assertEquals(removalSpot.destroy(solution, 1), createExpectedSolution());
+        assertEquals(removalSpot.destroy(solution), createExpectedSolution());
 
     }
 

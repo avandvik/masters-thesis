@@ -20,8 +20,8 @@ public class RemovalRelated extends Heuristic implements Destroyer {
     }
 
     @Override
-    public Solution destroy(Solution solution, int numberOfOrders) {
-        this.numberOfOrders = numberOfOrders;
+    public Solution destroy(Solution solution) {
+        numberOfOrders = getNbrOrdersToRemove(solution);
         Solution newSolution = solution;
         while (newSolution.getUnplacedOrders().size() < numberOfOrders) newSolution = getRelatedRemoval(newSolution);
         // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
@@ -72,7 +72,7 @@ public class RemovalRelated extends Heuristic implements Destroyer {
     private List<Order> findRelatedOrdersToRemove() {
         List<Map.Entry<Order, Double>> ordersRelatedness = new ArrayList<>(this.orderToRelatedness.entrySet());
         ordersRelatedness.sort(Comparator.comparing(Map.Entry<Order, Double>::getValue));
-        int removeIdx = (int) (Math.pow(Problem.random.nextDouble(), Parameters.rnRelated) * ordersRelatedness.size());
+        int removeIdx = (int) (Math.pow(Problem.random.nextDouble(), Parameters.p) * ordersRelatedness.size());
         Order relatedOrder = ordersRelatedness.get(removeIdx).getKey();
         return getOrdersToRemove(relatedOrder);
     }

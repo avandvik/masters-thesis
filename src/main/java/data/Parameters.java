@@ -3,17 +3,17 @@ package data;
 public class Parameters {
 
     // Noise in objective
-    public static double noiseRate = 0.5;
+    public static double noiseRate = 0.25;  // Initial 0.25
     public static double maxNoise = Problem.findMaxDistance() * noiseRate;
 
     // Rewards for heuristics
-    public static double newGlobalBest = 33.0;
-    public static double newLocalImprovement = 9.0;
-    public static double newLocal = 9.0;
+    public static double newGlobalBest = 33.0;  // Initial 33.0
+    public static double newLocalImprovement = 9.0;  // Initial 9.0
+    public static double newLocal = 13.0;  // Initial 13.0
 
     // Weights for heuristics
-    public static double initialWeight = 0.2;
-    public static double reaction = 0.2;
+    public static double initialWeight = 0.2;  // Initial 0.2
+    public static double reaction = 0.1;  // Initial 0.1
 
     // Simulated annealing
     public static double startTemperature;
@@ -23,23 +23,21 @@ public class Parameters {
     private static final double probAcceptCandidateXPercentWorse = 0.5;
 
     // Removal parameters
-    public static int nbrOrdersRemove = 3;  // TODO: Implement as percentage
-    public static int regretParameter = 4;
-    public static double rnRelated = 10;
-    public static double rnWorst = 10;
+    public static int minOrdersRemove = 2;  // No tuning
+    public static double minPercentage = 0.15;  // Initial 0.05
+    public static double maxPercentage = 0.50;  // Initial 0.15
+    public static int regretParameter = 3;  // No tuning
+    public static double p = 5;  // Initial 5
 
     // K-means
-    public static int k = 2;
-    public static int kMeansAttempts = 10;
+    public static int k = 2;  // No tuning
+    public static int kMeansAttempts = 10;  // No tuning
 
     // Local search
-    public static boolean exhaustiveLocalSearch = false;
-    public static double localSearchCondition = 0.2;  // TODO: Rename
-    public static boolean randomLocalSearch = true;  // TODO: Remove when condition for running local search is added
-    public static int numberOfOperators = 3;  // TODO: Remove when condition for running local search is added
+    public static double lsThresh = 0.2;  // No tuning
 
     // Iterations
-    public static int totalIter = 50;
+    public static int totalIter = 100;
     public static int maxIterSolution = 20;
     public static int setPartIter = 500;
     public static int segmentIter = 50;
@@ -54,8 +52,9 @@ public class Parameters {
     public static boolean setPartitioning = true;
     public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
-    public static boolean verbose = false;
+    public static boolean verbose = true;
     public static boolean semiVerbose = true;
+    public static boolean printSolution = false;
     public static boolean saveSolution = true;
     public static boolean saveHistory = true;
 

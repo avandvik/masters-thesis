@@ -36,20 +36,17 @@ public class Main {
         for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
-            Solution candidateSolution;
-            try {
-                candidateSolution = applyHeuristics(currentSolution, heuristics);
-                if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution);
-            } catch (IllegalStateException e) {
-                System.out.println("\n" + e.getMessage());
-                continue;
-            }
+            Solution candidateSolution = generateCandidate(heuristics);
+            if (candidateSolution == null) continue;
             if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
             printIterationInfo(iter, candidateSolution);
             double reward = acceptSolution(candidateSolution, iter);
             if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
-            if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime) break;
+            if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime || iter + 1 == Parameters.totalIter) {
+                SearchHistory.setNbrIterations(iter);
+                break;
+            }
         }
     }
 
@@ -85,6 +82,7 @@ public class Main {
     private static void initializeSolutionFields() {
         currentSolution = Construction.constructGreedyInitialSolution();
         bestSolution = currentSolution;
+        SearchHistory.setBestSolutionFound(currentSolution);
         visitedSolutions = new ArrayList<>();
         visitedSolutions.add(currentSolution.hashCode());
         iterationsCurrentSolution = 0;
@@ -112,7 +110,6 @@ public class Main {
         return new ArrayList<>(Arrays.asList(chosenDestroyer, chosenRepairer));
     }
 
-    // TODO: Must be verified when there are more heuristics to choose from
     private static Heuristic rouletteWheelSelection(List<Heuristic> heuristics) {
         double weights = heuristics.stream().mapToDouble(Heuristic::getWeight).sum();
         List<Double> probabilities = heuristics.stream().map(o -> o.getWeight() / weights).collect(Collectors.toList());
@@ -125,23 +122,23 @@ public class Main {
         return rouletteWheel.higherEntry(Problem.random.nextDouble()).getValue();
     }
 
-    public static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
+    public static Solution generateCandidate(List<Heuristic> heuristics) {
+        Solution candidateSolution = null;
+        try {
+            candidateSolution = applyHeuristics(currentSolution, heuristics);
+            if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution, bestSolution);
+        } catch (IllegalStateException e) {
+            System.out.println("\n" + e.getMessage());
+        }
+        return candidateSolution;
+    }
+
+    private static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
         Destroyer destroyer = (Destroyer) heuristics.get(0);
-        Solution partialSolution = destroyer.destroy(solution, Parameters.nbrOrdersRemove);
+        Solution partialSolution = destroyer.destroy(solution);
         Repairer repairer = (Repairer) heuristics.get(1);
         Solution candidateSolution = repairer.repair(partialSolution);
-        if (!Evaluator.isSolutionFeasible(candidateSolution)) {
-            /*
-            System.out.println(candidateSolution);
-            System.out.println("Load: " + Evaluator.isFeasibleLoad(candidateSolution.getOrderSequences()));
-            System.out.println("Duration: " + Evaluator.isFeasibleDuration(candidateSolution.getOrderSequences()));
-            System.out.println("Visits: " + Evaluator.isFeasibleVisits(candidateSolution.getOrderSequences()));
-            System.out.println("Completeness: " + Evaluator.isSolutionComplete(candidateSolution));
-            System.out.println("Each order occurs once: " + Evaluator.eachOrderOccursOnce(candidateSolution));
-            System.out.println("Heuristics used: " + heuristics);
-             */
-            throw new IllegalStateException(Messages.solInfeasible);
-        }
+        if (!Evaluator.isSolutionFeasible(candidateSolution)) throw new IllegalStateException(Messages.solInfeasible);
         return candidateSolution;
     }
 
@@ -207,6 +204,9 @@ public class Main {
         } catch (NullPointerException e) {
             System.out.println(Messages.errorInSetPartitioning);
             return;
+        }
+        if (candidateSolution.getObjective(false) < bestSolution.getObjective(false)) {
+            SearchHistory.incrementNbrImprovementsBySetPartitioning();
         }
         acceptSolution(candidateSolution, iter);  // Reward is ignored
     }
@@ -306,7 +306,7 @@ public class Main {
             System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
         }
-        if (Parameters.verbose) {
+        if (Parameters.printSolution) {
             System.out.println("Postponed orders: " + Main.getBestSolution().getAllPostponed());
             Main.getBestSolution().printSchedules();
         }
@@ -334,7 +334,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Constants.FILE_NAME = "17-22-3-1.json";  // If running locally (will be overwritten on Solstorm)
+        Constants.FILE_NAME = "T-9-9-1-1.json";  // If running locally (will be overwritten on Solstorm)
         if (args.length > 0) Constants.setSolstormConstants(args[0], args[1]);
         Main.run();
     }

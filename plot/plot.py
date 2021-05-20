@@ -24,7 +24,7 @@ resources_path = '/src/main/resources'
 solution_path = root_path + '/plot/solution'
 plots_path = f'{root_path}/plot/plots'
 installations_path = root_path + resources_path + '/constant/installations.json'
-instance_path = f'{root_path}{resources_path}/instance'
+instance_path = f'{root_path}{resources_path}/instances'
 
 
 def map_inst_ids_to_location():

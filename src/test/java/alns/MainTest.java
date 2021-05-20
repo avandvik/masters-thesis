@@ -69,7 +69,7 @@ public class MainTest {
         while (Main.getCurrentSolution() != solutionThree) rewardTwo = Main.acceptSolution(solutionThree, 0);
 
         assertEquals(solutionThree, Main.getCurrentSolution());
-        assertEquals(9.0, rewardTwo, 0.0);
+        assertEquals(13.0, rewardTwo, 0.0);
 
     }
 

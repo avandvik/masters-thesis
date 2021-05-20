@@ -57,6 +57,7 @@ public class InsertionRegret extends Heuristic implements Repairer {
             for (Map.Entry<List<Integer>, Double> entry : insertionToObj.entrySet()) {
                 List<Integer> insertion = entry.getKey();
                 double obj = entry.getValue();
+                obj += Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise);
                 double increase = obj - SubProblem.vesselToObjective.get(insertion.get(0));
                 increases.add(increase);
             }
@@ -78,13 +79,11 @@ public class InsertionRegret extends Heuristic implements Repairer {
     private List<Double> findIncreasesOrderSequences(List<List<Order>> orderSequences, Order order) {
         List<Double> increases = new ArrayList<>();
         Map<Integer, List<Integer>> insertions = Construction.getAllFeasibleInsertions(orderSequences, order);
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            List<Order> orderSequence = orderSequences.get(vesselIdx);
-            double currentObjective = Objective.runSP(orderSequence, vesselIdx);
-            for (int insertionIdx : insertions.get(vesselIdx)) {
-                List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
-                orderSequenceCopy.add(insertionIdx, order);
-                double increase = Objective.runSP(orderSequenceCopy, vesselIdx) - currentObjective;
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            List<Order> orderSequence = orderSequences.get(vIdx);
+            double currentObj = Objective.runSP(orderSequence, vIdx);
+            for (int insertionIdx : insertions.get(vIdx)) {
+                double increase = calculateIncrease(orderSequence, order, vIdx, insertionIdx, currentObj);
                 increases.add(increase);
             }
         }

@@ -1,9 +1,12 @@
 package alns.heuristics;
 
+import alns.Objective;
+import alns.Solution;
 import data.Parameters;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
+import utils.Helpers;
 
 import java.util.*;
 
@@ -39,12 +42,29 @@ public abstract class Heuristic {
         this.selections++;
     }
 
+    public int getSelections() {
+        return this.selections;
+    }
+
     public String getName() {
         return name;
     }
 
     private void smoothenWeights() {
-        this.weight = (1 - Parameters.reaction) * this.weight + Parameters.reaction * (this.score / this.selections);
+        if (this.selections == 0) return;
+        double nWeight = (1 - Parameters.reaction) * this.weight + Parameters.reaction * (this.score / this.selections);
+        this.weight = Math.max(nWeight, Parameters.initialWeight);
+    }
+
+    static int getNbrOrdersToRemove(Solution solution) {
+        int nbrScheduledOrders = 0;
+        for (List<Order> orderSequence : solution.getOrderSequences()) {
+            nbrScheduledOrders += orderSequence.size();
+        }
+        double span = Parameters.maxPercentage - Parameters.minPercentage;
+        double percentage = Parameters.minPercentage + span * Problem.random.nextDouble();
+        int nbrOrdersToRemove = (int) Math.ceil(nbrScheduledOrders * percentage);
+        return Math.max(Parameters.minOrdersRemove, nbrOrdersToRemove);
     }
 
     static List<Order> getOrdersToRemove(Order orderToRemove) {
@@ -58,6 +78,14 @@ public abstract class Heuristic {
             return mandOrder != null && unplacedOrders.contains(mandOrder);
         }
         return false;
+    }
+
+    static double calculateIncrease(List<Order> orderSequence, Order order, int vIdx, int iIdx, double currentObj) {
+        List<Order> orderSequenceCopy = Helpers.deepCopyList(orderSequence, true);
+        orderSequenceCopy.add(iIdx, order);
+        double obj = Objective.runSP(orderSequenceCopy, vIdx);
+        obj += Helpers.getRandomDouble(-Parameters.maxNoise, Parameters.maxNoise);
+        return obj - currentObj;
     }
 
     @Override

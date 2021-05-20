@@ -64,11 +64,18 @@ public class IO {
         JSONObject obj = new JSONObject();
         obj.put(Constants.INSTANCE_NAME_KEY, Constants.FILE_NAME);
         obj.put(Constants.OBJECTIVE_VALUE_KEY, SearchHistory.getBestObjective());
+        obj.put(Constants.FUEL_COSTS_KEY, SearchHistory.getBestFuelCosts());
+        obj.put(Constants.PENALTY_COSTS_KEY, SearchHistory.getBestPenaltyCosts());
         obj.put(Constants.ITER_TO_OBJ_KEY, SearchHistory.getIterationToObjective());
         obj.put(Constants.HEURISTIC_TO_ITER_TO_WEIGHT_KEY, SearchHistory.getHeuristicToIterationToWeight());
+        obj.put(Constants.HEURISTIC_TO_SELECTIONS_KEY, SearchHistory.getHeuristicToSelections());
         obj.put(Constants.ITER_BEST_FOUND_KEY, SearchHistory.getIterationBestSolutionFound());
         obj.put(Constants.RUNTIME_KEY, SearchHistory.getRuntime());
         obj.put(Constants.NBR_ITERATIONS_KEY, SearchHistory.getNbrIterations());
+        obj.put(Constants.NBR_LOCAL_SEARCH_RUNS_KEY, SearchHistory.getNbrLocalSearchRuns());
+        obj.put(Constants.AVG_LOCAL_SEARCH_IMPROVEMENT_KEY, SearchHistory.getAvgLocalSearchImprovement());
+        obj.put(Constants.BEST_LOCAL_SEARCH_IMPROVEMENT_KEY, SearchHistory.getBestLocalSearchImprovement());
+        obj.put(Constants.NBR_IMPROVEMENTS_SET_PART_KEY, SearchHistory.getNbrImprovementsBySetPartitioning());
 
         JSONObject parametersObj = new JSONObject();
         parametersObj.put(Constants.NOISE_CONTROL_KEY, Parameters.noiseRate);
@@ -79,12 +86,11 @@ public class IO {
         parametersObj.put(Constants.REACTION_KEY, Parameters.reaction);
         parametersObj.put(Constants.START_TEMPERATURE_KEY, Parameters.startTemperature);
         parametersObj.put(Constants.COOLING_RATE_KEY, Parameters.coolingRate);
-        parametersObj.put(Constants.REMOVAL_UPPER_PERCENTAGE_KEY, 0.5);
-        parametersObj.put(Constants.REMOVAL_LOWER_PERCENTAGE_KEY, 0.0);
+        parametersObj.put(Constants.REMOVAL_LOWER_PERCENTAGE_KEY, Parameters.minPercentage);
+        parametersObj.put(Constants.REMOVAL_UPPER_PERCENTAGE_KEY, Parameters.maxPercentage);
         parametersObj.put(Constants.REGRET_KEY, Parameters.regretParameter);
-        parametersObj.put(Constants.DETERMINISM_RELATED_KEY, Parameters.rnRelated);
-        parametersObj.put(Constants.DETERMINISM_WORST_KEY, Parameters.rnWorst);
-        parametersObj.put(Constants.LOCAL_SEARCH_CONDITION_KEY, Parameters.localSearchCondition);
+        parametersObj.put(Constants.DETERMINISM_KEY, Parameters.p);
+        parametersObj.put(Constants.LOCAL_SEARCH_CONDITION_KEY, Parameters.lsThresh);
         parametersObj.put(Constants.PREDETERMINED_ITERATIONS_KEY, Parameters.totalIter);
         parametersObj.put(Constants.MAX_ITERATIONS_SOLUTION_KEY, Parameters.maxIterSolution);
         parametersObj.put(Constants.SET_PARTITIONING_ITERATIONS_KEY, Parameters.setPartIter);
