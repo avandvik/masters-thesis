@@ -86,8 +86,8 @@ public class IO {
         parametersObj.put(Constants.REACTION_KEY, Parameters.reaction);
         parametersObj.put(Constants.START_TEMPERATURE_KEY, Parameters.startTemperature);
         parametersObj.put(Constants.COOLING_RATE_KEY, Parameters.coolingRate);
-        parametersObj.put(Constants.REMOVAL_UPPER_PERCENTAGE_KEY, 0.5);
-        parametersObj.put(Constants.REMOVAL_LOWER_PERCENTAGE_KEY, 0.0);
+        parametersObj.put(Constants.REMOVAL_LOWER_PERCENTAGE_KEY, Parameters.minPercentage);
+        parametersObj.put(Constants.REMOVAL_UPPER_PERCENTAGE_KEY, Parameters.maxPercentage);
         parametersObj.put(Constants.REGRET_KEY, Parameters.regretParameter);
         parametersObj.put(Constants.DETERMINISM_KEY, Parameters.p);
         parametersObj.put(Constants.LOCAL_SEARCH_CONDITION_KEY, Parameters.lsThresh);

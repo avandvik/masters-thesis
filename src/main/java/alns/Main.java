@@ -43,7 +43,7 @@ public class Main {
             double reward = acceptSolution(candidateSolution, iter);
             if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
-            if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime) {
+            if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime || iter + 1 == Parameters.totalIter) {
                 SearchHistory.setNbrIterations(iter);
                 break;
             }
@@ -334,7 +334,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Constants.FILE_NAME = "9-9-1-1.json";  // If running locally (will be overwritten on Solstorm)
+        Constants.FILE_NAME = "T-9-9-1-1.json";  // If running locally (will be overwritten on Solstorm)
         if (args.length > 0) Constants.setSolstormConstants(args[0], args[1]);
         Main.run();
     }
