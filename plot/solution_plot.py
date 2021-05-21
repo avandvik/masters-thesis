@@ -22,7 +22,7 @@ TO RUN:
 root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 resources_path = '/src/main/resources'
 solution_path = root_path + '/plot/solution'
-plots_path = f'{root_path}/plot/plots'
+plots_path = f'{root_path}/plot/solutions'
 installations_path = root_path + resources_path + '/constant/installations.json'
 instance_path = f'{root_path}{resources_path}/instances'
 

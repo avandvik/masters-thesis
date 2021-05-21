@@ -10,3 +10,6 @@ plot/solution/*
 generated
 instances
 .ipynb_checkpoints
+dataframes
+graphs
+solutions
