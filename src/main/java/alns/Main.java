@@ -51,7 +51,7 @@ public class Main {
     }
 
     public static void initialize() {
-        Data.initializeGurobiEnv();
+        if (Parameters.setPartitioning) Data.initializeGurobiEnv();
         Cache.initialize();
         initializeHeuristics();
         initializeSolutionFields();
