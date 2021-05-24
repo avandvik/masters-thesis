@@ -7,13 +7,13 @@ public class Parameters {
     public static double maxNoise = Problem.findMaxDistance() * noiseRate;
 
     // Rewards for heuristics
-    public static double newGlobalBest = 9.0;  // Initial 33.0  |  Final 33.0
+    public static double newGlobalBest = 33.0;  // Initial 33.0  |  Final 33.0
     public static double newLocalImprovement = 9.0;  // Initial 9.0  |  Final 9.0
     public static double newLocal = 1.0;  // Initial 13.0  |  Final 1.0
 
     // Weights for heuristics
     public static double initialWeight = 0.2;  // No tuning
-    public static double reaction = 0.1;  // Initial 0.1  |  Final 0.2
+    public static double reaction = 1.0;  // Initial 0.1  |  Final 0.2
 
     // Simulated annealing
     public static double startTemperature;
