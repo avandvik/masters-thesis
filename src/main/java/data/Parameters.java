@@ -3,7 +3,7 @@ package data;
 public class Parameters {
 
     // Noise in objective
-    public static double noiseRate = 0.5;  // Initial 0.25  |  Final
+    public static double noiseRate = 0.025;  // Initial 0.25  |  Final 0.025
     public static double maxNoise = Problem.findMaxDistance() * noiseRate;
 
     // Rewards for heuristics
@@ -27,7 +27,7 @@ public class Parameters {
     public static double minPercentage = 0.15;  // Initial 0.05  |  Final 0.15
     public static double maxPercentage = 0.50;  // Initial 0.15  |  Final 0.50
     public static int regretParameter = 3;  // No tuning
-    public static double p = 5;  // Initial 5
+    public static double p = 11;  // Initial 5  |  Final
 
     // K-means
     public static int k = 2;  // No tuning
