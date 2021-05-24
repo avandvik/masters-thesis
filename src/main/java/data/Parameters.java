@@ -3,7 +3,7 @@ package data;
 public class Parameters {
 
     // Noise in objective
-    public static double noiseRate = 0.25;  // Initial 0.25
+    public static double noiseRate = 0.5;  // Initial 0.25  |  Final
     public static double maxNoise = Problem.findMaxDistance() * noiseRate;
 
     // Rewards for heuristics
@@ -13,7 +13,7 @@ public class Parameters {
 
     // Weights for heuristics
     public static double initialWeight = 0.2;  // No tuning
-    public static double reaction = 1.0;  // Initial 0.1  |  Final 0.2
+    public static double reaction = 0.1;  // Initial 0.1  |  Final 0.1
 
     // Simulated annealing
     public static double startTemperature;
