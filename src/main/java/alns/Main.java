@@ -19,8 +19,8 @@ public class Main {
     private static final char[] animationChars = new char[]{'|', '/', '-', '\\'};
 
     private static List<Heuristic> allHeuristics;
-    private static List<Heuristic> destroyHeuristics;
-    private static List<Heuristic> repairHeuristics;
+    private static List<Heuristic> dHeuristics;
+    private static List<Heuristic> rHeuristics;
 
     private static Solution currentSolution;
     private static Solution bestSolution;
@@ -61,22 +61,22 @@ public class Main {
     }
 
     private static void initializeHeuristics() {
-        destroyHeuristics = new ArrayList<>();
-        repairHeuristics = new ArrayList<>();
-        destroyHeuristics.add(new RemovalRandom(Constants.REMOVAL_RANDOM_NAME));
-        destroyHeuristics.add(new RemovalRelated(Constants.REMOVAL_RELATED_NAME));
-        destroyHeuristics.add(new RemovalWorst(Constants.REMOVAL_WORST_NAME));
-        destroyHeuristics.add(new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME));
-        destroyHeuristics.add(new RemovalSpread(Constants.REMOVAL_SPREAD_NAME));
-        destroyHeuristics.add(new RemovalSpot(Constants.REMOVAL_SPOT_NAME));
-        repairHeuristics.add(new InsertionGreedy(Constants.INSERTION_GREEDY_NAME));
-        repairHeuristics.add(new InsertionRegret(Constants.INSERTION_REGRET_NAME));
-        repairHeuristics.add(new InsertionMaxPenaltyCost(Constants.INSERTION_MAX_PENALTY_NAME));
-        repairHeuristics.add(new InsertionMaxOrderSize(Constants.INSERTION_MAX_ORDER_SIZE_NAME));
-        for (Heuristic heuristic : destroyHeuristics) heuristic.setWeight(Parameters.initialWeight);
-        for (Heuristic heuristic : repairHeuristics) heuristic.setWeight(Parameters.initialWeight);
-        allHeuristics = new ArrayList<>(destroyHeuristics);
-        allHeuristics.addAll(repairHeuristics);
+        dHeuristics = new ArrayList<>();
+        rHeuristics = new ArrayList<>();
+        dHeuristics.add(new RemovalRandom(Constants.REMOVAL_RANDOM_NAME));
+        dHeuristics.add(new RemovalRelated(Constants.REMOVAL_RELATED_NAME));
+        dHeuristics.add(new RemovalWorst(Constants.REMOVAL_WORST_NAME));
+        dHeuristics.add(new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME));
+        dHeuristics.add(new RemovalSpread(Constants.REMOVAL_SPREAD_NAME));
+        dHeuristics.add(new RemovalSpot(Constants.REMOVAL_SPOT_NAME));
+        rHeuristics.add(new InsertionGreedy(Constants.INSERTION_GREEDY_NAME));
+        rHeuristics.add(new InsertionRegret(Constants.INSERTION_REGRET_NAME));
+        rHeuristics.add(new InsertionMaxPenaltyCost(Constants.INSERTION_MAX_PENALTY_NAME));
+        rHeuristics.add(new InsertionMaxOrderSize(Constants.INSERTION_MAX_ORDER_SIZE_NAME));
+        for (Heuristic heuristic : dHeuristics) heuristic.setWeight(Parameters.initialWeight);
+        for (Heuristic heuristic : rHeuristics) heuristic.setWeight(Parameters.initialWeight);
+        allHeuristics = new ArrayList<>(dHeuristics);
+        allHeuristics.addAll(rHeuristics);
     }
 
     private static void initializeSolutionFields() {
@@ -103,14 +103,14 @@ public class Main {
     }
 
     private static List<Heuristic> chooseHeuristics() {
-        Heuristic chosenDestroyer = rouletteWheelSelection(destroyHeuristics);
-        Heuristic chosenRepairer = rouletteWheelSelection(repairHeuristics);
-        chosenDestroyer.incrementSelections();
-        chosenRepairer.incrementSelections();
-        return new ArrayList<>(Arrays.asList(chosenDestroyer, chosenRepairer));
+        Heuristic chosenDestroy = Parameters.roulette ? rouletteSelection(dHeuristics) : randomSelection(dHeuristics);
+        Heuristic chosenRepair = Parameters.roulette ? rouletteSelection(rHeuristics) : randomSelection(rHeuristics);
+        chosenDestroy.incrementSelections();
+        chosenRepair.incrementSelections();
+        return new ArrayList<>(Arrays.asList(chosenDestroy, chosenRepair));
     }
 
-    private static Heuristic rouletteWheelSelection(List<Heuristic> heuristics) {
+    private static Heuristic rouletteSelection(List<Heuristic> heuristics) {
         double weights = heuristics.stream().mapToDouble(Heuristic::getWeight).sum();
         List<Double> probabilities = heuristics.stream().map(o -> o.getWeight() / weights).collect(Collectors.toList());
         TreeMap<Double, Heuristic> rouletteWheel = new TreeMap<>();
@@ -120,6 +120,10 @@ public class Main {
             rouletteWheel.put(aggregatedProbability, heuristics.get(idx));
         }
         return rouletteWheel.higherEntry(Problem.random.nextDouble()).getValue();
+    }
+
+    private static Heuristic randomSelection(List<Heuristic> heuristics) {
+        return heuristics.get(Problem.random.nextInt(heuristics.size()));
     }
 
     public static Solution generateCandidate(List<Heuristic> heuristics) {
@@ -227,8 +231,8 @@ public class Main {
     }
 
     private static void resetHeuristicScores() {
-        for (Heuristic heuristic : destroyHeuristics) heuristic.resetScoreAndUpdateWeight();
-        for (Heuristic heuristic : repairHeuristics) heuristic.resetScoreAndUpdateWeight();
+        for (Heuristic heuristic : dHeuristics) heuristic.resetScoreAndUpdateWeight();
+        for (Heuristic heuristic : rHeuristics) heuristic.resetScoreAndUpdateWeight();
     }
 
     public static Solution getCurrentSolution() {
@@ -334,7 +338,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Constants.FILE_NAME = "T-9-9-1-1.json";  // If running locally (will be overwritten on Solstorm)
+        Constants.FILE_NAME = "11-12-2-1.json";  // If running locally (will be overwritten on Solstorm)
         if (args.length > 0) Constants.setSolstormConstants(args[0], args[1]);
         Main.run();
     }

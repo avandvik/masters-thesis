@@ -6,14 +6,13 @@ public class Parameters {
     public static double noiseRate = 0.025;  // Initial 0.25  |  Final 0.025
     public static double maxNoise = Problem.findMaxDistance() * noiseRate;
 
-    // Rewards for heuristics
+    // Heuristics
     public static double newGlobalBest = 33.0;  // Initial 33.0  |  Final 33.0
     public static double newLocalImprovement = 9.0;  // Initial 9.0  |  Final 9.0
     public static double newLocal = 1.0;  // Initial 13.0  |  Final 1.0
-
-    // Weights for heuristics
     public static double initialWeight = 0.2;  // No tuning
     public static double reaction = 0.1;  // Initial 0.1  |  Final 0.1
+    public static boolean roulette = true;
 
     // Simulated annealing
     public static double startTemperature;
@@ -48,8 +47,8 @@ public class Parameters {
     public static int poolSize = 200;  // Pool size is per vessel
 
     // Toggles
-    public static boolean localSearch = false;
-    public static boolean setPartitioning = false;
+    public static boolean localSearch = true;
+    public static boolean setPartitioning = true;
     public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
     public static boolean verbose = true;
@@ -77,6 +76,7 @@ public class Parameters {
         totalIter = 5000;
         verbose = false;
         semiVerbose = true;
+        printSolution = false;
         saveSolution = true;
         saveHistory = true;
     }

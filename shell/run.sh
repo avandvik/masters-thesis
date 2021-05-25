@@ -12,7 +12,7 @@ module load gurobi/9.1
 
 nbr_sims="$1"
 export nbr_sims
-cool_down=40
+cool_down=20
 export cool_down
 jar="$2"
 export jar
