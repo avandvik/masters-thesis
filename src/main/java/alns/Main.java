@@ -44,14 +44,14 @@ public class Main {
             if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
             if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime || iter + 1 == Parameters.totalIter) {
-                SearchHistory.setNbrIterations(iter);
+                SearchHistory.setNbrIterations(iter + 1);
                 break;
             }
         }
     }
 
     public static void initialize() {
-        Data.initializeGurobiEnv();
+        if (Parameters.setPartitioning) Data.initializeGurobiEnv();
         Cache.initialize();
         initializeHeuristics();
         initializeSolutionFields();
