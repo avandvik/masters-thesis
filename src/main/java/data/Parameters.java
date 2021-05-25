@@ -27,7 +27,7 @@ public class Parameters {
     public static double minPercentage = 0.15;  // Initial 0.05  |  Final 0.15
     public static double maxPercentage = 0.50;  // Initial 0.15  |  Final 0.50
     public static int regretParameter = 3;  // No tuning
-    public static double p = 11;  // Initial 5  |  Final
+    public static double p = 7.0;  // Initial 5.0  |  Final 7.0
 
     // K-means
     public static int k = 2;  // No tuning
