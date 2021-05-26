@@ -1,5 +1,6 @@
 package subproblem;
 
+import alns.Main;
 import data.Messages;
 import data.Parameters;
 import data.Problem;
@@ -38,8 +39,9 @@ public class SubProblem implements Runnable {
     @Override
     public void run() {
         this.solveSubProblem();
-        addToResultsStructure(vesselIdx, this.cost);
+        addToResultsStructure(this.vesselIdx, this.cost);
         if (Parameters.cacheSP) Cache.cacheCurrent(this.hashCode(), this);
+        if (Parameters.setPartitioning) Main.saveOrderSequence(this.vesselIdx, this.orderSequence);
     }
 
     public void solveSubProblem() {

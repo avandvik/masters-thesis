@@ -21,7 +21,6 @@ public class Solution {
 
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, boolean setFitness) {
         /* Use this constructor when generating a complete solution */
-
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
         this.unplacedOrders = new HashSet<>();  // Solutions from this constructor must have no unplaced orders
@@ -31,7 +30,6 @@ public class Solution {
 
     public Solution(List<List<Order>> orderSequences, Set<Order> postponedOrders, Set<Order> unplacedOrders) {
         /* Use this constructor when generating a partial solution */
-
         this.orderSequences = orderSequences;
         this.postponedOrders = postponedOrders;
         this.unplacedOrders = unplacedOrders;

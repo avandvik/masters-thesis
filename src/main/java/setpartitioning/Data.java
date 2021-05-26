@@ -30,6 +30,7 @@ public class Data {
     public static List<List<List<Integer>>> voyageODOPArray;  // inst -> vessel -> voyageIdx
 
     public static Map<Integer, Map<Integer, List<Order>>> vesselToVoyageIdxToVoyage;
+    public static Map<Integer, Map<Integer, Double>> vesselToVoyageIdxToCost;
 
     public static void initializeGurobiEnv() {
         try {
@@ -51,7 +52,7 @@ public class Data {
     }
 
     public static void makeArrays() {
-        if (Main.vesselToSequenceToCost == null) throw new NullPointerException("VesselToSequenceCost is null");
+        if (Main.vesselToSequenceToCost == null) throw new NullPointerException("VesselToSequenceToCost is null");
         makeOrdersArray();
         makeInstallationsArray();
         makeVesselToVoyageIndices();
@@ -75,11 +76,16 @@ public class Data {
 
     private static void makeVesselToVoyageIndices() {
         vesselToVoyageIdxToVoyage = new HashMap<>();
+        vesselToVoyageIdxToCost = new HashMap<>();
         for (int vIdx = 0; vIdx < nbrVessels; vIdx++) {
             vesselToVoyageIdxToVoyage.put(vIdx, new HashMap<>());
+            vesselToVoyageIdxToCost.put(vIdx, new HashMap<>());
             int voyageIdx = 0;
-            for (List<Order> voyage : Main.vesselToSequenceToCost.get(vIdx).keySet()) {
+            for (Map.Entry<List<Order>, Double> entry : Main.vesselToSequenceToCost.get(vIdx).entrySet()) {
+                List<Order> voyage = entry.getKey();
+                double cost = entry.getValue();
                 vesselToVoyageIdxToVoyage.get(vIdx).put(voyageIdx, voyage);
+                vesselToVoyageIdxToCost.get(vIdx).put(voyageIdx, cost);
                 voyageIdx++;
             }
         }
@@ -138,12 +144,10 @@ public class Data {
 
     private static void makeCostOfVoyageForVessel() {
         costOfVoyageForVessel = new ArrayList<>();
-        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+        for (int vIdx = 0; vIdx < nbrVessels; vIdx++) {
             costOfVoyageForVessel.add(new ArrayList<>(Collections.nCopies(vesselToNbrVoyages.get(vIdx), 0.0)));
-            Map<List<Order>, Double> voyageToCost = Main.vesselToSequenceToCost.get(vIdx);
             for (int voyageIdx = 0; voyageIdx < Data.vesselToNbrVoyages.get(vIdx); voyageIdx++) {
-                List<Order> voyage = vesselToVoyageIdxToVoyage.get(vIdx).get(voyageIdx);
-                double cost = voyageToCost.get(voyage);
+                double cost = vesselToVoyageIdxToCost.get(vIdx).get(voyageIdx);
                 costOfVoyageForVessel.get(vIdx).add(voyageIdx, cost);
             }
         }

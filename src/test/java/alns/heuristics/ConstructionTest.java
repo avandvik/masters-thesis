@@ -1,5 +1,6 @@
 package alns.heuristics;
 
+import alns.Main;
 import alns.Objective;
 import alns.Solution;
 import data.Parameters;
@@ -20,6 +21,7 @@ public class ConstructionTest {
     public void getFeasibleInsertionsTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Cache.initialize();
+        Main.initializeSequenceSaving();
         List<List<Order>> orderSequences = new ArrayList<>();
         for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
         for (int i = 0; i < 2; i++) orderSequences.get(0).add(Problem.getOrder(i));
@@ -65,6 +67,7 @@ public class ConstructionTest {
     public void constructRandomInitialSolutionTest() {
         Problem.setUpProblem("basicTestData.json",true, 10);
         Cache.initialize();
+        Main.initializeSequenceSaving();
         testInitialSolutionAsExpected();
 
         Problem.setUpProblem("tooManyOrders.json", true, 10);
@@ -107,6 +110,7 @@ public class ConstructionTest {
     public void constructGreedyInitialSolutionTest() {
         Problem.setUpProblem("basicTestData.json",true, 10);
         Cache.initialize();
+        Main.initializeSequenceSaving();
         Parameters.parallelHeuristics = false;
         // assertEquals(createExpectedGreedySolution(), Construction.constructGreedyInitialSolution());
     }

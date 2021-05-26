@@ -38,20 +38,20 @@ public class Parameters {
     // Iterations
     public static int totalIter = 100;
     public static int maxIterSolution = 20;
-    public static int setPartIter = 500;
+    public static int setPartIter = 50;
     public static int segmentIter = 50;
     public static int searchHistoryIter = 10;
 
     // Cache and order sequence pool size
     public static int cacheSize = 1000;
-    public static int poolSize = 200;  // Pool size is per vessel
+    public static int poolSize = 100;  // Pool size is per vessel
 
     // Toggles
     public static boolean localSearch = true;
     public static boolean setPartitioning = true;
     public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
-    public static boolean verbose = true;
+    public static boolean verbose = false;
     public static boolean semiVerbose = true;
     public static boolean printSolution = false;
     public static boolean saveSolution = true;
@@ -71,7 +71,7 @@ public class Parameters {
     public static void setSolstormParameters() {
         cacheSP = true;
         cacheSize = 6000000;
-        poolSize = 30000;
+        poolSize = 50000;
         parallelHeuristics = true;
         totalIter = 5000;
         verbose = false;

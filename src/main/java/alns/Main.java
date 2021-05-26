@@ -55,10 +55,10 @@ public class Main {
     public static void initialize() {
         if (Parameters.setPartitioning) Data.initializeGurobiEnv();
         Cache.initialize();
+        initializeSequenceSaving();
         initializeHeuristics();
         initializeSolutionFields();
         initializeSimulatedAnnealing();
-        initializeSequenceSaving();
         SearchHistory.initialize(allHeuristics);
     }
 
@@ -95,7 +95,7 @@ public class Main {
         currentTemperature = Parameters.startTemperature;
     }
 
-    private static void initializeSequenceSaving() {
+    public static void initializeSequenceSaving() {
         vesselToSequenceToCost = new HashMap<>();
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             Map<List<Order>, Double> emptySequence = new HashMap<>();
@@ -151,18 +151,27 @@ public class Main {
         return candidateSolution;
     }
 
-    private static void saveOrderSequences(Solution candidateSolution) {
+    public static void saveOrderSequences(Solution candidateSolution) {
         /* Save order sequences in candidateSolution while not exceeding storage limits */
         for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
-            if (vesselToSequenceToCost.get(vIdx).keySet().size() > Parameters.poolSize) {
-                List<List<Order>> sequences = new ArrayList<>(vesselToSequenceToCost.get(vIdx).keySet());
-                Collections.shuffle(sequences, Problem.random);
-                int mappingsToDelete = Problem.getNumberOfVessels();
-                sequences.subList(0, mappingsToDelete).forEach(vesselToSequenceToCost.get(vIdx).keySet()::remove);
-            }
             List<Order> orderSequence = candidateSolution.getOrderSequence(vIdx);
-            double cost = Objective.getOrderSequenceCost(orderSequence, vIdx);
-            vesselToSequenceToCost.get(vIdx).put(orderSequence, cost);  // Okay if overwrite
+            saveOrderSequence(vIdx, orderSequence);
+        }
+    }
+
+    public static void saveOrderSequence(int vIdx, List<Order> orderSequence) {
+        /* Save order sequence to set partitioning pool */
+        deleteExceedingSequences(vIdx);
+        double cost = Objective.getOrderSequenceCost(orderSequence, vIdx);
+        vesselToSequenceToCost.get(vIdx).put(orderSequence, cost);  // Okay if overwrite
+    }
+
+    private static void deleteExceedingSequences(int vIdx) {
+        if (vesselToSequenceToCost.get(vIdx).keySet().size() > Parameters.poolSize) {
+            List<List<Order>> sequences = new ArrayList<>(vesselToSequenceToCost.get(vIdx).keySet());
+            Collections.shuffle(sequences, Problem.random);
+            int mappingsToDelete = Problem.getNumberOfVessels();
+            sequences.subList(0, mappingsToDelete).forEach(vesselToSequenceToCost.get(vIdx).keySet()::remove);
         }
     }
 
@@ -214,6 +223,8 @@ public class Main {
     }
 
     private static void runSetPartitioning(int iter) {
+        System.out.print("\nRunning set partitioning... \r");
+        double startTime = System.nanoTime();
         Model model = new Model();
         model.run();
         Solution setPartSolution;
@@ -223,6 +234,7 @@ public class Main {
             System.out.println(Messages.errorInSetPartitioning);
             return;
         }
+        System.out.println("Done! Took " + ((System.nanoTime() - startTime) / 1e9));
         if (setPartSolution.getObjective(false) < bestSolution.getObjective(false)) {
             SearchHistory.incrementNbrImprovementsBySetPartitioning();
         }
