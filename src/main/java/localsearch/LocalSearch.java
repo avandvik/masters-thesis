@@ -11,14 +11,14 @@ public class LocalSearch {
 
     public static Solution localSearch(Solution candidateSolution, Solution bestSolution) {
         if (notWorthRunningLS(candidateSolution, bestSolution)) return candidateSolution;
-        Solution newSolution = Helpers.deepCopySolution(candidateSolution);
-        newSolution = intraVoyageImprovement(newSolution);
-        newSolution = interVoyageImprovement(newSolution);
-        newSolution = schedulePostponeImprovement(newSolution);
-        if (!Evaluator.isSolutionFeasible(newSolution)) throw new IllegalStateException(Messages.infSolCreated);
+        Solution lsSolution = Helpers.deepCopySolution(candidateSolution);
+        lsSolution = intraVoyageImprovement(lsSolution);
+        lsSolution = interVoyageImprovement(lsSolution);
+        lsSolution = schedulePostponeImprovement(lsSolution);
+        if (!Evaluator.isSolutionFeasible(lsSolution)) throw new IllegalStateException(Messages.infSolCreated);
         SearchHistory.incrementLocalSearchRuns();
-        SearchHistory.updateLocalSearchImprovementData(newSolution, candidateSolution);
-        return newSolution;
+        SearchHistory.updateLocalSearchImprovementData(lsSolution, candidateSolution);
+        return lsSolution;
     }
 
     private static boolean notWorthRunningLS(Solution candidateSolution, Solution bestSolution) {

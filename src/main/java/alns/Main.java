@@ -36,11 +36,13 @@ public class Main {
         for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
-            Solution candidateSolution = generateCandidate(heuristics);
+            List<Solution> newSolutions = generateNewSolutions(heuristics);
+            Solution candidateSolution = newSolutions.get(0);
+            Solution lsSolution = newSolutions.get(1);
             if (candidateSolution == null) continue;
             if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
             printIterationInfo(iter, candidateSolution);
-            double reward = acceptSolution(candidateSolution, iter);
+            double reward = acceptSolution(candidateSolution, lsSolution, iter);
             if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
             if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime || iter + 1 == Parameters.totalIter) {
@@ -126,15 +128,18 @@ public class Main {
         return heuristics.get(Problem.random.nextInt(heuristics.size()));
     }
 
-    public static Solution generateCandidate(List<Heuristic> heuristics) {
+    public static List<Solution> generateNewSolutions(List<Heuristic> heuristics) {
         Solution candidateSolution = null;
+        Solution lsSolution = null;
         try {
             candidateSolution = applyHeuristics(currentSolution, heuristics);
-            if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution, bestSolution);
+            if (Parameters.localSearch) lsSolution = LocalSearch.localSearch(candidateSolution, bestSolution);
         } catch (IllegalStateException e) {
-            System.out.println("\n" + e.getMessage());
+            System.out.println("\n" + e.getMessage() + "(" + heuristics + ")");
+            candidateSolution = Construction.constructRandomInitialSolution();
+            lsSolution = LocalSearch.localSearch(candidateSolution, bestSolution);
         }
-        return candidateSolution;
+        return new ArrayList<>(Arrays.asList(candidateSolution, lsSolution));
     }
 
     private static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
@@ -161,36 +166,45 @@ public class Main {
         }
     }
 
-    public static Double acceptSolution(Solution candidateSolution, int iter) {
-        if (candidateSolution.equals(currentSolution)) {
+    public static Double acceptSolution(Solution candidateSolution, Solution lsSolution, int iter) {
+        Solution iterSolution = getIterationBestSolution(candidateSolution, lsSolution);
+        if (iterSolution.getObjective(false) < bestSolution.getObjective(false)) {
+            return doGlobalBestUpdates(candidateSolution, iterSolution, iter);
+        } else if (simulatedAnnealing(currentSolution.getObjective(false), iterSolution.getObjective(false))) {
+            return doLocalUpdates(candidateSolution, iterSolution);
+        } else {
             if (iterationsCurrentSolution > Parameters.maxIterSolution) {
                 currentSolution = Construction.constructRandomInitialSolution();
                 iterationsCurrentSolution = 0;
             }
-        } else if (candidateSolution.getObjective(false) < bestSolution.getObjective(false)) {
-            return doGlobalBestUpdates(candidateSolution, iter);
-        } else if (simulatedAnnealing(currentSolution.getObjective(false), candidateSolution.getObjective(false))) {
-            return doLocalUpdates(candidateSolution);
         }
         return 0.0;
     }
 
-    private static double doGlobalBestUpdates(Solution candidateSolution, int iter) {
-        bestSolution = candidateSolution;
+    private static Solution getIterationBestSolution(Solution candidateSolution, Solution lsSolution) {
+        Solution iterSolution = candidateSolution;
+        if (lsSolution != null && lsSolution.getObjective(false) < candidateSolution.getObjective(false)) {
+            iterSolution = lsSolution;
+        }
+        return iterSolution;
+    }
+
+    private static double doGlobalBestUpdates(Solution candidateSolution, Solution iterSolution, int iter) {
+        bestSolution = iterSolution;
         currentSolution = candidateSolution;
         visitedSolutions.add(candidateSolution.hashCode());
         iterationsCurrentSolution = 0;
         SearchHistory.setIterationBestSolutionFound(iter);
-        SearchHistory.setBestSolutionFound(candidateSolution);
+        SearchHistory.setBestSolutionFound(iterSolution);
         return Parameters.newGlobalBest;
     }
 
-    private static double doLocalUpdates(Solution candidateSolution) {
+    private static double doLocalUpdates(Solution candidateSolution, Solution iterSolution) {
         currentSolution = candidateSolution;
         iterationsCurrentSolution = 0;
         if (!visitedSolutions.contains(candidateSolution.hashCode())) {
             visitedSolutions.add(candidateSolution.hashCode());
-            if (candidateSolution.getObjective(false) < currentSolution.getObjective(false)) {
+            if (iterSolution.getObjective(false) < currentSolution.getObjective(false)) {
                 return Parameters.newLocalImprovement;
             } else {
                 return Parameters.newLocal;
@@ -202,17 +216,17 @@ public class Main {
     private static void runSetPartitioning(int iter) {
         Model model = new Model();
         model.run();
-        Solution candidateSolution;
+        Solution setPartSolution;
         try {
-            candidateSolution = model.getNewSolution();
+            setPartSolution = model.getNewSolution();
         } catch (NullPointerException e) {
             System.out.println(Messages.errorInSetPartitioning);
             return;
         }
-        if (candidateSolution.getObjective(false) < bestSolution.getObjective(false)) {
+        if (setPartSolution.getObjective(false) < bestSolution.getObjective(false)) {
             SearchHistory.incrementNbrImprovementsBySetPartitioning();
         }
-        acceptSolution(candidateSolution, iter);  // Reward is ignored
+        acceptSolution(setPartSolution, null, iter);  // Reward is ignored
     }
 
     private static boolean simulatedAnnealing(double currentFitness, double candidateFitness) {
