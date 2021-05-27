@@ -1,6 +1,5 @@
 package subproblem;
 
-import alns.Main;
 import data.Messages;
 import data.Parameters;
 import data.Problem;
