@@ -140,7 +140,6 @@ public class Solution {
             for (Node node : this.shortestPaths.get(vesselIdx)) {
                 String orderName;
                 String schedule;
-
                 if (node.getOrder() != null) {
                     double speed = node.getSpeed(prevNode);
                     orderName = node.getOrder().toString();

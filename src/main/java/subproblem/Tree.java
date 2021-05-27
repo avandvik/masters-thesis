@@ -284,23 +284,4 @@ public class Tree {
             System.out.println();
         }
     }
-
-    private static List<Order> generateSequenceOne() {
-        return new LinkedList<>(Arrays.asList(Problem.getOrder(0), Problem.getOrder(3),
-                Problem.getOrder(11), Problem.getOrder(4)));
-    }
-
-    public static void main(String[] args) {
-        Constants.FILE_NAME = "11-12-2-1.json";
-        Problem.setUpProblem(Constants.FILE_NAME, false, 364);
-        List<Order> orderSequenceOne = generateSequenceOne();
-        System.out.println(orderSequenceOne);
-        Tree tree = new Tree(1);
-        tree.generateTree(orderSequenceOne, false);
-        tree.printTree();
-
-        for (Vessel vessel : Problem.vessels) {
-            System.out.println(vessel.getFcDesignSpeed());
-        }
-    }
 }
