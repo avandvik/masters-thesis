@@ -12,7 +12,6 @@ public class Parameters {
     public static double newLocal = 1.0;  // Initial 13.0  |  Final 1.0
     public static double initialWeight = 0.2;  // No tuning
     public static double reaction = 0.1;  // Initial 0.1  |  Final 0.1
-    public static boolean roulette = true;
 
     // Simulated annealing
     public static double startTemperature;
@@ -49,6 +48,7 @@ public class Parameters {
     // Toggles
     public static boolean localSearch = true;
     public static boolean setPartitioning = true;
+    public static boolean roulette = true;
     public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
     public static boolean verbose = false;
