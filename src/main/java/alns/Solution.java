@@ -141,16 +141,8 @@ public class Solution {
                 String orderName;
                 String schedule;
 
-                double speed = 0.0;
-                if (prevNode != null && node.getOrder() != null) {
-                    Installation fromInst = Helpers.getInstallationFromNode(prevNode);
-                    Installation toInst = Helpers.getInstallationFromNode(node);
-                    double distance = DistanceCalculator.distance(fromInst, toInst, "N");
-                    double time = Problem.discTimeToHour(node.getArrTime(prevNode) - prevNode.getDiscreteTime());
-                    speed = distance / time;
-                }
-
                 if (node.getOrder() != null) {
+                    double speed = node.getSpeed(prevNode);
                     orderName = node.getOrder().toString();
                     schedule = "\t\tArrives at: " + node.getArrTime(prevNode) + " (" + speed + ")"
                             + "\n\t\tServices at: " + node.getServiceStartTime(prevNode)

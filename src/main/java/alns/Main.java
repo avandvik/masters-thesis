@@ -223,7 +223,6 @@ public class Main {
     }
 
     private static void runSetPartitioning(int iter) {
-        System.out.print("\nRunning set partitioning... \r");
         double startTime = System.nanoTime();
         Model model = new Model();
         model.run();
@@ -234,7 +233,7 @@ public class Main {
             System.out.println(Messages.errorInSetPartitioning);
             return;
         }
-        System.out.println("Done! Took " + ((System.nanoTime() - startTime) / 1e9));
+        System.out.println("\nSet partitioning done! Took " + ((System.nanoTime() - startTime) / 1e9));
         if (setPartSolution.getObjective(false) < bestSolution.getObjective(false)) {
             SearchHistory.incrementNbrImprovementsBySetPartitioning();
         }
