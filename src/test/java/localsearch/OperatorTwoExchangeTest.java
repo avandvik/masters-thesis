@@ -7,6 +7,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import setpartitioning.VoyagePool;
 import subproblem.Cache;
 
 import java.util.*;
@@ -20,6 +21,7 @@ public class OperatorTwoExchangeTest {
     public void twoExchangeTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Cache.initialize();
+        VoyagePool.initializeSequenceSaving();
         Solution solution = SolutionGenerator.createSolutionBasicTestData(5, 8);
         Objective.setObjValAndSchedule(solution);
         Solution newSolution = OperatorTwoExchange.twoExchange(solution);

@@ -7,6 +7,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import setpartitioning.VoyagePool;
 import subproblem.Cache;
 
 import static org.junit.Assert.assertEquals;
@@ -18,6 +19,7 @@ public class OperatorPostponeScheduledTest {
     public void postponeScheduledTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Cache.initialize();
+        VoyagePool.initializeSequenceSaving();
         // No postponement due to high penalty cost
         Solution solution = SolutionGenerator.createSolutionBasicTestData(5, 8);
         Objective.setObjValAndSchedule(solution);
