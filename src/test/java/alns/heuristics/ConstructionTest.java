@@ -1,6 +1,5 @@
 package alns.heuristics;
 
-import alns.Main;
 import alns.Objective;
 import alns.Solution;
 import data.Parameters;
