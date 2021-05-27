@@ -5,6 +5,7 @@ import data.Messages;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
+import setpartitioning.VoyagePool;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +42,7 @@ public class SubProblem implements Runnable {
         this.solveSubProblem();
         addToResultsStructure(this.vesselIdx, this.cost);
         if (Parameters.cacheSP) Cache.cacheCurrent(this.hashCode(), this);
-        if (Parameters.setPartitioning) Main.saveOrderSequence(this.vesselIdx, this.orderSequence);
+        if (Parameters.setPartitioning) VoyagePool.saveOrderSequence(this.vesselIdx, this.orderSequence);
     }
 
     public void solveSubProblem() {

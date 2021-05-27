@@ -8,6 +8,7 @@ import localsearch.LocalSearch;
 import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
+import setpartitioning.VoyagePool;
 import subproblem.Cache;
 import utils.IO;
 
@@ -40,7 +41,7 @@ public class Main {
             Solution candidateSolution = newSolutions.get(0);
             Solution lsSolution = newSolutions.get(1);
             if (candidateSolution == null) continue;
-            if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
+            if (Parameters.setPartitioning) VoyagePool.saveOrderSequences(candidateSolution);
             printIterationInfo(iter, candidateSolution);
             double reward = acceptSolution(candidateSolution, lsSolution, iter);
             if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
@@ -55,7 +56,7 @@ public class Main {
     public static void initialize() {
         if (Parameters.setPartitioning) Data.initializeGurobiEnv();
         Cache.initialize();
-        initializeSequenceSaving();
+        VoyagePool.initializeSequenceSaving();
         initializeHeuristics();
         initializeSolutionFields();
         initializeSimulatedAnnealing();
@@ -93,15 +94,6 @@ public class Main {
     private static void initializeSimulatedAnnealing() {
         Parameters.setTemperatureAndCooling(currentSolution.getObjective(false));
         currentTemperature = Parameters.startTemperature;
-    }
-
-    public static void initializeSequenceSaving() {
-        vesselToSequenceToCost = new HashMap<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            Map<List<Order>, Double> emptySequence = new HashMap<>();
-            emptySequence.put(new LinkedList<>(), 0.0);
-            vesselToSequenceToCost.put(vesselIdx, emptySequence);
-        }
     }
 
     private static List<Heuristic> chooseHeuristics() {
@@ -149,30 +141,6 @@ public class Main {
         Solution candidateSolution = repairer.repair(partialSolution);
         if (!Evaluator.isSolutionFeasible(candidateSolution)) throw new IllegalStateException(Messages.solInfeasible);
         return candidateSolution;
-    }
-
-    public static void saveOrderSequences(Solution candidateSolution) {
-        /* Save order sequences in candidateSolution while not exceeding storage limits */
-        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
-            List<Order> orderSequence = candidateSolution.getOrderSequence(vIdx);
-            saveOrderSequence(vIdx, orderSequence);
-        }
-    }
-
-    public static void saveOrderSequence(int vIdx, List<Order> orderSequence) {
-        /* Save order sequence to set partitioning pool */
-        deleteExceedingSequences(vIdx);
-        double cost = Objective.getOrderSequenceCost(orderSequence, vIdx);
-        vesselToSequenceToCost.get(vIdx).put(orderSequence, cost);  // Okay if overwrite
-    }
-
-    private static void deleteExceedingSequences(int vIdx) {
-        if (vesselToSequenceToCost.get(vIdx).keySet().size() > Parameters.poolSize) {
-            List<List<Order>> sequences = new ArrayList<>(vesselToSequenceToCost.get(vIdx).keySet());
-            Collections.shuffle(sequences, Problem.random);
-            int mappingsToDelete = Problem.getNumberOfVessels();
-            sequences.subList(0, mappingsToDelete).forEach(vesselToSequenceToCost.get(vIdx).keySet()::remove);
-        }
     }
 
     public static Double acceptSolution(Solution candidateSolution, Solution lsSolution, int iter) {
@@ -269,7 +237,7 @@ public class Main {
     public static int getNumberOfSavedSequences() {
         int nbrSequences = 0;
         for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
-            nbrSequences += vesselToSequenceToCost.get(vIdx).size();
+            nbrSequences += VoyagePool.vesselToSequenceToCost.get(vIdx).size();
         }
         return nbrSequences;
     }

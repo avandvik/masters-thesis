@@ -9,6 +9,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import setpartitioning.VoyagePool;
 import subproblem.Cache;
 import utils.Helpers;
 
@@ -23,7 +24,7 @@ public class InsertionRegretTest {
     public void insertionRegretTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Cache.initialize();
-        Main.initializeSequenceSaving();
+        VoyagePool.initializeSequenceSaving();
         InsertionRegret insertionRegret = new InsertionRegret(Constants.INSERTION_REGRET_NAME);
         testRegretTwoOrders(insertionRegret);
         testRegretThreeOrders(insertionRegret);

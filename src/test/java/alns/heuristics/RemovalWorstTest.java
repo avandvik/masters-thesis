@@ -9,6 +9,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import setpartitioning.VoyagePool;
 import subproblem.Cache;
 
 import java.util.*;
@@ -22,7 +23,7 @@ public class RemovalWorstTest {
     public void removalWorstTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Cache.initialize();
-        Main.initializeSequenceSaving();
+        VoyagePool.initializeSequenceSaving();
         RemovalWorst removalWorst = new RemovalWorst(Constants.REMOVAL_WORST_NAME);
         Parameters.parallelHeuristics = false;
         Solution solution = createInitialSolution();
