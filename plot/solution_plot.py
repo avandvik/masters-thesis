@@ -1,6 +1,7 @@
 import folium
 import json
 import os
+import re
 import selenium.webdriver
 
 
@@ -25,6 +26,7 @@ solution_path = root_path + '/plot/solution'
 plots_path = f'{root_path}/plot/solutions'
 installations_path = root_path + resources_path + '/constant/installations.json'
 instance_path = f'{root_path}{resources_path}/instances'
+vessel_to_color = {0: "green", 1: "blue", 2: "yellow", 3: "black", 4: "white", 5: "pink"}
 
 
 def map_inst_ids_to_location():
@@ -73,7 +75,7 @@ def save_solution_plot():
                 installation_sequence.append(installation_id)
         add_markers(m_1, installation_sequence)
         add_markers(m_2, installation_sequence)
-        add_lines(m_2, installation_sequence)
+        add_lines(m_2, installation_sequence, vessel)
     instance_name = get_instance_name().split('.')[0]
     save_map_png(m_1, f'{instance_name}_markers')
     save_map_png(m_2, f'{instance_name}_markers_lines')
@@ -93,19 +95,21 @@ def add_markers(m, installations):
         location = get_location(installation)
         folium.CircleMarker(location=location,
                             radius=4,
-                            color='darkblue',
-                            fill_color='white',
+                            color='lightblue',
+                            fill_color='black',
                             fill_opacity=1,
                             fill=True).add_to(m)
 
 
-def add_lines(m, installations):
+def add_lines(m, installations, vessel):
     points = []
     for installation in installations:
         location = get_location(installation)
         points.append(location)
     points.append(get_location(0))
-    folium.PolyLine(points, color="green", weight=2.5, opacity=1).add_to(m)
+    v_idx = int(re.split('_', vessel)[1])
+    color = vessel_to_color.get(v_idx)
+    folium.PolyLine(points, color=color, weight=2.5, opacity=1).add_to(m)
 
 
 def get_location(installation):
