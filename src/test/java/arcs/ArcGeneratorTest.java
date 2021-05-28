@@ -67,8 +67,8 @@ public class ArcGeneratorTest {
         speedsToExpectedServiceEndTimes.put(11.0, 120);
 
         Map<Double, Integer> speedsToExpectedIdlingEndTimes = new HashMap<>();
-        speedsToExpectedIdlingEndTimes.put(9.0, 123);
-        speedsToExpectedIdlingEndTimes.put(11.0, 123);
+        speedsToExpectedIdlingEndTimes.put(9.0, 124);
+        speedsToExpectedIdlingEndTimes.put(11.0, 124);
 
         // To depot
         Map<Double, List<Integer>> speedsToTPDepot = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, distance,
@@ -138,7 +138,7 @@ public class ArcGeneratorTest {
         Installation instSometimesClosed = Problem.getInstallation(Problem.orders.get(0));
         assertFalse(ArcGenerator.isServicingPossible(80, 100, instSometimesClosed));
         assertFalse(ArcGenerator.isServicingPossible(122, 130, instSometimesClosed));
-        assertTrue(ArcGenerator.isServicingPossible(123, 131, instSometimesClosed));
+        assertTrue(ArcGenerator.isServicingPossible(124, 132, instSometimesClosed));
     }
 
     @Test

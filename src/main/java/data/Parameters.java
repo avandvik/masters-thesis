@@ -1,5 +1,9 @@
 package data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Parameters {
 
     // Noise in objective
@@ -35,11 +39,12 @@ public class Parameters {
     public static double lsThresh = 0.2;  // No tuning
 
     // Iterations
-    public static int totalIter = 100;
+    public static int totalIter = 1000;
     public static int maxIterSolution = 20;
-    public static int setPartIter = 200;
     public static int segmentIter = 50;
     public static int searchHistoryIter = 10;
+    public static List<Integer> setPartIterations = new ArrayList<>(Arrays.asList(200, 400, 600, 800, 1000, 1500,
+            2000, 3000, 4000, 5000));
 
     // Cache and order sequence pool size
     public static int cacheSize = 1000;
@@ -71,7 +76,7 @@ public class Parameters {
     public static void setSolstormParameters() {
         cacheSP = true;
         cacheSize = 6000000;
-        poolSize = 40000;
+        poolSize = 100000;
         parallelHeuristics = true;
         totalIter = 5000;
         verbose = false;

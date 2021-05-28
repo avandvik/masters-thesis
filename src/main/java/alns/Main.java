@@ -30,8 +30,6 @@ public class Main {
     private static int iterationsCurrentSolution;
     private static double currentTemperature;
 
-    public static Map<Integer, Map<List<Order>, Double>> vesselToSequenceToCost;
-
     public static void alns(double startTime) {
         initialize();
         for (int iter = 0; iter < Parameters.totalIter; iter++) {
@@ -44,7 +42,7 @@ public class Main {
             if (Parameters.setPartitioning) VoyagePool.saveOrderSequences(candidateSolution);
             printIterationInfo(iter, candidateSolution);
             double reward = acceptSolution(candidateSolution, lsSolution, iter);
-            if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
+            if (Parameters.setPartitioning && Parameters.setPartIterations.contains(iter + 1)) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
             if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime || iter + 1 == Parameters.totalIter) {
                 SearchHistory.setNbrIterations(iter + 1);
@@ -234,14 +232,6 @@ public class Main {
         return bestSolution;
     }
 
-    public static int getNumberOfSavedSequences() {
-        int nbrSequences = 0;
-        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
-            nbrSequences += VoyagePool.vesselToSequenceToCost.get(vIdx).size();
-        }
-        return nbrSequences;
-    }
-
     public static void setCurrentSolution(Solution solution) {
         currentSolution = solution;
     }
@@ -288,7 +278,7 @@ public class Main {
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4]
                 + "     " + Math.round(bestSolution.getObjective(false))
                 + "  |  " + Cache.getCacheSize()
-                + "  |  " + getNumberOfSavedSequences()
+                + "  |  " + VoyagePool.getNumberOfSavedSequences()
                 + "  |  " + heapUtilization + "/" + Constants.MAX_HEAP_SIZE
                 + "\r");
     }

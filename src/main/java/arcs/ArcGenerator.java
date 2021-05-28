@@ -113,12 +113,13 @@ public class ArcGenerator {
     public static boolean isServicingPossible(int serviceStartTime, int serviceEndTime, Installation toInst) {
         int startDayTime = Problem.discToDiscDayTime(serviceStartTime);
         int endDayTime = Problem.discToDiscDayTime(serviceEndTime);
-        int openTime = toInst.getOpeningHour() * Problem.discretizationParam - 1;
-        int closeTime = toInst.getClosingHour() * Problem.discretizationParam - 1;
+        int openTime = toInst.getOpeningHour() * Problem.discretizationParam;
+        int closeTime = toInst.getClosingHour() * Problem.discretizationParam;
         boolean instOpen = true;
         if (openTime != Problem.getFirstTimePoint() && closeTime != Problem.getEndOfDayTimePoint()) {
             instOpen = startDayTime >= openTime && endDayTime <= closeTime
-                    && endDayTime >= openTime && startDayTime <= closeTime;
+                    && endDayTime >= openTime && startDayTime <= closeTime
+                    && startDayTime < endDayTime;
         }
         int worstWeatherState = Problem.getWorstWeatherState(serviceStartTime, serviceEndTime);
         return instOpen && worstWeatherState < Problem.worstWeatherState;

@@ -93,7 +93,6 @@ public class IO {
         parametersObj.put(Constants.LOCAL_SEARCH_CONDITION_KEY, Parameters.lsThresh);
         parametersObj.put(Constants.PREDETERMINED_ITERATIONS_KEY, Parameters.totalIter);
         parametersObj.put(Constants.MAX_ITERATIONS_SOLUTION_KEY, Parameters.maxIterSolution);
-        parametersObj.put(Constants.SET_PARTITIONING_ITERATIONS_KEY, Parameters.setPartIter);
         parametersObj.put(Constants.SEGMENT_ITERATIONS_KEY, Parameters.segmentIter);
         parametersObj.put(Constants.CACHE_SIZE_KEY, Parameters.cacheSize);
         parametersObj.put(Constants.POOL_SIZE_KEY, Parameters.poolSize);

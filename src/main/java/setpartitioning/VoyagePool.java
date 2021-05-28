@@ -31,17 +31,27 @@ public class VoyagePool {
 
     public static void saveOrderSequence(int vIdx, List<Order> orderSequence) {
         /* Save order sequence to set partitioning pool */
-        deleteExceedingSequences(vIdx);
+        deleteExceedingSequences();
         double cost = Objective.getOrderSequenceCost(orderSequence, vIdx);
         vesselToSequenceToCost.get(vIdx).put(orderSequence, cost);  // Okay if overwrite
     }
 
-    private static void deleteExceedingSequences(int vIdx) {
-        if (vesselToSequenceToCost.get(vIdx).keySet().size() > Parameters.poolSize) {
-            List<List<Order>> sequences = new ArrayList<>(vesselToSequenceToCost.get(vIdx).keySet());
+    private static void deleteExceedingSequences() {
+        int nbrSavedSequences = getNumberOfSavedSequences();
+        if (nbrSavedSequences > Parameters.poolSize) {
+            int rnVesselIdx = Problem.random.nextInt(Problem.getNumberOfVessels());
+            List<List<Order>> sequences = new ArrayList<>(vesselToSequenceToCost.get(rnVesselIdx).keySet());
             Collections.shuffle(sequences, Problem.random);
             int mappingsToDelete = Problem.getNumberOfVessels();
-            sequences.subList(0, mappingsToDelete).forEach(vesselToSequenceToCost.get(vIdx).keySet()::remove);
+            sequences.subList(0, mappingsToDelete).forEach(vesselToSequenceToCost.get(rnVesselIdx).keySet()::remove);
         }
+    }
+
+    public static int getNumberOfSavedSequences() {
+        int nbrSequences = 0;
+        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
+            nbrSequences += VoyagePool.vesselToSequenceToCost.get(vIdx).size();
+        }
+        return nbrSequences;
     }
 }
