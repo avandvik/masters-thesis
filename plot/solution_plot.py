@@ -107,8 +107,11 @@ def add_lines(m, installations, vessel):
         location = get_location(installation)
         points.append(location)
     points.append(get_location(0))
-    v_idx = int(re.split('_', vessel)[1])
-    color = vessel_to_color.get(v_idx)
+    if vessel == 'SPOT':
+        color = 'red'
+    else:
+        v_idx = int(re.split('_', vessel)[1])
+        color = vessel_to_color.get(v_idx)
     folium.PolyLine(points, color=color, weight=2.5, opacity=1).add_to(m)
 
 
