@@ -1,6 +1,5 @@
 package setpartitioning;
 
-import alns.Main;
 import data.Problem;
 import gurobi.GRB;
 import gurobi.GRBEnv;
@@ -37,8 +36,7 @@ public class Data {
             gurobiEnv = new GRBEnv();
             gurobiEnv.set(GRB.IntParam.OutputFlag, 0);
         } catch (GRBException e) {
-            System.out.println("Error code: " + e.getErrorCode() + ". " +
-                    e.getMessage());
+            System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
         }
     }
 
@@ -47,7 +45,7 @@ public class Data {
         nbrVessels = Problem.getNumberOfVessels();
         vesselToNbrVoyages = new HashMap<>();
         for (int vIdx = 0; vIdx < nbrVessels; vIdx++) {
-            vesselToNbrVoyages.put(vIdx, VoyagePool.vesselToSequenceToCost.get(vIdx).size());
+            vesselToNbrVoyages.put(vIdx, Pool.vesselToVoyageToCost.get(vIdx).keySet().size());
         }
     }
 
@@ -80,7 +78,7 @@ public class Data {
             vesselToVoyageIdxToVoyage.put(vIdx, new HashMap<>());
             vesselToVoyageIdxToCost.put(vIdx, new HashMap<>());
             int voyageIdx = 0;
-            for (Map.Entry<List<Order>, Double> entry : VoyagePool.vesselToSequenceToCost.get(vIdx).entrySet()) {
+            for (Map.Entry<List<Order>, Double> entry : Pool.vesselToVoyageToCost.get(vIdx).entrySet()) {
                 List<Order> voyage = entry.getKey();
                 double cost = entry.getValue();
                 vesselToVoyageIdxToVoyage.get(vIdx).put(voyageIdx, voyage);

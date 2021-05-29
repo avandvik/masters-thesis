@@ -1,5 +1,6 @@
 package setpartitioning;
 
+import alns.Evaluator;
 import alns.Solution;
 import data.Parameters;
 import data.Problem;
@@ -117,6 +118,16 @@ public class Model {
     private Solution postprocess() throws GRBException {
         List<List<Order>> orderSequences = this.postprocessChosenRoutes();
         Set<Order> postponedOrders = this.postprocessPostponedOrders();
+        Solution solution;
+        try {
+            solution = new Solution(orderSequences, postponedOrders, true);
+        } catch (IllegalStateException e) {
+            debugChosenVoyages(orderSequences, postponedOrders);
+            System.out.println("Feasible visits: " + Evaluator.isFeasibleVisits(orderSequences));
+            System.out.println("Feasible duration: " + Evaluator.isFeasibleDuration(orderSequences));
+            System.out.println("Feasible load: " + Evaluator.isFeasibleLoad(orderSequences));
+            throw new IllegalStateException();
+        }
         return new Solution(orderSequences, postponedOrders, true);
     }
 

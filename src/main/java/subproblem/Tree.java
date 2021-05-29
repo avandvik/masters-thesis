@@ -1,11 +1,9 @@
 package subproblem;
 
 import arcs.ArcGenerator;
-import data.Constants;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
-import objects.Vessel;
 import utils.DistanceCalculator;
 import utils.Helpers;
 

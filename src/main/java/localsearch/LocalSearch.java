@@ -45,24 +45,4 @@ public class LocalSearch {
         newSolution = OperatorSchedulePostponed.schedulePostponed(newSolution);
         return newSolution;
     }
-
-    private static Solution applyOperator(int operatorNo, Solution solution) {
-        switch (operatorNo) {
-            case 1:
-                return OperatorOneExchange.oneExchange(solution);
-            case 2:
-                return OperatorTwoExchange.twoExchange(solution);
-            case 3:
-                return OperatorOneRelocate.oneRelocate(solution);
-            case 4:
-                return OperatorTwoRelocate.twoRelocate(solution);
-            case 5:
-                return OperatorSchedulePostponed.schedulePostponed(solution);
-            case 6:
-                return OperatorPostponeScheduled.postponeScheduled(solution);
-            default:
-                System.out.println("Unrecognized operator.");
-        }
-        return solution;
-    }
 }

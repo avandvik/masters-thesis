@@ -1,7 +1,9 @@
 package subproblem;
 
+import alns.Cache;
 import data.Parameters;
 import objects.Order;
+import setpartitioning.Pool;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +34,8 @@ public class SubProblemRemoval extends SubProblem implements Runnable {
     @Override
     public void run() {
         super.solveSubProblem();
-        addToResultsStructure(super.getVesselIdx(), this.removalIdx, super.getCost());
-        if (Parameters.cacheSP) Cache.cacheCurrent(super.hashCode(), this);
+        addToResultsStructure(super.getVIdx(), this.removalIdx, super.getCost());
+        if (Parameters.cacheSP) Cache.cacheSequence(super.getVIdx(), super.getOrderSequence(), this);
+        if (Parameters.setPartitioning) Pool.saveVoyage(super.getVIdx(), super.getOrderSequence(), super.getCost());
     }
 }

@@ -5,8 +5,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import setpartitioning.VoyagePool;
-import subproblem.Cache;
+import setpartitioning.Pool;
 
 import java.util.*;
 
@@ -55,10 +54,8 @@ public class MainTest {
         Main.setBestSolution(solutionOne);
 
         // Initialize route saving
-        VoyagePool.vesselToSequenceToCost = new HashMap<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            VoyagePool.vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
-        }
+        Cache.initialize();
+        Pool.initialize();
 
         double rewardOne = Main.acceptSolution(solutionTwo, null, 0);
 

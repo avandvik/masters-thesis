@@ -48,7 +48,8 @@ public class Parameters {
 
     // Cache and order sequence pool size
     public static int cacheSize = 1000;
-    public static int poolSize = 100;  // Pool size is per vessel
+    public static int totalPoolSize = 1000;
+    public static int vesselPoolSize;
 
     // Toggles
     public static boolean localSearch = true;
@@ -75,8 +76,8 @@ public class Parameters {
 
     public static void setSolstormParameters() {
         cacheSP = true;
-        cacheSize = 6000000;
-        poolSize = 100000;
+        cacheSize = 600000;
+        totalPoolSize = 250000;
         parallelHeuristics = true;
         totalIter = 5000;
         verbose = false;

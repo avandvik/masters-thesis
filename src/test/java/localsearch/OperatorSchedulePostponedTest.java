@@ -1,5 +1,6 @@
 package localsearch;
 
+import alns.Cache;
 import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
@@ -7,8 +8,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import setpartitioning.VoyagePool;
-import subproblem.Cache;
+import setpartitioning.Pool;
 
 import java.util.*;
 
@@ -21,7 +21,7 @@ public class OperatorSchedulePostponedTest {
     public void schedulePostponedTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Cache.initialize();
-        VoyagePool.initializeSequenceSaving();
+        Pool.initialize();
         Solution initialSolution = SolutionGenerator.createSolutionBasicTestData(5, 8);
         Order postponeOrderOne = initialSolution.getOrderSequence(0).get(4);
         initialSolution.addPostponedOrder(postponeOrderOne);

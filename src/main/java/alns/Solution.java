@@ -3,10 +3,8 @@ package alns;
 import data.Messages;
 import data.Parameters;
 import data.Problem;
-import objects.Installation;
 import objects.Order;
 import subproblem.Node;
-import utils.DistanceCalculator;
 import utils.Helpers;
 
 import java.util.*;

@@ -84,6 +84,14 @@ public class Problem {
         return hasOD && hasOP;
     }
 
+    public static boolean instHasMD(Installation inst) {
+        List<Order> orders = getOrdersFromInstallation(inst);
+        for (Order order : orders) {
+            if (order.isMandatory()) return true;
+        }
+        return false;
+    }
+
     /* =========== ORDERS =========== */
 
     public static Order getOrder(int orderIndex) {
@@ -149,6 +157,9 @@ public class Problem {
         return Problem.vessels.get(vesselIdx);
     }
 
+    public static void setVesselPoolSize() {
+        Parameters.vesselPoolSize = Parameters.totalPoolSize / (getNumberOfVessels() - 1);
+    }
 
     /* =========== WEATHER =========== */
 

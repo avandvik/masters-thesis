@@ -7,8 +7,8 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import setpartitioning.VoyagePool;
-import subproblem.Cache;
+import alns.Cache;
+import setpartitioning.Pool;
 
 import java.util.*;
 
@@ -21,7 +21,7 @@ public class ConstructionTest {
     public void getFeasibleInsertionsTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Cache.initialize();
-        VoyagePool.initializeSequenceSaving();
+        Pool.initialize();
         List<List<Order>> orderSequences = new ArrayList<>();
         for (int i = 0; i < Problem.getNumberOfVessels(); i++) orderSequences.add(new LinkedList<>());
         for (int i = 0; i < 2; i++) orderSequences.get(0).add(Problem.getOrder(i));
@@ -67,11 +67,12 @@ public class ConstructionTest {
     public void constructRandomInitialSolutionTest() {
         Problem.setUpProblem("basicTestData.json",true, 10);
         Cache.initialize();
-        VoyagePool.initializeSequenceSaving();
+        Pool.initialize();
         testInitialSolutionAsExpected();
 
         Problem.setUpProblem("tooManyOrders.json", true, 10);
         Cache.initialize();
+        Pool.initialize();
         testPostponementInInitialSolution();
     }
 
@@ -110,7 +111,7 @@ public class ConstructionTest {
     public void constructGreedyInitialSolutionTest() {
         Problem.setUpProblem("basicTestData.json",true, 10);
         Cache.initialize();
-        VoyagePool.initializeSequenceSaving();
+        Pool.initialize();
         Parameters.parallelHeuristics = false;
         // assertEquals(createExpectedGreedySolution(), Construction.constructGreedyInitialSolution());
     }

@@ -5,11 +5,9 @@ import alns.heuristics.protocols.Destroyer;
 import alns.heuristics.protocols.Repairer;
 import data.*;
 import localsearch.LocalSearch;
-import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
-import setpartitioning.VoyagePool;
-import subproblem.Cache;
+import setpartitioning.Pool;
 import utils.IO;
 
 import java.util.*;
@@ -39,7 +37,6 @@ public class Main {
             Solution candidateSolution = newSolutions.get(0);
             Solution lsSolution = newSolutions.get(1);
             if (candidateSolution == null) continue;
-            if (Parameters.setPartitioning) VoyagePool.saveOrderSequences(candidateSolution);
             printIterationInfo(iter, candidateSolution);
             double reward = acceptSolution(candidateSolution, lsSolution, iter);
             if (Parameters.setPartitioning && Parameters.setPartIterations.contains(iter + 1)) runSetPartitioning(iter);
@@ -54,7 +51,7 @@ public class Main {
     public static void initialize() {
         if (Parameters.setPartitioning) Data.initializeGurobiEnv();
         Cache.initialize();
-        VoyagePool.initializeSequenceSaving();
+        Pool.initialize();
         initializeHeuristics();
         initializeSolutionFields();
         initializeSimulatedAnnealing();
@@ -190,11 +187,11 @@ public class Main {
 
     private static void runSetPartitioning(int iter) {
         Model model = new Model();
-        model.run();
         Solution setPartSolution;
         try {
+            model.run();
             setPartSolution = model.getNewSolution();
-        } catch (NullPointerException e) {
+        } catch (IllegalStateException | NullPointerException e) {
             System.out.println(Messages.errorInSetPartitioning);
             return;
         }
@@ -212,7 +209,6 @@ public class Main {
         currentTemperature *= Parameters.coolingRate;
         for (Heuristic heuristic : heuristics) heuristic.addToScore(reward);
         if ((iteration + 1) % Parameters.segmentIter == 0) resetHeuristicScores();
-        Cache.cacheLongTerm();
         if (iteration % Parameters.searchHistoryIter == 0) {
             SearchHistory.setIterationToObjective(iteration, bestSolution.getObjective(false));
             for (Heuristic heuristic : allHeuristics) SearchHistory.setIterationToWeight(heuristic, iteration);
@@ -277,8 +273,8 @@ public class Main {
         int percentage = (int) (((iteration + 1) / (double) Parameters.totalIter) * 100);
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4]
                 + "     " + Math.round(bestSolution.getObjective(false))
-                + "  |  " + Cache.getCacheSize()
-                + "  |  " + VoyagePool.getNumberOfSavedSequences()
+                + "  |  " + Cache.getTotalCacheSize()
+                + "  |  " + Pool.getTotalPoolSize()
                 + "  |  " + heapUtilization + "/" + Constants.MAX_HEAP_SIZE
                 + "\r");
     }
@@ -286,14 +282,14 @@ public class Main {
     private static void printSolutionInfo(double startTime) {
         if (Parameters.semiVerbose) {
             double timeElapsed = (System.nanoTime() - startTime) / 1e9;
-            System.out.println("\nBest objective: " + Main.getBestSolution().getObjective(false));
-            System.out.println("\tFuel costs: " + Main.getBestSolution().getFuelCosts());
-            System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
+            System.out.println("\nBest objective: " + bestSolution.getObjective(false));
+            System.out.println("\tFuel costs: " + bestSolution.getFuelCosts());
+            System.out.println("\tPenalty costs: " + bestSolution.getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
         }
         if (Parameters.printSolution) {
-            System.out.println("Postponed orders: " + Main.getBestSolution().getAllPostponed());
-            Main.getBestSolution().printSchedules();
+            System.out.println("Postponed orders: " + bestSolution.getAllPostponed());
+            bestSolution.printSchedules();
         }
         System.out.println();
     }
@@ -304,6 +300,7 @@ public class Main {
         Problem.setUpProblem(Constants.FILE_NAME, false, seed);
         if (Constants.SOLSTORM) Parameters.setSolstormParameters();
         Problem.setRandom(seed);
+        Problem.setVesselPoolSize();
         System.out.println("Running with seed: " + seed);
         double startTime = System.nanoTime();
         try {
@@ -319,7 +316,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Constants.FILE_NAME = "11-12-2-1.json";  // If running locally (will be overwritten on Solstorm)
+        Constants.FILE_NAME = "13-18-2-1.json";  // If running locally (will be overwritten on Solstorm)
         if (args.length > 0) Constants.setSolstormConstants(args[0], args[1]);
         Main.run();
     }
