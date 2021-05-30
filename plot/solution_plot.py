@@ -47,7 +47,8 @@ def get_solution():
         raise FileNotFoundError('Make sure that there is only one file in solution directory!')
 
     with open(f'{solution_path}/{files[0]}') as json_solution:
-        return json.load(json_solution)
+        seed = files[0].split('_')[1]
+        return json.load(json_solution), seed
 
 
 def get_instance():
@@ -77,8 +78,8 @@ def save_solution_plot():
         add_markers(m_2, installation_sequence)
         add_lines(m_2, installation_sequence, vessel)
     instance_name = get_instance_name().split('.')[0]
-    save_map_png(m_1, f'{instance_name}_markers')
-    save_map_png(m_2, f'{instance_name}_markers_lines')
+    save_map_png(m_1, f'{instance_name}_{seed}_markers')
+    save_map_png(m_2, f'{instance_name}_{seed}_markers_lines')
 
 
 def define_map():
@@ -135,6 +136,6 @@ def save_map_png(m, file_name):
 
 
 inst_ids_to_location = map_inst_ids_to_location()
-solution = get_solution()
+solution, seed = get_solution()
 instance = get_instance()
 save_solution_plot()
