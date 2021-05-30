@@ -75,7 +75,12 @@ public class IO {
         obj.put(Constants.NBR_LOCAL_SEARCH_RUNS_KEY, SearchHistory.getNbrLocalSearchRuns());
         obj.put(Constants.AVG_LOCAL_SEARCH_IMPROVEMENT_KEY, SearchHistory.getAvgLocalSearchImprovement());
         obj.put(Constants.BEST_LOCAL_SEARCH_IMPROVEMENT_KEY, SearchHistory.getBestLocalSearchImprovement());
-        obj.put(Constants.NBR_IMPROVEMENTS_SET_PART_KEY, SearchHistory.getNbrImprovementsBySetPartitioning());
+        obj.put(Constants.NBR_IMPROVEMENTS_SP_KEY, SearchHistory.getNbrImprovementsBySetPartitioning());
+        obj.put(Constants.NBR_IMPROVEMENTS_LS_KEY, SearchHistory.getNbrImprovementsByLocalSearch());
+        obj.put(Constants.NBR_IMPROVEMENTS_DR_KEY, SearchHistory.getNbrImprovementsByDestroyRepair());
+        obj.put(Constants.NBR_IMPROVEMENTS_LS_OPERATORS_KEY, SearchHistory.getOperatorToNbrImprovements());
+        obj.put(Constants.INITIAL_SOLUTION_OBJECTIVE_KEY, SearchHistory.getConstructionHeuristicObjective());
+        obj.put(Constants.BEST_SOLUTION_FOUND_BY_KEY, SearchHistory.getBestSolFoundBy());
 
         JSONObject parametersObj = new JSONObject();
         parametersObj.put(Constants.NOISE_CONTROL_KEY, Parameters.noiseRate);

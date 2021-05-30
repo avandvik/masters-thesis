@@ -40,5 +40,4 @@ public class OperatorTwoExchangeTest {
         Set<Order> unplacedOrders = new HashSet<>();
         return new Solution(orderSequences, postponedOrders, unplacedOrders);
     }
-
 }

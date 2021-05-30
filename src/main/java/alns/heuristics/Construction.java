@@ -4,6 +4,7 @@ import alns.Evaluator;
 import alns.Solution;
 import data.Constants;
 import data.Problem;
+import data.SearchHistory;
 import objects.Order;
 import utils.Helpers;
 
@@ -35,7 +36,10 @@ public class Construction {
         Set<Order> postponedOrders = new HashSet<>();
         Set<Order> unplacedOrders = new HashSet<>(Problem.orders);
         Solution emptySolution = new Solution(orderSequences, postponedOrders, unplacedOrders);
-        return insertionGreedy.repair(emptySolution);
+        Solution initialSolution = insertionGreedy.repair(emptySolution);
+        SearchHistory.setConstructionHeuristicObjective(initialSolution.getObjective(false));
+        SearchHistory.setBestSolFoundBy(Constants.CONSTRUCTION_NAME);
+        return initialSolution;
     }
 
     public static Solution constructRandomInitialSolution() {

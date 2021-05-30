@@ -2,6 +2,7 @@ package localsearch;
 
 import alns.Evaluator;
 import alns.Solution;
+import data.Constants;
 import data.Messages;
 import data.Parameters;
 import data.SearchHistory;
@@ -10,8 +11,9 @@ import utils.Helpers;
 public class LocalSearch {
 
     public static Solution localSearch(Solution candidateSolution, Solution bestSolution) {
-        if (notWorthRunningLS(candidateSolution, bestSolution)) return candidateSolution;
         Solution lsSolution = Helpers.deepCopySolution(candidateSolution);
+        lsSolution = voyageExchangeImprovement(lsSolution);
+        if (notWorthRunningLS(lsSolution, bestSolution)) return lsSolution;
         lsSolution = intraVoyageImprovement(lsSolution);
         lsSolution = interVoyageImprovement(lsSolution);
         lsSolution = schedulePostponeImprovement(lsSolution);
@@ -19,6 +21,12 @@ public class LocalSearch {
         SearchHistory.incrementLocalSearchRuns();
         SearchHistory.updateLocalSearchImprovementData(lsSolution, candidateSolution);
         return lsSolution;
+    }
+
+    private static Solution voyageExchangeImprovement(Solution solution) {
+        Solution newSolution = OperatorVoyageExchange.voyageExchange(solution);
+        SearchHistory.incrementNbrImprovementsByOperator(Constants.VOYAGE_EXCHANGE_NAME, solution, newSolution);
+        return newSolution;
     }
 
     private static boolean notWorthRunningLS(Solution candidateSolution, Solution bestSolution) {
@@ -29,20 +37,26 @@ public class LocalSearch {
     }
 
     private static Solution intraVoyageImprovement(Solution solution) {
-        Solution newSolution = OperatorOneRelocate.oneRelocate(solution);
-        newSolution = OperatorOneExchange.oneExchange(newSolution);
-        return newSolution;
+        Solution firstSol = OperatorOneRelocate.oneRelocate(solution);
+        SearchHistory.incrementNbrImprovementsByOperator(Constants.ONE_RELOCATE_NAME, solution, firstSol);
+        Solution secondSol = OperatorOneExchange.oneExchange(firstSol);
+        SearchHistory.incrementNbrImprovementsByOperator(Constants.ONE_EXCHANGE_NAME, firstSol, secondSol);
+        return secondSol;
     }
 
     private static Solution interVoyageImprovement(Solution solution) {
-        Solution newSolution = OperatorTwoRelocate.twoRelocate(solution);
-        newSolution = OperatorTwoExchange.twoExchange(newSolution);
-        return newSolution;
+        Solution firstSol = OperatorTwoRelocate.twoRelocate(solution);
+        SearchHistory.incrementNbrImprovementsByOperator(Constants.TWO_RELOCATE_NAME, solution, firstSol);
+        Solution secondSol = OperatorTwoExchange.twoExchange(firstSol);
+        SearchHistory.incrementNbrImprovementsByOperator(Constants.TWO_EXCHANGE_NAME, firstSol, secondSol);
+        return secondSol;
     }
 
     private static Solution schedulePostponeImprovement(Solution solution) {
-        Solution newSolution = OperatorPostponeScheduled.postponeScheduled(solution);
-        newSolution = OperatorSchedulePostponed.schedulePostponed(newSolution);
-        return newSolution;
+        Solution firstSol = OperatorPostponeScheduled.postponeScheduled(solution);
+        SearchHistory.incrementNbrImprovementsByOperator(Constants.POSTPONE_SCHEDULED_NAME, solution, firstSol);
+        Solution secondSol = OperatorSchedulePostponed.schedulePostponed(firstSol);
+        SearchHistory.incrementNbrImprovementsByOperator(Constants.SCHEDULE_POSTPONED_NAME, firstSol, secondSol);
+        return secondSol;
     }
 }

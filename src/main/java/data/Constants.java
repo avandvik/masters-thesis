@@ -92,7 +92,12 @@ public class Constants {
     public static final String NBR_LOCAL_SEARCH_RUNS_KEY = "number_of_local_search_runs";
     public static final String AVG_LOCAL_SEARCH_IMPROVEMENT_KEY = "avg_improvement_local_search";
     public static final String BEST_LOCAL_SEARCH_IMPROVEMENT_KEY = "best_improvement_local_search";
-    public static final String NBR_IMPROVEMENTS_SET_PART_KEY = "number_of_improvements_by_set_partitioning";
+    public static final String NBR_IMPROVEMENTS_SP_KEY = "number_of_improvements_by_set_partitioning";
+    public static final String NBR_IMPROVEMENTS_LS_KEY = "number_of_improvements_by_local_search";
+    public static final String NBR_IMPROVEMENTS_DR_KEY = "number_of_improvements_by_destroy_repair";
+    public static final String NBR_IMPROVEMENTS_LS_OPERATORS_KEY = "number_of_improvements_by_local_search_operators";
+    public static final String INITIAL_SOLUTION_OBJECTIVE_KEY = "construction_heuristic_objective";
+    public static final String BEST_SOLUTION_FOUND_BY_KEY = "best_solution_found_by";
     public static final String PARAMETERS_KEY = "parameters";
     public static final String NOISE_CONTROL_KEY = "noise_control";
     public static final String NEW_GLOBAL_SCORE_KEY = "new_global_score";
@@ -109,12 +114,24 @@ public class Constants {
     public static final String LOWER_WEIGHT_THRESHOLD_KEY = "lower_weight_threshold";
     public static final String PREDETERMINED_ITERATIONS_KEY = "predetermined_iterations";
     public static final String MAX_ITERATIONS_SOLUTION_KEY = "max_iterations_solution";
-    public static final String SET_PARTITIONING_ITERATIONS_KEY = "set_partitioning_iterations";
     public static final String SEGMENT_ITERATIONS_KEY = "segment_iterations";
     public static final String CACHE_SIZE_KEY = "cache_size";
     public static final String POOL_SIZE_KEY = "pool_size";
     public static final String LOCAL_SEARCH_KEY = "local_search";
     public static final String SET_PARTITIONING_KEY = "set_partitioning";
+
+    public static final String ONE_EXCHANGE_NAME = "one_exchange";
+    public static final String TWO_EXCHANGE_NAME = "two_exchange";
+    public static final String ONE_RELOCATE_NAME = "one_relocate";
+    public static final String TWO_RELOCATE_NAME = "two_relocate";
+    public static final String POSTPONE_SCHEDULED_NAME = "postpone_scheduled";
+    public static final String SCHEDULE_POSTPONED_NAME = "schedule_postponed";
+    public static final String VOYAGE_EXCHANGE_NAME = "voyage_exchange";
+
+    public static final String CONSTRUCTION_NAME = "construction_heuristic";
+    public static final String LOCAL_SEARCH_NAME = "local_search";
+    public static final String DESTROY_REPAIR_NAME = "destroy_repair";
+    public static final String SET_PARTITIONING_NAME = "set_partitioning";
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_GREEN = "\u001B[32m";

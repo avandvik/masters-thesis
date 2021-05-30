@@ -168,6 +168,7 @@ public class Main {
         iterationsCurrentSolution = 0;
         SearchHistory.setIterationBestSolutionFound(iter);
         SearchHistory.setBestSolutionFound(iterSolution);
+        SearchHistory.updateLSOrDRImprovements(candidateSolution, iterSolution);
         return Parameters.newGlobalBest;
     }
 
@@ -197,6 +198,7 @@ public class Main {
         }
         if (setPartSolution.getObjective(false) < bestSolution.getObjective(false)) {
             SearchHistory.incrementNbrImprovementsBySetPartitioning();
+            SearchHistory.setBestSolFoundBy(Constants.SET_PARTITIONING_NAME);
         }
         acceptSolution(setPartSolution, null, iter);  // Reward is ignored
     }

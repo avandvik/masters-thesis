@@ -42,7 +42,7 @@ public class Parameters {
     public static int totalIter = 1000;
     public static int maxIterSolution = 20;
     public static int segmentIter = 50;
-    public static int searchHistoryIter = 10;
+    public static int searchHistoryIter = 5000;
     public static List<Integer> setPartIterations = new ArrayList<>(Arrays.asList(200, 400, 600, 800, 1000, 1500,
             2000, 3000, 4000, 5000));
 
@@ -77,7 +77,7 @@ public class Parameters {
     public static void setSolstormParameters() {
         cacheSP = true;
         cacheSize = 600000;
-        totalPoolSize = 250000;
+        totalPoolSize = 100000;
         parallelHeuristics = true;
         totalIter = 5000;
         verbose = false;
