@@ -36,7 +36,8 @@ public class Parameters {
     public static int kMeansAttempts = 10;  // No tuning
 
     // Local search
-    public static double lsThresh = 0.2;  // No tuning
+    public static double lsMaxGap = 0.2;  // No tuning
+    public static double lsOperatorRunLimit = 0.5;  // No tuning
 
     // Iterations
     public static int totalIter = 1000;
@@ -48,6 +49,7 @@ public class Parameters {
 
     // Cache and order sequence pool size
     public static int cacheSize = 1000;
+    public static int vesselCacheSize;
     public static int totalPoolSize = 1000;
     public static int vesselPoolSize;
 
@@ -76,7 +78,7 @@ public class Parameters {
 
     public static void setSolstormParameters() {
         cacheSP = true;
-        cacheSize = 600000;
+        cacheSize = 1000000;
         totalPoolSize = 100000;
         parallelHeuristics = true;
         totalIter = 5000;

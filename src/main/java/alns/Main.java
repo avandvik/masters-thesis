@@ -302,7 +302,7 @@ public class Main {
         Problem.setUpProblem(Constants.FILE_NAME, false, seed);
         if (Constants.SOLSTORM) Parameters.setSolstormParameters();
         Problem.setRandom(seed);
-        Problem.setVesselPoolSize();
+        Problem.setVesselPoolAndCacheSize();
         System.out.println("Running with seed: " + seed);
         double startTime = System.nanoTime();
         try {

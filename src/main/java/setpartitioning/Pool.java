@@ -6,6 +6,7 @@ import data.Problem;
 import objects.Order;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,13 +37,15 @@ public class Pool {
     public static void saveVoyage(int vIdx, List<Order> orderSequence, double cost) {
         if (!Evaluator.isVoyageFeasible(orderSequence, vIdx)) return;
         if (vesselToVoyageToCost.get(vIdx).containsKey(orderSequence)) return;
-        if (getVesselPoolSize(vIdx) > Parameters.vesselPoolSize) deleteExceedingSequences(vIdx);
+        int vesselPoolSize = getVesselPoolSize(vIdx);
+        if (vesselPoolSize > Parameters.vesselPoolSize) prunePool(vIdx, vesselPoolSize);
         vesselToVoyageToCost.get(vIdx).put(orderSequence, cost);
     }
 
-    private static void deleteExceedingSequences(int vIdx) {
+    private static void prunePool(int vIdx, int vesselPoolSize) {
         List<List<Order>> keys = new ArrayList<>(vesselToVoyageToCost.get(vIdx).keySet());
-        List<Order> key = keys.get(Problem.random.nextInt(keys.size()));
-        vesselToVoyageToCost.get(vIdx).remove(key);
+        Collections.shuffle(keys, Problem.random);
+        int pruneSize = vesselPoolSize / 2;
+        keys.subList(0, pruneSize).forEach(vesselToVoyageToCost.get(vIdx).keySet()::remove);
     }
 }

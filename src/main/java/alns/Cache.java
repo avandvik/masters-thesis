@@ -1,10 +1,14 @@
 package alns;
 
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import subproblem.Node;
 import subproblem.SubProblem;
 
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,7 +60,17 @@ public class Cache {
     public static void cacheSequence(int vIdx, List<Order> orderSequence, SubProblem subProblem) {
         if (vesselToSequenceToCost.get(vIdx).containsKey(orderSequence)) return;
         if (vesselToSequenceToShortestPath.get(vIdx).containsKey(orderSequence)) return;
+        int vesselCacheSize = getVesselCacheSize(vIdx);
+        if (vesselCacheSize > Parameters.vesselCacheSize) pruneCache(vIdx, vesselCacheSize);
         vesselToSequenceToCost.get(vIdx).put(orderSequence, subProblem.getCost());
         vesselToSequenceToShortestPath.get(vIdx).put(orderSequence, subProblem.getShortestPath());
+    }
+
+    public static void pruneCache(int vIdx, int vesselCacheSize) {
+        List<List<Order>> keys = new ArrayList<>(vesselToSequenceToCost.get(vIdx).keySet());
+        Collections.shuffle(keys, Problem.random);
+        int pruneSize = vesselCacheSize / 2;
+        keys.subList(0, pruneSize).forEach(vesselToSequenceToCost.get(vIdx).keySet()::remove);
+        keys.subList(0, pruneSize).forEach(vesselToSequenceToShortestPath.get(vIdx).keySet()::remove);
     }
 }

@@ -95,7 +95,7 @@ public class IO {
         parametersObj.put(Constants.REMOVAL_UPPER_PERCENTAGE_KEY, Parameters.maxPercentage);
         parametersObj.put(Constants.REGRET_KEY, Parameters.regretParameter);
         parametersObj.put(Constants.DETERMINISM_KEY, Parameters.p);
-        parametersObj.put(Constants.LOCAL_SEARCH_CONDITION_KEY, Parameters.lsThresh);
+        parametersObj.put(Constants.LOCAL_SEARCH_CONDITION_KEY, Parameters.lsMaxGap);
         parametersObj.put(Constants.PREDETERMINED_ITERATIONS_KEY, Parameters.totalIter);
         parametersObj.put(Constants.MAX_ITERATIONS_SOLUTION_KEY, Parameters.maxIterSolution);
         parametersObj.put(Constants.SEGMENT_ITERATIONS_KEY, Parameters.segmentIter);

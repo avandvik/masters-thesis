@@ -157,8 +157,9 @@ public class Problem {
         return Problem.vessels.get(vesselIdx);
     }
 
-    public static void setVesselPoolSize() {
+    public static void setVesselPoolAndCacheSize() {
         Parameters.vesselPoolSize = Parameters.totalPoolSize / (getNumberOfVessels() - 1);
+        Parameters.vesselCacheSize = Parameters.cacheSize / (getNumberOfVessels() - 1);
     }
 
     /* =========== WEATHER =========== */
