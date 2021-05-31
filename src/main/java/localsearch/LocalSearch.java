@@ -6,13 +6,11 @@ import data.Constants;
 import data.Messages;
 import data.Parameters;
 import data.SearchHistory;
-import utils.Helpers;
 
 public class LocalSearch {
 
     public static Solution localSearch(Solution candidateSolution, Solution bestSolution) {
-        Solution lsSolution = Helpers.deepCopySolution(candidateSolution);
-        lsSolution = voyageExchangeImprovement(lsSolution);
+        Solution lsSolution = voyageExchangeImprovement(candidateSolution);
         if (notWorthRunningLS(lsSolution, bestSolution)) return lsSolution;
         lsSolution = intraVoyageImprovement(lsSolution);
         lsSolution = interVoyageImprovement(lsSolution);
