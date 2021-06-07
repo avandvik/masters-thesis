@@ -64,6 +64,7 @@ public class Parameters {
     public static boolean printSolution = true;
     public static boolean saveSolution = true;
     public static boolean saveHistory = true;
+    public static boolean speedOpt = true;
 
     // Other
     public static final int seedBound = 1000;
@@ -84,7 +85,7 @@ public class Parameters {
         totalIter = 5000;
         verbose = false;
         semiVerbose = true;
-        printSolution = false;
+        printSolution = true;
         saveSolution = true;
         saveHistory = true;
     }
