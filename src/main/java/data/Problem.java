@@ -50,6 +50,9 @@ public class Problem {
     public static Random random;
     public static int currentSeed;
 
+    // Speed optimization
+    public static boolean speedOpt;
+
 
     /* =========== INSTALLATION =========== */
 
@@ -217,6 +220,7 @@ public class Problem {
 
     public static void setUpProblem(String fileName, boolean isTest, int randomSeed) {
         Constants.PATH_TO_INSTANCE = (isTest ? Constants.PATH_TO_TEST_DIR : Constants.PATH_TO_INSTANCES_DIR) + fileName;
+        Problem.speedOpt = true;
         IO.setUpInstanceInfo();
         IO.setUpInstallations();
         IO.setUpVesselInfo();

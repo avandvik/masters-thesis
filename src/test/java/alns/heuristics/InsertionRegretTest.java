@@ -22,6 +22,7 @@ public class InsertionRegretTest {
     @DisplayName("test InsertionRegret")
     public void insertionRegretTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        Problem.speedOpt = true;
         Cache.initialize();
         Pool.initialize();
         InsertionRegret insertionRegret = new InsertionRegret(Constants.INSERTION_REGRET_NAME);

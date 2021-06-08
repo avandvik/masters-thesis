@@ -46,6 +46,7 @@ public class Pool {
         List<List<Order>> keys = new ArrayList<>(vesselToVoyageToCost.get(vIdx).keySet());
         Collections.shuffle(keys, Problem.random);
         int pruneSize = vesselPoolSize / 2;
+        if (pruneSize > keys.size()) return;
         keys.subList(0, pruneSize).forEach(vesselToVoyageToCost.get(vIdx).keySet()::remove);
     }
 }

@@ -83,6 +83,7 @@ public class Constants {
     public static final String ARRIVAL_TIME_KEY = "arrival_time";
     public static final String SERVICE_TIME_KEY = "service_time";
     public static final String END_TIME_KEY = "end_time";
+    public static final String SPEED_KEY = "speed";
     public static final String ITER_TO_OBJ_KEY = "iteration_to_objective";
     public static final String HEURISTIC_TO_ITER_TO_WEIGHT_KEY = "heuristic_to_iteration_to_weight";
     public static final String HEURISTIC_TO_SELECTIONS_KEY = "heuristic_to_selections";

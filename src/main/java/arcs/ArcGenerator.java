@@ -1,6 +1,5 @@
 package arcs;
 
-import data.Parameters;
 import data.Problem;
 import objects.Installation;
 import objects.Order;
@@ -12,7 +11,7 @@ public class ArcGenerator {
 
     public static List<Double> getSpeeds(double distance, int startTime) {
         if (distance == 0) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
-        if (!Parameters.speedOpt) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
+        if (!Problem.speedOpt) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
         double averageMaxSpeed;
         try {
             averageMaxSpeed = calculateAverageMaxSpeed(startTime, distance);

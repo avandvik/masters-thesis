@@ -64,7 +64,6 @@ public class Parameters {
     public static boolean printSolution = true;
     public static boolean saveSolution = true;
     public static boolean saveHistory = true;
-    public static boolean speedOpt = true;
 
     // Other
     public static final int seedBound = 1000;

@@ -36,17 +36,21 @@ public class IO {
             JSONObject vesselObj = ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel));
             vesselObj.put(Constants.SEQUENCE_KEY, orderSequence);
             vesselObj.put(Constants.TIME_POINTS_KEY, new JSONObject());
+            // TODO: Save speed and make emission calculator
             Node prevNode = null;
             for (Node node : solution.getShortestPaths().get(vesselIdx)) {
                 JSONObject timePoints = new JSONObject();
+                double speed = node.getSpeed(prevNode);
                 if (node.getOrder() != null) {
                     timePoints.put(Constants.ARRIVAL_TIME_KEY, node.getArrTime(prevNode));
                     timePoints.put(Constants.SERVICE_TIME_KEY, node.getServiceStartTime(prevNode));
                     timePoints.put(Constants.END_TIME_KEY, node.getDiscreteTime());
+                    timePoints.put(Constants.SPEED_KEY, speed);
                     int orderId = node.getOrder().getOrderId();
                     ((JSONObject) vesselObj.get(Constants.TIME_POINTS_KEY)).put(orderId, timePoints);
                 } else {
                     timePoints.put(Constants.END_TIME_KEY, node.getDiscreteTime());
+                    timePoints.put(Constants.SPEED_KEY, speed);
                     boolean isStartDepot = node.getDiscreteTime() == Problem.preparationEndTime;
                     String depotName = isStartDepot ? "SD" : "ED";
                     ((JSONObject) vesselObj.get(Constants.TIME_POINTS_KEY)).put(depotName, timePoints);

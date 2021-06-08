@@ -1,5 +1,6 @@
 package subproblem;
 
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -16,6 +17,7 @@ public class TreeTest {
     @DisplayName("Test generateTree")
     public void testGenerateTree() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        Problem.speedOpt = true;
         LinkedList<Order> orderSequence = new LinkedList<>();
         for (int i = 0; i < 5; i++) orderSequence.add(Problem.orders.get(i));
         Tree tree = new Tree(0);  // 0 for fleet vessel
@@ -60,6 +62,7 @@ public class TreeTest {
     @DisplayName("Test findShortestPath")
     public void testFindShortestPath() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        Problem.speedOpt = true;
         LinkedList<Order> orderSequence = new LinkedList<>();
         for (int i = 0; i < 5; i++) orderSequence.add(Problem.orders.get(i));
         Tree tree = new Tree(0);  // Fleet vessel
