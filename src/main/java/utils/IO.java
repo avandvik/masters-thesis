@@ -36,7 +36,6 @@ public class IO {
             JSONObject vesselObj = ((JSONObject) ((JSONObject) obj.get(Constants.VOYAGES_KEY)).get(vessel));
             vesselObj.put(Constants.SEQUENCE_KEY, orderSequence);
             vesselObj.put(Constants.TIME_POINTS_KEY, new JSONObject());
-            // TODO: Save speed and make emission calculator
             Node prevNode = null;
             for (Node node : solution.getShortestPaths().get(vesselIdx)) {
                 JSONObject timePoints = new JSONObject();

@@ -88,7 +88,7 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>masters-thesis-so</finalName>
+                            <finalName>masters-thesis</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
 
