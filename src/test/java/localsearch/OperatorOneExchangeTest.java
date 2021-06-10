@@ -8,6 +8,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import setpartitioning.Pool;
 
 import java.util.*;
 
@@ -19,6 +20,7 @@ public class OperatorOneExchangeTest {
     @DisplayName("test oneExchange")
     public void oneExchangeTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        Pool.initialize();
         Cache.initialize();
         Solution solution = SolutionGenerator.createSolutionBasicTestData(3, 8);
         Objective.setObjValAndSchedule(solution);
