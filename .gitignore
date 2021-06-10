@@ -4,11 +4,6 @@ target
 output
 venv
 *.log
-plot/plots/*
-plot/solution/*
 .DS_Store
 generated
-instances
 .ipynb_checkpoints
-graphs
-solutions

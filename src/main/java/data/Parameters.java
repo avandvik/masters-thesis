@@ -37,7 +37,7 @@ public class Parameters {
 
     // Local search
     public static double lsMaxGap = 0.2;  // No tuning
-    public static double lsOperatorRunLimit = 0.5;  // No tuning
+    public static double lsOperatorRunLimit = 1.0;  // No tuning
 
     // Iterations
     public static int totalIter = 1000;

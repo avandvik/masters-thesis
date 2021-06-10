@@ -21,13 +21,12 @@ public class RemovalCluster extends Heuristic implements Destroyer {
     public Solution destroy(Solution solution) {
         int nbrOrders = getNbrOrdersToRemove(solution);
         Solution newSolution = getClusterRemoval(solution, nbrOrders);
-        // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;
     }
 
     private Solution getClusterRemoval(Solution solution, int numberOfOrders) {
-        /*  */
+        /* Removes orders based on clusters in the solution's voyages */
 
         Solution newSolution = Helpers.deepCopySolution(solution);
         newSolution.clearSubProblemResults();

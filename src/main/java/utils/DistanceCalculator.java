@@ -66,9 +66,4 @@ public class DistanceCalculator {
             return (dist);
         }
     }
-
-
-
-
-
 }

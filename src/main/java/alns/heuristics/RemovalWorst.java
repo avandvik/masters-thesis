@@ -25,13 +25,12 @@ public class RemovalWorst extends Heuristic implements Destroyer {
         int nbrOrders = getNbrOrdersToRemove(solution);
         Solution newSolution = solution;
         while (newSolution.getUnplacedOrders().size() < nbrOrders) newSolution = getWorstRemoval(newSolution);
-        // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;
     }
 
     private Solution getWorstRemoval(Solution solution) {
-        /*  */
+        /* Finds the removal that decreases the objective the most */
 
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();

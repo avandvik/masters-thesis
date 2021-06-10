@@ -215,7 +215,6 @@ public class Problem {
         Problem.random = new Random(seed);
     }
 
-
     /* =========== SETUP =========== */
 
     public static void setUpProblem(String fileName, boolean isTest, int randomSeed) {
@@ -231,5 +230,3 @@ public class Problem {
         Problem.calcAndSetPostponementPenalties();
     }
 }
-
-

@@ -24,13 +24,12 @@ public class RemovalRelated extends Heuristic implements Destroyer {
         numberOfOrders = getNbrOrdersToRemove(solution);
         Solution newSolution = solution;
         while (newSolution.getUnplacedOrders().size() < numberOfOrders) newSolution = getRelatedRemoval(newSolution);
-        // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;
     }
 
     private Solution getRelatedRemoval(Solution solution) {
-        /*  */
+        /* Finds the most related removal and returns the new solution */
 
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();
