@@ -39,14 +39,17 @@ public class IO {
             Node prevNode = null;
             for (Node node : solution.getShortestPaths().get(vesselIdx)) {
                 JSONObject timePoints = new JSONObject();
+                double speed = node.getSpeed(prevNode);
                 if (node.getOrder() != null) {
                     timePoints.put(Constants.ARRIVAL_TIME_KEY, node.getArrTime(prevNode));
                     timePoints.put(Constants.SERVICE_TIME_KEY, node.getServiceStartTime(prevNode));
                     timePoints.put(Constants.END_TIME_KEY, node.getDiscreteTime());
+                    timePoints.put(Constants.SPEED_KEY, speed);
                     int orderId = node.getOrder().getOrderId();
                     ((JSONObject) vesselObj.get(Constants.TIME_POINTS_KEY)).put(orderId, timePoints);
                 } else {
                     timePoints.put(Constants.END_TIME_KEY, node.getDiscreteTime());
+                    timePoints.put(Constants.SPEED_KEY, speed);
                     boolean isStartDepot = node.getDiscreteTime() == Problem.preparationEndTime;
                     String depotName = isStartDepot ? "SD" : "ED";
                     ((JSONObject) vesselObj.get(Constants.TIME_POINTS_KEY)).put(depotName, timePoints);
@@ -75,7 +78,12 @@ public class IO {
         obj.put(Constants.NBR_LOCAL_SEARCH_RUNS_KEY, SearchHistory.getNbrLocalSearchRuns());
         obj.put(Constants.AVG_LOCAL_SEARCH_IMPROVEMENT_KEY, SearchHistory.getAvgLocalSearchImprovement());
         obj.put(Constants.BEST_LOCAL_SEARCH_IMPROVEMENT_KEY, SearchHistory.getBestLocalSearchImprovement());
-        obj.put(Constants.NBR_IMPROVEMENTS_SET_PART_KEY, SearchHistory.getNbrImprovementsBySetPartitioning());
+        obj.put(Constants.NBR_IMPROVEMENTS_SP_KEY, SearchHistory.getNbrImprovementsBySetPartitioning());
+        obj.put(Constants.NBR_IMPROVEMENTS_LS_KEY, SearchHistory.getNbrImprovementsByLocalSearch());
+        obj.put(Constants.NBR_IMPROVEMENTS_DR_KEY, SearchHistory.getNbrImprovementsByDestroyRepair());
+        obj.put(Constants.NBR_IMPROVEMENTS_LS_OPERATORS_KEY, SearchHistory.getOperatorToNbrImprovements());
+        obj.put(Constants.INITIAL_SOLUTION_OBJECTIVE_KEY, SearchHistory.getConstructionHeuristicObjective());
+        obj.put(Constants.BEST_SOLUTION_FOUND_BY_KEY, SearchHistory.getBestSolFoundBy());
 
         JSONObject parametersObj = new JSONObject();
         parametersObj.put(Constants.NOISE_CONTROL_KEY, Parameters.noiseRate);
@@ -90,13 +98,12 @@ public class IO {
         parametersObj.put(Constants.REMOVAL_UPPER_PERCENTAGE_KEY, Parameters.maxPercentage);
         parametersObj.put(Constants.REGRET_KEY, Parameters.regretParameter);
         parametersObj.put(Constants.DETERMINISM_KEY, Parameters.p);
-        parametersObj.put(Constants.LOCAL_SEARCH_CONDITION_KEY, Parameters.lsThresh);
+        parametersObj.put(Constants.LOCAL_SEARCH_CONDITION_KEY, Parameters.lsMaxGap);
         parametersObj.put(Constants.PREDETERMINED_ITERATIONS_KEY, Parameters.totalIter);
         parametersObj.put(Constants.MAX_ITERATIONS_SOLUTION_KEY, Parameters.maxIterSolution);
-        parametersObj.put(Constants.SET_PARTITIONING_ITERATIONS_KEY, Parameters.setPartIter);
         parametersObj.put(Constants.SEGMENT_ITERATIONS_KEY, Parameters.segmentIter);
         parametersObj.put(Constants.CACHE_SIZE_KEY, Parameters.cacheSize);
-        parametersObj.put(Constants.POOL_SIZE_KEY, Parameters.poolSize);
+        parametersObj.put(Constants.POOL_SIZE_KEY, Parameters.totalPoolSize);
         parametersObj.put(Constants.LOCAL_SEARCH_KEY, Parameters.localSearch);
         parametersObj.put(Constants.SET_PARTITIONING_KEY, Parameters.setPartitioning);
         obj.put(Constants.PARAMETERS_KEY, parametersObj);

@@ -1,9 +1,11 @@
 package subproblem;
 
+import alns.Cache;
 import data.Messages;
 import data.Parameters;
 import data.Problem;
 import objects.Order;
+import setpartitioning.Pool;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,8 +40,9 @@ public class SubProblem implements Runnable {
     @Override
     public void run() {
         this.solveSubProblem();
-        addToResultsStructure(vesselIdx, this.cost);
-        if (Parameters.cacheSP) Cache.cacheCurrent(this.hashCode(), this);
+        addToResultsStructure(this.vesselIdx, this.cost);
+        if (Parameters.cacheSP) Cache.cacheSequence(vesselIdx, orderSequence, this);
+        if (Parameters.setPartitioning) Pool.saveVoyage(vesselIdx, orderSequence, this.cost);
     }
 
     public void solveSubProblem() {
@@ -69,7 +72,7 @@ public class SubProblem implements Runnable {
         return orderSequence;
     }
 
-    public int getVesselIdx() {
+    public int getVIdx() {
         return vesselIdx;
     }
 
@@ -80,14 +83,5 @@ public class SubProblem implements Runnable {
     private void isVesselIdxValid(int vesselIdx) {
         if (vesselIdx < 0 || vesselIdx >= Problem.getNumberOfVessels())
             throw new IllegalArgumentException(Messages.invalidVesselIdx);
-    }
-
-    public static int getSubProblemHash(List<Order> orderSequence, int vesselIdx) {
-        return Objects.hash(orderSequence, vesselIdx);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.orderSequence, this.vesselIdx);
     }
 }

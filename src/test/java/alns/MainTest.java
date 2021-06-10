@@ -5,7 +5,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import subproblem.Cache;
+import setpartitioning.Pool;
 
 import java.util.*;
 
@@ -54,19 +54,17 @@ public class MainTest {
         Main.setBestSolution(solutionOne);
 
         // Initialize route saving
-        Main.vesselToSequenceToCost = new HashMap<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            Main.vesselToSequenceToCost.put(vesselIdx, new HashMap<>());
-        }
+        Cache.initialize();
+        Pool.initialize();
 
-        double rewardOne = Main.acceptSolution(solutionTwo, 0);
+        double rewardOne = Main.acceptSolution(solutionTwo, null, 0);
 
         assertEquals(solutionTwo, Main.getBestSolution());
         assertEquals(solutionTwo, Main.getCurrentSolution());
         // assertEquals(33.0, rewardOne, 0.0);
 
         double rewardTwo = 0.0;
-        while (Main.getCurrentSolution() != solutionThree) rewardTwo = Main.acceptSolution(solutionThree, 0);
+        while (Main.getCurrentSolution() != solutionThree) rewardTwo = Main.acceptSolution(solutionThree, null, 0);
 
         assertEquals(solutionThree, Main.getCurrentSolution());
         // assertEquals(13.0, rewardTwo, 0.0);

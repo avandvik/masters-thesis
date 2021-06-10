@@ -40,6 +40,13 @@ public class Evaluator {
                 && !isIllegalPattern(orderSequence, Helpers.getInstIdSequence(orderSequence));
     }
 
+    public static boolean isVoyageFeasible(List<Order> orderSequence, int vIdx) {
+        return isFeasibleLoadSequence(orderSequence, Problem.getVessel(vIdx))
+                && isFeasibleDurationSequence(orderSequence)
+                && !isIllegalPattern(orderSequence, Helpers.getInstIdSequence(orderSequence))
+                && !hasOptionalWithoutMD(orderSequence);
+    }
+
     public static boolean isFeasibleLoad(List<List<Order>> orderSequences) {
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             if (!isFeasibleLoadSequence(orderSequences.get(vesselIdx), Problem.getVessel(vesselIdx))) return false;
@@ -161,6 +168,29 @@ public class Evaluator {
 
     public static boolean isIllegalPattern(List<Order> orderSequence, List<Integer> instSequence) {
         return isSpread(instSequence) || isIllegalVisitOrder(orderSequence);
+    }
+
+    public static boolean hasOptionalWithoutMD(List<Order> orderSequence) {
+        List<Installation> instSequence = Helpers.getInstSequence(orderSequence);
+        outer:
+        for (Installation inst : instSequence) {
+            if (Problem.instHasMD(inst)) {
+                boolean instHasOptional = false;
+                for (Order order : orderSequence) {
+                    if (!order.isMandatory() && Problem.getInstallation(order).equals(inst)) {
+                        instHasOptional = true;
+                        break;
+                    }
+                }
+                if (instHasOptional) {
+                    for (Order order : orderSequence) {
+                        if (order.isMandatory() && Problem.getInstallation(order).equals(inst)) continue outer;
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean isSpread(List<Integer> instSequence) {

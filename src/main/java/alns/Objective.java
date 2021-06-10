@@ -11,10 +11,9 @@ import java.util.*;
 
 public class Objective {
 
-    public static double getOrderSequenceCost(List<Order> orderSequence, int vIdx) {
+    public static double getOrderSequenceCost(List<Order> os, int vIdx) {
         /* If caching is on, the cache must contain the orderSequence, else this will return NaN */
-        int hash = SubProblem.getSubProblemHash(orderSequence, vIdx);
-        return orderSequence.isEmpty() ? 0.0 : Parameters.cacheSP ? Cache.getCost(hash) : runSP(orderSequence, vIdx);
+        return os.isEmpty() ? 0.0 : Parameters.cacheSP ? Cache.getCost(vIdx, os) : runSP(os, vIdx);
     }
 
     public static void setObjValAndSchedule(Solution solution) {
@@ -42,32 +41,28 @@ public class Objective {
 
     public static SubProblem runSPComplete(List<Order> orderSequence, int vesselIdx) {
         /* Runs SubProblem and returns entire object to access all solution info (schedules) */
-
         if (orderSequence.isEmpty()) return null;
-        int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
-        if (Cache.isCached(hash)) {
+        if (Cache.isCached(vesselIdx, orderSequence)) {
             SubProblem subProblem = new SubProblem(orderSequence, vesselIdx);
-            subProblem.setCost(Cache.getCost(hash));
-            subProblem.setShortestPath(Cache.getShortestPath(hash));
+            subProblem.setCost(Cache.getCost(vesselIdx, orderSequence));
+            subProblem.setShortestPath(Cache.getShortestPath(vesselIdx, orderSequence));
             return subProblem;
         }
         SubProblem subProblem = new SubProblem(orderSequence, vesselIdx);
         SubProblem.initializeResultsStructure();
         subProblem.run();
-        if (Parameters.cacheSP) Cache.cacheCurrent(hash, subProblem);
+        if (Parameters.cacheSP) Cache.cacheSequence(vesselIdx, orderSequence, subProblem);
         return subProblem;
     }
 
     public static double runSP(List<Order> orderSequence, int vesselIdx) {
         /* Run SubProblem and returns only objective value */
-
         if (orderSequence.isEmpty()) return 0.0;
-        int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
-        if (Cache.isCached(hash)) return Cache.getCost(hash);
+        if (Cache.isCached(vesselIdx, orderSequence)) return Cache.getCost(vesselIdx, orderSequence);
         SubProblem subProblem = new SubProblem(orderSequence, vesselIdx);
         SubProblem.initializeResultsStructure();
         subProblem.run();
-        if (Parameters.cacheSP) Cache.cacheCurrent(hash, subProblem);
+        if (Parameters.cacheSP) Cache.cacheSequence(vesselIdx, orderSequence, subProblem);
         return subProblem.getCost();
     }
 
@@ -93,9 +88,8 @@ public class Objective {
     }
 
     private static boolean cacheInsertion(Order order, List<Order> orderSequence, int vesselIdx, int insertionIdx) {
-        int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
-        if (Cache.isCached(hash)) {
-            double cost = Cache.getCost(hash);
+        if (Cache.isCached(vesselIdx, orderSequence)){
+            double cost = Cache.getCost(vesselIdx, orderSequence);
             SubProblemInsertion.addToResultsStructure(order, vesselIdx, insertionIdx, cost);
             return true;
         }
@@ -128,9 +122,8 @@ public class Objective {
     }
 
     private static boolean cacheRemoval(List<Order> orderSequence, int vesselIdx, int removalIdx) {
-        int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
-        if (Cache.isCached(hash)) {
-            double cost = Cache.getCost(hash);
+        if (Cache.isCached(vesselIdx, orderSequence)) {
+            double cost = Cache.getCost(vesselIdx, orderSequence);
             SubProblemRemoval.addToResultsStructure(vesselIdx, removalIdx, cost);
             return true;
         }
@@ -157,9 +150,8 @@ public class Objective {
     }
 
     private static boolean cacheEvaluate(List<Order> orderSequence, int vesselIdx) {
-        int hash = SubProblem.getSubProblemHash(orderSequence, vesselIdx);
-        if (Cache.isCached(hash)) {
-            double cost = Cache.getCost(hash);
+        if (Cache.isCached(vesselIdx, orderSequence)) {
+            double cost = Cache.getCost(vesselIdx, orderSequence);
             SubProblem.addToResultsStructure(vesselIdx, cost);
             return true;
         }

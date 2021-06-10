@@ -1,7 +1,9 @@
 package subproblem;
 
+import alns.Cache;
 import data.Parameters;
 import objects.Order;
+import setpartitioning.Pool;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +37,8 @@ public class SubProblemInsertion extends SubProblem implements Runnable {
     @Override
     public void run() {
         super.solveSubProblem();
-        addToResultsStructure(this.orderToPlace, super.getVesselIdx(), this.insertionIdx, super.getCost());
-        if (Parameters.cacheSP) Cache.cacheCurrent(super.hashCode(), this);
+        addToResultsStructure(this.orderToPlace, super.getVIdx(), this.insertionIdx, super.getCost());
+        if (Parameters.cacheSP) Cache.cacheSequence(super.getVIdx(), super.getOrderSequence(), this);
+        if (Parameters.setPartitioning) Pool.saveVoyage(super.getVIdx(), super.getOrderSequence(), super.getCost());
     }
 }

@@ -1,6 +1,7 @@
 import folium
 import json
 import os
+import re
 import selenium.webdriver
 
 
@@ -25,6 +26,7 @@ solution_path = root_path + '/plot/solution'
 plots_path = f'{root_path}/plot/solutions'
 installations_path = root_path + resources_path + '/constant/installations.json'
 instance_path = f'{root_path}{resources_path}/instances'
+vessel_to_color = {0: "green", 1: "blue", 2: "yellow", 3: "black", 4: "white", 5: "pink"}
 
 
 def map_inst_ids_to_location():
@@ -45,7 +47,8 @@ def get_solution():
         raise FileNotFoundError('Make sure that there is only one file in solution directory!')
 
     with open(f'{solution_path}/{files[0]}') as json_solution:
-        return json.load(json_solution)
+        seed = files[0].split('_')[1]
+        return json.load(json_solution), seed
 
 
 def get_instance():
@@ -73,10 +76,10 @@ def save_solution_plot():
                 installation_sequence.append(installation_id)
         add_markers(m_1, installation_sequence)
         add_markers(m_2, installation_sequence)
-        add_lines(m_2, installation_sequence)
+        add_lines(m_2, installation_sequence, vessel)
     instance_name = get_instance_name().split('.')[0]
-    save_map_png(m_1, f'{instance_name}_markers')
-    save_map_png(m_2, f'{instance_name}_markers_lines')
+    save_map_png(m_1, f'{instance_name}_{seed}_markers')
+    save_map_png(m_2, f'{instance_name}_{seed}_markers_lines')
 
 
 def define_map():
@@ -93,19 +96,24 @@ def add_markers(m, installations):
         location = get_location(installation)
         folium.CircleMarker(location=location,
                             radius=4,
-                            color='darkblue',
-                            fill_color='white',
+                            color='lightblue',
+                            fill_color='black',
                             fill_opacity=1,
                             fill=True).add_to(m)
 
 
-def add_lines(m, installations):
+def add_lines(m, installations, vessel):
     points = []
     for installation in installations:
         location = get_location(installation)
         points.append(location)
     points.append(get_location(0))
-    folium.PolyLine(points, color="green", weight=2.5, opacity=1).add_to(m)
+    if vessel == 'SPOT':
+        color = 'red'
+    else:
+        v_idx = int(re.split('_', vessel)[1])
+        color = vessel_to_color.get(v_idx)
+    folium.PolyLine(points, color=color, weight=2.5, opacity=1).add_to(m)
 
 
 def get_location(installation):
@@ -128,6 +136,6 @@ def save_map_png(m, file_name):
 
 
 inst_ids_to_location = map_inst_ids_to_location()
-solution = get_solution()
+solution, seed = get_solution()
 instance = get_instance()
 save_solution_plot()

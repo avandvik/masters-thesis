@@ -12,7 +12,7 @@ module load gurobi/9.1
 
 nbr_sims="$1"
 export nbr_sims
-cool_down=40
+cool_down=5
 export cool_down
 jar="$2"
 export jar
@@ -24,7 +24,7 @@ do
     file_name="$(basename -- "$file_path")"
     echo "Running $file_name ($i/$nbr_sims)"
     java -Xmx330g -jar "$jar" "$current_time" "$file_name"
-    echo "Sleeping for $cool_down seconds to cool down..."
+    echo "Sleeping for $cool_down seconds..."
     sleep "$cool_down"
   done
 done

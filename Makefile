@@ -18,6 +18,9 @@ coverage-report:
 upload:
 	./shell/upload.sh $(jar)
 
+upload-instances:
+	./shell/upload_instances.sh
+
 run:
 	./run.sh $(sims) $(jar)
 

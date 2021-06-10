@@ -1,5 +1,6 @@
 package localsearch;
 
+import alns.Cache;
 import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
@@ -7,7 +8,6 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import subproblem.Cache;
 
 import java.util.*;
 

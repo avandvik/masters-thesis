@@ -9,14 +9,9 @@ import java.util.*;
 
 public class ArcGenerator {
 
-    private static Vessel vessel;
-
-    public static void setVessel(int vesselIdx) {
-        vessel = Problem.getVessel(vesselIdx);
-    }
-
     public static List<Double> getSpeeds(double distance, int startTime) {
         if (distance == 0) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
+        if (!Problem.speedOpt) return new ArrayList<>(Collections.singletonList(Problem.designSpeed));
         double averageMaxSpeed;
         try {
             averageMaxSpeed = calculateAverageMaxSpeed(startTime, distance);
@@ -119,25 +114,26 @@ public class ArcGenerator {
     public static boolean isServicingPossible(int serviceStartTime, int serviceEndTime, Installation toInst) {
         int startDayTime = Problem.discToDiscDayTime(serviceStartTime);
         int endDayTime = Problem.discToDiscDayTime(serviceEndTime);
-        int openTime = toInst.getOpeningHour() * Problem.discretizationParam - 1;
-        int closeTime = toInst.getClosingHour() * Problem.discretizationParam - 1;
+        int openTime = toInst.getOpeningHour() * Problem.discretizationParam;
+        int closeTime = toInst.getClosingHour() * Problem.discretizationParam;
         boolean instOpen = true;
         if (openTime != Problem.getFirstTimePoint() && closeTime != Problem.getEndOfDayTimePoint()) {
             instOpen = startDayTime >= openTime && endDayTime <= closeTime
-                    && endDayTime >= openTime && startDayTime <= closeTime;
+                    && endDayTime >= openTime && startDayTime <= closeTime
+                    && startDayTime < endDayTime;
         }
         int worstWeatherState = Problem.getWorstWeatherState(serviceStartTime, serviceEndTime);
         return instOpen && worstWeatherState < Problem.worstWeatherState;
     }
 
     public static Map<Double, Double> mapSpeedsToCosts(Map<Double, List<Integer>> speedsToTimePoints, double distance
-            , int startTime, boolean isSpotVessel) {
+            , int startTime, int vIdx) {
         Map<Double, Double> speedsToCosts = new HashMap<>();
         for (Map.Entry<Double, List<Integer>> entry : speedsToTimePoints.entrySet()) {
             double speed = entry.getKey();
             List<Integer> timePoints = entry.getValue();
             double cost = calculateArcCost(startTime, timePoints.get(0), timePoints.get(1), timePoints.get(2)
-                    , speed, distance, isSpotVessel);
+                    , speed, distance, vIdx);
             speedsToCosts.put(speed, cost);
         }
         return speedsToCosts;
@@ -169,35 +165,35 @@ public class ArcGenerator {
         return timePoints;
     }
 
-    // TODO: The pickup duration must be addressed as an assumption if this is how we want to do this
     public static int calculateServiceDuration(Order order) {
         if (!order.isMandatory() && !order.isDelivery()) return 1;
         return (int) Math.ceil(order.getSize() * Problem.discServiceTimeUnit);
     }
 
     public static double calculateArcCost(int startTime, int arrTime, int serviceStartTime, int serviceEndTime,
-                                          double speed, double distance, boolean isSpotVessel) {
-        double sailCost = calculateFuelCostSailing(startTime, arrTime, speed, distance);
+                                          double speed, double distance, int vIdx) {
+        double sailCost = calculateFuelCostSailing(startTime, arrTime, speed, distance, vIdx);
         double idlingCost = calculateFuelCostIdling(arrTime, serviceStartTime);
         double serviceCost = calculateFuelCostServicing(serviceStartTime, serviceEndTime);
-        double charterCost = calculateCharterCost(startTime, serviceEndTime, isSpotVessel);
+        double charterCost = calculateCharterCost(startTime, serviceEndTime, Problem.isSpotVessel(vIdx));
         return sailCost + idlingCost + serviceCost + charterCost;
     }
 
-    public static double calculateFuelCostSailing(int startTime, int arrTime, double speed, double distance) {
+    public static double calculateFuelCostSailing(int startTime, int arrTime, double speed, double distance, int vIdx) {
         if (distance == 0 || startTime == arrTime) return 0;
         Map<Integer, Double> wsToTimeSpent = mapWSToTimeSpent(startTime, arrTime);
         Map<Integer, Double> wsToDistanceTravelled = mapWSToDistanceTravelled(wsToTimeSpent, speed);
         double distanceInWSOneTwo = wsToDistanceTravelled.get(0) + wsToDistanceTravelled.get(1);
 
-        double consumption = calculateFuelConsumptionSailing(distanceInWSOneTwo, speed, 0)
-                + calculateFuelConsumptionSailing(wsToDistanceTravelled.get(2), speed, 2)
-                + calculateFuelConsumptionSailing(wsToDistanceTravelled.get(3), speed, 3);
+        double consumption = calculateFuelConsumptionSailing(distanceInWSOneTwo, speed, 0, vIdx)
+                + calculateFuelConsumptionSailing(wsToDistanceTravelled.get(2), speed, 2, vIdx)
+                + calculateFuelConsumptionSailing(wsToDistanceTravelled.get(3), speed, 3, vIdx);
 
         return consumption * Problem.fuelPrice;
     }
 
-    public static double calculateFuelConsumptionSailing(double distance, double speed, int weatherState) {
+    public static double calculateFuelConsumptionSailing(double distance, double speed, int weatherState, int vIdx) {
+        Vessel vessel = Problem.getVessel(vIdx);
         return (distance / (speed - Problem.wsToSpeedImpact.get(weatherState))
                 * vessel.getFcDesignSpeed() * Math.pow(speed / Problem.designSpeed, 3));
     }

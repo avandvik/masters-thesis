@@ -16,8 +16,10 @@ public class Tree {
     private List<Node> shortestPath;
     private double globalBestCost;
 
+    private final int vIdx;
+
     public Tree(int vesselIdx) {
-        ArcGenerator.setVessel(vesselIdx);
+        this.vIdx = vesselIdx;
     }
 
     private void setRoot(Node root) {
@@ -63,7 +65,7 @@ public class Tree {
         while (queue.size() != 0) {
             Node currentNode = ((LinkedList<Node>) queue).removeFirst();
             Set<Node> setOfChildren = currentNode.getChildren();
-            if (setOfChildren.isEmpty()) updateGlobalBest(currentNode);
+            if (currentNode.getOrder() == null && setOfChildren.isEmpty()) updateGlobalBest(currentNode);
             for (Node childNode : setOfChildren) {
                 updateChildBest(currentNode, childNode);
                 if (!childNode.isVisited()) {
@@ -158,15 +160,15 @@ public class Tree {
         createNodes(fromNode, null, isSpotVessel, distance, startTime, 3);
     }
 
-    private void createNodes(Node fromNode, Order toOrder, boolean isSpot, double distance, int startTime, int c) {
-        List<Double> speeds = ArcGenerator.getSpeeds(distance, startTime);
+    private void createNodes(Node fromNode, Order toOrder, boolean isSpot, double dist, int startTime, int c) {
+        List<Double> speeds = ArcGenerator.getSpeeds(dist, startTime);
         if (speeds == null) return;  // No valid speeds given the distance and start time
-        Map<Double, Integer> speedsToArrTimes = ArcGenerator.mapSpeedsToArrTimes(distance, startTime, speeds);
+        Map<Double, Integer> speedsToArrTimes = ArcGenerator.mapSpeedsToArrTimes(dist, startTime, speeds);
         int serviceDuration = toOrder != null ? ArcGenerator.calculateServiceDuration(toOrder) : 0;
-        Map<Double, List<Integer>> speedsToTimes = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, distance,
+        Map<Double, List<Integer>> speedsToTimes = ArcGenerator.mapSpeedsToTimePoints(speedsToArrTimes, dist,
                 serviceDuration, toOrder != null ? Problem.getInstallation(toOrder) : Problem.getDepot());
         if (speedsToTimes.values().isEmpty()) return;  // Check for early break
-        Map<Double, Double> speedsToCosts = ArcGenerator.mapSpeedsToCosts(speedsToTimes, distance, startTime, isSpot);
+        Map<Double, Double> speedsToCosts = ArcGenerator.mapSpeedsToCosts(speedsToTimes, dist, startTime, this.vIdx);
         addNodesToTree(speedsToCosts, speedsToTimes, fromNode, toOrder, c);
     }
 
@@ -191,7 +193,7 @@ public class Tree {
                                     Order toOrder) {
         List<Integer> timePointsDepot = new ArrayList<>(Arrays.asList(Problem.preparationEndTime,
                 Problem.preparationEndTime, Problem.preparationEndTime));
-        Node depotNode = new Node(null, null, timePointsDepot);
+        Node depotNode = new Node(null, null, timePointsDepot, 0.0);
         this.addNode(depotNode);
         this.setRoot(depotNode);
         for (double speed : speedsToCosts.keySet()) {
@@ -200,7 +202,7 @@ public class Tree {
             int endTime = timePoints.get(2);
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
-                Node newNode = new Node(toOrder, depotNode, timePoints);
+                Node newNode = new Node(toOrder, depotNode, timePoints, speed);
                 depotNode.addChild(newNode);
                 depotNode.setChildToCost(newNode, cost);
                 this.addNode(newNode);
@@ -208,6 +210,7 @@ public class Tree {
                 if (cost < depotNode.getCostOfChild(existingNode)) {
                     depotNode.setChildToCost(existingNode, cost);
                     existingNode.setParentToTimePoints(null, timePoints);
+                    existingNode.setParentToSpeed(null, speed);
                 }
             }
         }
@@ -221,13 +224,14 @@ public class Tree {
             int endTime = timePoints.get(2);
             Node existingNode = getExistingNode(endTime, toOrder);
             if (existingNode == null) {
-                Node newNode = new Node(toOrder, fromNode, timePoints);
+                Node newNode = new Node(toOrder, fromNode, timePoints, speed);
                 fromNode.addChild(newNode);
                 fromNode.setChildToCost(newNode, cost);
                 this.addNode(newNode);
             } else {
                 existingNode.addParent(fromNode);
                 existingNode.setParentToTimePoints(fromNode, timePoints);
+                existingNode.setParentToSpeed(fromNode, speed);
                 if (fromNode.hasChild(existingNode)) {
                     double bestCost = Math.min(fromNode.getCostOfChild(existingNode), cost);
                     fromNode.setChildToCost(existingNode, bestCost);
@@ -247,13 +251,14 @@ public class Tree {
         int endTime = timePoints.get(2);
         Node existingDepotNode = getExistingNode(endTime, null);
         if (existingDepotNode == null) {
-            Node depotNode = new Node(null, fromNode, timePoints);
+            Node depotNode = new Node(null, fromNode, timePoints, minCostSpeed);
             fromNode.addChild(depotNode);
             fromNode.setChildToCost(depotNode, cost);
             this.addNode(depotNode);
         } else {
             existingDepotNode.addParent(fromNode);
             existingDepotNode.setParentToTimePoints(fromNode, timePoints);
+            existingDepotNode.setParentToSpeed(fromNode, minCostSpeed);
             fromNode.addChild(existingDepotNode);
             fromNode.setChildToCost(existingDepotNode, cost);
         }
@@ -266,7 +271,9 @@ public class Tree {
             List<Node> sortedChildren = new ArrayList<>(node.getChildren());
             sortedChildren.sort(Comparator.comparing(Node::getDiscreteTime));
             for (Node child : sortedChildren) {
-                System.out.println("\t\t" + child + " at cost " + node.getCostOfChild(child));
+                double cost = Math.round(node.getCostOfChild(child) * 100.0) / 100.0;
+                double speed = child.getSpeed(node);
+                System.out.println("\t\t" + child + " at cost " + cost + " and speed " + speed);
             }
             System.out.println("\tParents");
             for (Node parent : node.getParents()) {

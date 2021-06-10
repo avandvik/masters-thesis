@@ -50,6 +50,9 @@ public class Problem {
     public static Random random;
     public static int currentSeed;
 
+    // Speed optimization
+    public static boolean speedOpt;
+
 
     /* =========== INSTALLATION =========== */
 
@@ -82,6 +85,14 @@ public class Problem {
             if (!order.isMandatory() && !order.isDelivery()) hasOP = true;
         }
         return hasOD && hasOP;
+    }
+
+    public static boolean instHasMD(Installation inst) {
+        List<Order> orders = getOrdersFromInstallation(inst);
+        for (Order order : orders) {
+            if (order.isMandatory()) return true;
+        }
+        return false;
     }
 
     /* =========== ORDERS =========== */
@@ -127,9 +138,9 @@ public class Problem {
         double distance = DistanceCalculator.distance(depot, inst, "N");
         int startTime = Problem.preparationEndTime;
         int arrTime = startTime + Problem.hourToDiscTimePoint(distance / speed);
-        ArcGenerator.setVessel(0);  // The first vessel will always be a fleet vessel
+        int vIdx = 0;  // The first vessel will always be a fleet vessel
         int serviceEndTime = arrTime + ArcGenerator.calculateServiceDuration(order);
-        double sailCost = ArcGenerator.calculateFuelCostSailing(startTime, arrTime, speed, distance) * 2;
+        double sailCost = ArcGenerator.calculateFuelCostSailing(startTime, arrTime, speed, distance, vIdx) * 2;
         double serviceCost = ArcGenerator.calculateFuelCostServicing(arrTime, serviceEndTime);
         return sailCost + serviceCost;
     }
@@ -149,6 +160,10 @@ public class Problem {
         return Problem.vessels.get(vesselIdx);
     }
 
+    public static void setVesselPoolAndCacheSize() {
+        Parameters.vesselPoolSize = Parameters.totalPoolSize / (getNumberOfVessels() - 1);
+        Parameters.vesselCacheSize = Parameters.cacheSize / (getNumberOfVessels() - 1);
+    }
 
     /* =========== WEATHER =========== */
 
@@ -200,11 +215,11 @@ public class Problem {
         Problem.random = new Random(seed);
     }
 
-
     /* =========== SETUP =========== */
 
     public static void setUpProblem(String fileName, boolean isTest, int randomSeed) {
         Constants.PATH_TO_INSTANCE = (isTest ? Constants.PATH_TO_TEST_DIR : Constants.PATH_TO_INSTANCES_DIR) + fileName;
+        Problem.speedOpt = true;
         IO.setUpInstanceInfo();
         IO.setUpInstallations();
         IO.setUpVesselInfo();
@@ -215,5 +230,3 @@ public class Problem {
         Problem.calcAndSetPostponementPenalties();
     }
 }
-
-

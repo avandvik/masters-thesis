@@ -19,13 +19,12 @@ public class RemovalRandom extends Heuristic implements Destroyer {
         int nbrOrders = getNbrOrdersToRemove(solution);
         Solution newSolution = solution;
         while (newSolution.getUnplacedOrders().size() < nbrOrders) newSolution = getRandomRemoval(newSolution);
-        // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;
     }
 
     public Solution getRandomRemoval(Solution solution) {
-        /*  */
+        /* Removes a random order from one of the voyages of the solution */
 
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<List<Order>> orderSequences = newSolution.getOrderSequences();

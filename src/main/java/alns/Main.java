@@ -5,10 +5,9 @@ import alns.heuristics.protocols.Destroyer;
 import alns.heuristics.protocols.Repairer;
 import data.*;
 import localsearch.LocalSearch;
-import objects.Order;
 import setpartitioning.Data;
 import setpartitioning.Model;
-import subproblem.Cache;
+import setpartitioning.Pool;
 import utils.IO;
 
 import java.util.*;
@@ -19,8 +18,8 @@ public class Main {
     private static final char[] animationChars = new char[]{'|', '/', '-', '\\'};
 
     private static List<Heuristic> allHeuristics;
-    private static List<Heuristic> destroyHeuristics;
-    private static List<Heuristic> repairHeuristics;
+    private static List<Heuristic> dHeuristics;
+    private static List<Heuristic> rHeuristics;
 
     private static Solution currentSolution;
     private static Solution bestSolution;
@@ -29,19 +28,18 @@ public class Main {
     private static int iterationsCurrentSolution;
     private static double currentTemperature;
 
-    public static Map<Integer, Map<List<Order>, Double>> vesselToSequenceToCost;
-
     public static void alns(double startTime) {
         initialize();
         for (int iter = 0; iter < Parameters.totalIter; iter++) {
             iterationsCurrentSolution++;
             List<Heuristic> heuristics = chooseHeuristics();
-            Solution candidateSolution = generateCandidate(heuristics);
+            List<Solution> newSolutions = generateNewSolutions(heuristics);
+            Solution candidateSolution = newSolutions.get(0);
+            Solution lsSolution = newSolutions.get(1);
             if (candidateSolution == null) continue;
-            if (Parameters.setPartitioning) saveOrderSequences(candidateSolution);
             printIterationInfo(iter, candidateSolution);
-            double reward = acceptSolution(candidateSolution, iter);
-            if (Parameters.setPartitioning && (iter + 1) % Parameters.setPartIter == 0) runSetPartitioning(iter);
+            double reward = acceptSolution(candidateSolution, lsSolution, iter);
+            if (Parameters.setPartitioning && Parameters.setPartIterations.contains(iter + 1)) runSetPartitioning(iter);
             maintenance(reward, heuristics, iter);
             if ((System.nanoTime() - startTime) / 1e9 > Parameters.maxRunTime || iter + 1 == Parameters.totalIter) {
                 SearchHistory.setNbrIterations(iter + 1);
@@ -53,30 +51,30 @@ public class Main {
     public static void initialize() {
         if (Parameters.setPartitioning) Data.initializeGurobiEnv();
         Cache.initialize();
+        Pool.initialize();
         initializeHeuristics();
         initializeSolutionFields();
         initializeSimulatedAnnealing();
-        initializeSequenceSaving();
         SearchHistory.initialize(allHeuristics);
     }
 
     private static void initializeHeuristics() {
-        destroyHeuristics = new ArrayList<>();
-        repairHeuristics = new ArrayList<>();
-        destroyHeuristics.add(new RemovalRandom(Constants.REMOVAL_RANDOM_NAME));
-        destroyHeuristics.add(new RemovalRelated(Constants.REMOVAL_RELATED_NAME));
-        destroyHeuristics.add(new RemovalWorst(Constants.REMOVAL_WORST_NAME));
-        destroyHeuristics.add(new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME));
-        destroyHeuristics.add(new RemovalSpread(Constants.REMOVAL_SPREAD_NAME));
-        destroyHeuristics.add(new RemovalSpot(Constants.REMOVAL_SPOT_NAME));
-        repairHeuristics.add(new InsertionGreedy(Constants.INSERTION_GREEDY_NAME));
-        repairHeuristics.add(new InsertionRegret(Constants.INSERTION_REGRET_NAME));
-        repairHeuristics.add(new InsertionMaxPenaltyCost(Constants.INSERTION_MAX_PENALTY_NAME));
-        repairHeuristics.add(new InsertionMaxOrderSize(Constants.INSERTION_MAX_ORDER_SIZE_NAME));
-        for (Heuristic heuristic : destroyHeuristics) heuristic.setWeight(Parameters.initialWeight);
-        for (Heuristic heuristic : repairHeuristics) heuristic.setWeight(Parameters.initialWeight);
-        allHeuristics = new ArrayList<>(destroyHeuristics);
-        allHeuristics.addAll(repairHeuristics);
+        dHeuristics = new ArrayList<>();
+        rHeuristics = new ArrayList<>();
+        dHeuristics.add(new RemovalRandom(Constants.REMOVAL_RANDOM_NAME));
+        dHeuristics.add(new RemovalRelated(Constants.REMOVAL_RELATED_NAME));
+        dHeuristics.add(new RemovalWorst(Constants.REMOVAL_WORST_NAME));
+        dHeuristics.add(new RemovalCluster(Constants.REMOVAL_CLUSTER_NAME));
+        dHeuristics.add(new RemovalSpread(Constants.REMOVAL_SPREAD_NAME));
+        dHeuristics.add(new RemovalSpot(Constants.REMOVAL_SPOT_NAME));
+        rHeuristics.add(new InsertionGreedy(Constants.INSERTION_GREEDY_NAME));
+        rHeuristics.add(new InsertionRegret(Constants.INSERTION_REGRET_NAME));
+        rHeuristics.add(new InsertionMaxPenaltyCost(Constants.INSERTION_MAX_PENALTY_NAME));
+        rHeuristics.add(new InsertionMaxOrderSize(Constants.INSERTION_MAX_ORDER_SIZE_NAME));
+        for (Heuristic heuristic : dHeuristics) heuristic.setWeight(Parameters.initialWeight);
+        for (Heuristic heuristic : rHeuristics) heuristic.setWeight(Parameters.initialWeight);
+        allHeuristics = new ArrayList<>(dHeuristics);
+        allHeuristics.addAll(rHeuristics);
     }
 
     private static void initializeSolutionFields() {
@@ -93,24 +91,15 @@ public class Main {
         currentTemperature = Parameters.startTemperature;
     }
 
-    private static void initializeSequenceSaving() {
-        vesselToSequenceToCost = new HashMap<>();
-        for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
-            Map<List<Order>, Double> emptySequence = new HashMap<>();
-            emptySequence.put(new LinkedList<>(), 0.0);
-            vesselToSequenceToCost.put(vesselIdx, emptySequence);
-        }
-    }
-
     private static List<Heuristic> chooseHeuristics() {
-        Heuristic chosenDestroyer = rouletteWheelSelection(destroyHeuristics);
-        Heuristic chosenRepairer = rouletteWheelSelection(repairHeuristics);
-        chosenDestroyer.incrementSelections();
-        chosenRepairer.incrementSelections();
-        return new ArrayList<>(Arrays.asList(chosenDestroyer, chosenRepairer));
+        Heuristic chosenDestroy = Parameters.roulette ? rouletteSelection(dHeuristics) : randomSelection(dHeuristics);
+        Heuristic chosenRepair = Parameters.roulette ? rouletteSelection(rHeuristics) : randomSelection(rHeuristics);
+        chosenDestroy.incrementSelections();
+        chosenRepair.incrementSelections();
+        return new ArrayList<>(Arrays.asList(chosenDestroy, chosenRepair));
     }
 
-    private static Heuristic rouletteWheelSelection(List<Heuristic> heuristics) {
+    private static Heuristic rouletteSelection(List<Heuristic> heuristics) {
         double weights = heuristics.stream().mapToDouble(Heuristic::getWeight).sum();
         List<Double> probabilities = heuristics.stream().map(o -> o.getWeight() / weights).collect(Collectors.toList());
         TreeMap<Double, Heuristic> rouletteWheel = new TreeMap<>();
@@ -122,15 +111,22 @@ public class Main {
         return rouletteWheel.higherEntry(Problem.random.nextDouble()).getValue();
     }
 
-    public static Solution generateCandidate(List<Heuristic> heuristics) {
+    private static Heuristic randomSelection(List<Heuristic> heuristics) {
+        return heuristics.get(Problem.random.nextInt(heuristics.size()));
+    }
+
+    public static List<Solution> generateNewSolutions(List<Heuristic> heuristics) {
         Solution candidateSolution = null;
+        Solution lsSolution = null;
         try {
             candidateSolution = applyHeuristics(currentSolution, heuristics);
-            if (Parameters.localSearch) candidateSolution = LocalSearch.localSearch(candidateSolution, bestSolution);
+            if (Parameters.localSearch) lsSolution = LocalSearch.localSearch(candidateSolution, bestSolution);
         } catch (IllegalStateException e) {
-            System.out.println("\n" + e.getMessage());
+            System.out.println("\n" + e.getMessage() + "(" + heuristics + ")");
+            candidateSolution = Construction.constructRandomInitialSolution();
+            lsSolution = LocalSearch.localSearch(candidateSolution, bestSolution);
         }
-        return candidateSolution;
+        return new ArrayList<>(Arrays.asList(candidateSolution, lsSolution));
     }
 
     private static Solution applyHeuristics(Solution solution, List<Heuristic> heuristics) {
@@ -142,51 +138,46 @@ public class Main {
         return candidateSolution;
     }
 
-    private static void saveOrderSequences(Solution candidateSolution) {
-        /* Save order sequences in candidateSolution while not exceeding storage limits */
-        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
-            if (vesselToSequenceToCost.get(vIdx).keySet().size() > Parameters.poolSize) {
-                List<List<Order>> sequences = new ArrayList<>(vesselToSequenceToCost.get(vIdx).keySet());
-                Collections.shuffle(sequences, Problem.random);
-                int mappingsToDelete = Problem.getNumberOfVessels();
-                sequences.subList(0, mappingsToDelete).forEach(vesselToSequenceToCost.get(vIdx).keySet()::remove);
-            }
-            List<Order> orderSequence = candidateSolution.getOrderSequence(vIdx);
-            double cost = Objective.getOrderSequenceCost(orderSequence, vIdx);
-            vesselToSequenceToCost.get(vIdx).put(orderSequence, cost);  // Okay if overwrite
-        }
-    }
-
-    public static Double acceptSolution(Solution candidateSolution, int iter) {
-        if (candidateSolution.equals(currentSolution)) {
+    public static Double acceptSolution(Solution candidateSolution, Solution lsSolution, int iter) {
+        Solution iterSolution = getIterationBestSolution(candidateSolution, lsSolution);
+        if (iterSolution.getObjective(false) < bestSolution.getObjective(false)) {
+            return doGlobalBestUpdates(candidateSolution, iterSolution, iter);
+        } else if (simulatedAnnealing(currentSolution.getObjective(false), iterSolution.getObjective(false))) {
+            return doLocalUpdates(candidateSolution, iterSolution);
+        } else {
             if (iterationsCurrentSolution > Parameters.maxIterSolution) {
                 currentSolution = Construction.constructRandomInitialSolution();
                 iterationsCurrentSolution = 0;
             }
-        } else if (candidateSolution.getObjective(false) < bestSolution.getObjective(false)) {
-            return doGlobalBestUpdates(candidateSolution, iter);
-        } else if (simulatedAnnealing(currentSolution.getObjective(false), candidateSolution.getObjective(false))) {
-            return doLocalUpdates(candidateSolution);
         }
         return 0.0;
     }
 
-    private static double doGlobalBestUpdates(Solution candidateSolution, int iter) {
-        bestSolution = candidateSolution;
+    private static Solution getIterationBestSolution(Solution candidateSolution, Solution lsSolution) {
+        Solution iterSolution = candidateSolution;
+        if (lsSolution != null && lsSolution.getObjective(false) < candidateSolution.getObjective(false)) {
+            iterSolution = lsSolution;
+        }
+        return iterSolution;
+    }
+
+    private static double doGlobalBestUpdates(Solution candidateSolution, Solution iterSolution, int iter) {
+        bestSolution = iterSolution;
         currentSolution = candidateSolution;
         visitedSolutions.add(candidateSolution.hashCode());
         iterationsCurrentSolution = 0;
         SearchHistory.setIterationBestSolutionFound(iter);
-        SearchHistory.setBestSolutionFound(candidateSolution);
+        SearchHistory.setBestSolutionFound(iterSolution);
+        SearchHistory.updateLSOrDRImprovements(candidateSolution, iterSolution);
         return Parameters.newGlobalBest;
     }
 
-    private static double doLocalUpdates(Solution candidateSolution) {
+    private static double doLocalUpdates(Solution candidateSolution, Solution iterSolution) {
         currentSolution = candidateSolution;
         iterationsCurrentSolution = 0;
         if (!visitedSolutions.contains(candidateSolution.hashCode())) {
             visitedSolutions.add(candidateSolution.hashCode());
-            if (candidateSolution.getObjective(false) < currentSolution.getObjective(false)) {
+            if (iterSolution.getObjective(false) < currentSolution.getObjective(false)) {
                 return Parameters.newLocalImprovement;
             } else {
                 return Parameters.newLocal;
@@ -197,18 +188,19 @@ public class Main {
 
     private static void runSetPartitioning(int iter) {
         Model model = new Model();
-        model.run();
-        Solution candidateSolution;
+        Solution setPartSolution;
         try {
-            candidateSolution = model.getNewSolution();
-        } catch (NullPointerException e) {
+            model.run();
+            setPartSolution = model.getNewSolution();
+        } catch (IllegalStateException | NullPointerException e) {
             System.out.println(Messages.errorInSetPartitioning);
             return;
         }
-        if (candidateSolution.getObjective(false) < bestSolution.getObjective(false)) {
+        if (setPartSolution.getObjective(false) < bestSolution.getObjective(false)) {
             SearchHistory.incrementNbrImprovementsBySetPartitioning();
+            SearchHistory.setBestSolFoundBy(Constants.SET_PARTITIONING_NAME);
         }
-        acceptSolution(candidateSolution, iter);  // Reward is ignored
+        acceptSolution(setPartSolution, null, iter);  // Reward is ignored
     }
 
     private static boolean simulatedAnnealing(double currentFitness, double candidateFitness) {
@@ -219,7 +211,6 @@ public class Main {
         currentTemperature *= Parameters.coolingRate;
         for (Heuristic heuristic : heuristics) heuristic.addToScore(reward);
         if ((iteration + 1) % Parameters.segmentIter == 0) resetHeuristicScores();
-        Cache.cacheLongTerm();
         if (iteration % Parameters.searchHistoryIter == 0) {
             SearchHistory.setIterationToObjective(iteration, bestSolution.getObjective(false));
             for (Heuristic heuristic : allHeuristics) SearchHistory.setIterationToWeight(heuristic, iteration);
@@ -227,8 +218,8 @@ public class Main {
     }
 
     private static void resetHeuristicScores() {
-        for (Heuristic heuristic : destroyHeuristics) heuristic.resetScoreAndUpdateWeight();
-        for (Heuristic heuristic : repairHeuristics) heuristic.resetScoreAndUpdateWeight();
+        for (Heuristic heuristic : dHeuristics) heuristic.resetScoreAndUpdateWeight();
+        for (Heuristic heuristic : rHeuristics) heuristic.resetScoreAndUpdateWeight();
     }
 
     public static Solution getCurrentSolution() {
@@ -237,14 +228,6 @@ public class Main {
 
     public static Solution getBestSolution() {
         return bestSolution;
-    }
-
-    public static int getNumberOfSavedSequences() {
-        int nbrSequences = 0;
-        for (int vIdx = 0; vIdx < Problem.getNumberOfVessels(); vIdx++) {
-            nbrSequences += vesselToSequenceToCost.get(vIdx).size();
-        }
-        return nbrSequences;
     }
 
     public static void setCurrentSolution(Solution solution) {
@@ -292,8 +275,8 @@ public class Main {
         int percentage = (int) (((iteration + 1) / (double) Parameters.totalIter) * 100);
         System.out.print("Processing: " + percentage + "% " + animationChars[iteration % 4]
                 + "     " + Math.round(bestSolution.getObjective(false))
-                + "  |  " + Cache.getCacheSize()
-                + "  |  " + getNumberOfSavedSequences()
+                + "  |  " + Cache.getTotalCacheSize()
+                + "  |  " + Pool.getTotalPoolSize()
                 + "  |  " + heapUtilization + "/" + Constants.MAX_HEAP_SIZE
                 + "\r");
     }
@@ -301,14 +284,14 @@ public class Main {
     private static void printSolutionInfo(double startTime) {
         if (Parameters.semiVerbose) {
             double timeElapsed = (System.nanoTime() - startTime) / 1e9;
-            System.out.println("\nBest objective: " + Main.getBestSolution().getObjective(false));
-            System.out.println("\tFuel costs: " + Main.getBestSolution().getFuelCosts());
-            System.out.println("\tPenalty costs: " + Main.getBestSolution().getPenaltyCosts());
+            System.out.println("\nBest objective: " + bestSolution.getObjective(false));
+            System.out.println("\tFuel costs: " + bestSolution.getFuelCosts());
+            System.out.println("\tPenalty costs: " + bestSolution.getPenaltyCosts());
             System.out.println("Time elapsed: " + timeElapsed);
         }
         if (Parameters.printSolution) {
-            System.out.println("Postponed orders: " + Main.getBestSolution().getAllPostponed());
-            Main.getBestSolution().printSchedules();
+            System.out.println("Postponed orders: " + bestSolution.getAllPostponed());
+            bestSolution.printSchedules();
         }
         System.out.println();
     }
@@ -319,6 +302,7 @@ public class Main {
         Problem.setUpProblem(Constants.FILE_NAME, false, seed);
         if (Constants.SOLSTORM) Parameters.setSolstormParameters();
         Problem.setRandom(seed);
+        Problem.setVesselPoolAndCacheSize();
         System.out.println("Running with seed: " + seed);
         double startTime = System.nanoTime();
         try {
@@ -334,7 +318,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Constants.FILE_NAME = "T-9-9-1-1.json";  // If running locally (will be overwritten on Solstorm)
+        Constants.FILE_NAME = "19-21-3-2_critical.json";  // If running locally (will be overwritten on Solstorm)
         if (args.length > 0) Constants.setSolstormConstants(args[0], args[1]);
         Main.run();
     }

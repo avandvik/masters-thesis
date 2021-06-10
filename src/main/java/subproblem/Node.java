@@ -11,6 +11,7 @@ public class Node implements Comparable<Node> {
     private final Set<Node> children = new HashSet<>();
 
     private final Map<Node, List<Integer>> parentToTimePoints = new HashMap<>();  // arrTime, serviceTime, discreteTime
+    private final Map<Node, Double> parentToSpeed = new HashMap<>();
     private final int discreteTime;  // The end time of incoming arc, start time of outgoing arc
 
     private final Map<Node, Double> childToCost = new HashMap<>();
@@ -19,11 +20,12 @@ public class Node implements Comparable<Node> {
     private double bestCost = Double.POSITIVE_INFINITY;
     private boolean isVisited = false;
 
-    public Node(Order order, Node parent, List<Integer> timePoints) {
+    public Node(Order order, Node parent, List<Integer> timePoints, double speed) {
         this.order = order;
         if (parent != null) this.parents.add(parent);
         this.discreteTime = timePoints.get(2);
         this.parentToTimePoints.put(parent, timePoints);  // First depot node will have null as parent
+        this.parentToSpeed.put(parent, speed);  // First depot node will have null as parent and 0.0 as speed
     }
 
     public List<Node> getBestPath() {
@@ -48,6 +50,10 @@ public class Node implements Comparable<Node> {
 
     public int getDiscreteTime() {
         return discreteTime;
+    }
+
+    public double getSpeed(Node parent) {
+        return parentToSpeed.get(parent);
     }
 
     public Set<Node> getParents() {
@@ -96,6 +102,10 @@ public class Node implements Comparable<Node> {
 
     public void setParentToTimePoints(Node parent, List<Integer> timePoints) {
         this.parentToTimePoints.put(parent, timePoints);
+    }
+
+    public void setParentToSpeed(Node parent, Double speed) {
+        this.parentToSpeed.put(parent, speed);
     }
 
     @Override

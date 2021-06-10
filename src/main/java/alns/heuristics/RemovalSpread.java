@@ -19,13 +19,12 @@ public class RemovalSpread extends Heuristic implements Destroyer {
     public Solution destroy(Solution solution) {
         int nbrOrders = getNbrOrdersToRemove(solution);
         Solution newSolution = getSpreadRemoval(solution, nbrOrders);
-        // if (!Evaluator.isPartFeasible(newSolution)) throw new IllegalStateException(Messages.solutionInfeasible);
         newSolution.clearSubProblemResults();
         return newSolution;
     }
 
     private Solution getSpreadRemoval(Solution solution, int numberOfOrders) {
-        /*  */
+        /* Removes based on the spread (distance) in orders */
 
         Solution newSolution = Helpers.deepCopySolution(solution);
         List<Order> orders = Helpers.deepCopyList(Problem.orders, true);

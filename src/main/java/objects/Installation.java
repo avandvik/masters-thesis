@@ -47,7 +47,6 @@ public class Installation implements Comparable<Installation>{
         return "Inst " + this.id;
     }
 
-
     @Override
     public int compareTo(Installation o) {
         if (this.id < o.id) {

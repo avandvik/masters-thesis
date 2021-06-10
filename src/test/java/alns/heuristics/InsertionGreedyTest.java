@@ -1,6 +1,6 @@
 package alns.heuristics;
 
-import alns.Objective;
+import alns.Cache;
 import alns.Solution;
 import alns.SolutionGenerator;
 import data.Constants;
@@ -9,7 +9,6 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import subproblem.Cache;
 import utils.Helpers;
 
 import java.util.*;

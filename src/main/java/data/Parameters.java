@@ -1,17 +1,19 @@
 package data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Parameters {
 
     // Noise in objective
     public static double noiseRate = 0.025;  // Initial 0.25  |  Final 0.025
     public static double maxNoise = Problem.findMaxDistance() * noiseRate;
 
-    // Rewards for heuristics
+    // Heuristics
     public static double newGlobalBest = 33.0;  // Initial 33.0  |  Final 33.0
     public static double newLocalImprovement = 9.0;  // Initial 9.0  |  Final 9.0
     public static double newLocal = 1.0;  // Initial 13.0  |  Final 1.0
-
-    // Weights for heuristics
     public static double initialWeight = 0.2;  // No tuning
     public static double reaction = 0.1;  // Initial 0.1  |  Final 0.1
 
@@ -34,27 +36,32 @@ public class Parameters {
     public static int kMeansAttempts = 10;  // No tuning
 
     // Local search
-    public static double lsThresh = 0.2;  // No tuning
+    public static double lsMaxGap = 0.2;  // No tuning
+    public static double lsOperatorRunLimit = 1.0;  // No tuning
 
     // Iterations
-    public static int totalIter = 100;
+    public static int totalIter = 1000;
     public static int maxIterSolution = 20;
-    public static int setPartIter = 500;
     public static int segmentIter = 50;
-    public static int searchHistoryIter = 10;
+    public static int searchHistoryIter = 1;
+    public static List<Integer> setPartIterations = new ArrayList<>(Arrays.asList(200, 400, 600, 800, 1000, 1500,
+            2000, 3000, 4000, 5000));
 
     // Cache and order sequence pool size
     public static int cacheSize = 1000;
-    public static int poolSize = 200;  // Pool size is per vessel
+    public static int vesselCacheSize;
+    public static int totalPoolSize = 1000;
+    public static int vesselPoolSize;
 
     // Toggles
-    public static boolean localSearch = false;
-    public static boolean setPartitioning = false;
+    public static boolean localSearch = true;
+    public static boolean setPartitioning = true;
+    public static boolean roulette = true;
     public static boolean parallelHeuristics = false;
     public static boolean cacheSP = true;
-    public static boolean verbose = true;
+    public static boolean verbose = false;
     public static boolean semiVerbose = true;
-    public static boolean printSolution = false;
+    public static boolean printSolution = true;
     public static boolean saveSolution = true;
     public static boolean saveHistory = true;
 
@@ -71,12 +78,13 @@ public class Parameters {
 
     public static void setSolstormParameters() {
         cacheSP = true;
-        cacheSize = 200000;
-        poolSize = 30000;
+        cacheSize = 1000000;
+        totalPoolSize = 100000;
         parallelHeuristics = true;
         totalIter = 5000;
         verbose = false;
         semiVerbose = true;
+        printSolution = true;
         saveSolution = true;
         saveHistory = true;
     }

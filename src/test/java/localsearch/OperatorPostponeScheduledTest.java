@@ -1,5 +1,6 @@
 package localsearch;
 
+import alns.Cache;
 import alns.Objective;
 import alns.Solution;
 import alns.SolutionGenerator;
@@ -7,7 +8,7 @@ import data.Problem;
 import objects.Order;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import subproblem.Cache;
+import setpartitioning.Pool;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,6 +19,7 @@ public class OperatorPostponeScheduledTest {
     public void postponeScheduledTest() {
         Problem.setUpProblem("basicTestData.json", true, 10);
         Cache.initialize();
+        Pool.initialize();
         // No postponement due to high penalty cost
         Solution solution = SolutionGenerator.createSolutionBasicTestData(5, 8);
         Objective.setObjValAndSchedule(solution);

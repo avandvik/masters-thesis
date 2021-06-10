@@ -1,5 +1,6 @@
 package subproblem;
 
+import data.Parameters;
 import data.Problem;
 import objects.Order;
 import org.junit.Test;
@@ -16,6 +17,7 @@ public class TreeTest {
     @DisplayName("Test generateTree")
     public void testGenerateTree() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        Problem.speedOpt = true;
         LinkedList<Order> orderSequence = new LinkedList<>();
         for (int i = 0; i < 5; i++) orderSequence.add(Problem.orders.get(i));
         Tree tree = new Tree(0);  // 0 for fleet vessel
@@ -60,6 +62,7 @@ public class TreeTest {
     @DisplayName("Test findShortestPath")
     public void testFindShortestPath() {
         Problem.setUpProblem("basicTestData.json", true, 10);
+        Problem.speedOpt = true;
         LinkedList<Order> orderSequence = new LinkedList<>();
         for (int i = 0; i < 5; i++) orderSequence.add(Problem.orders.get(i));
         Tree tree = new Tree(0);  // Fleet vessel
@@ -70,21 +73,21 @@ public class TreeTest {
         assertEquals(63, firstNode.getDiscreteTime());
         Node secondNode = shortestPath.get(1);
         assertEquals(orderSequence.get(0), secondNode.getOrder());
-        assertEquals(133, secondNode.getDiscreteTime());
+        assertEquals(134, secondNode.getDiscreteTime());
         Node thirdNode = shortestPath.get(2);
         assertEquals(orderSequence.get(1), thirdNode.getOrder());
-        assertEquals(134, thirdNode.getDiscreteTime());
+        assertEquals(135, thirdNode.getDiscreteTime());
         Node fourthNode = shortestPath.get(3);
         assertEquals(orderSequence.get(2), fourthNode.getOrder());
-        assertEquals(170, fourthNode.getDiscreteTime());
+        assertEquals(171, fourthNode.getDiscreteTime());
         Node fifthNode = shortestPath.get(4);
         assertEquals(orderSequence.get(3), fifthNode.getOrder());
-        assertEquals(194, fifthNode.getDiscreteTime());
+        assertEquals(195, fifthNode.getDiscreteTime());
         Node sixthNode = shortestPath.get(5);
         assertEquals(orderSequence.get(4), sixthNode.getOrder());
-        assertEquals(200, sixthNode.getDiscreteTime());
+        assertEquals(201, sixthNode.getDiscreteTime());
         Node seventhNode = shortestPath.get(6);
         assertNull(seventhNode.getOrder());
-        assertEquals(213, seventhNode.getDiscreteTime());
+        assertEquals(214, seventhNode.getDiscreteTime());
     }
 }
