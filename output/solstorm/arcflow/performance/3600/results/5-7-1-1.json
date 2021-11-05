@@ -1,0 +1,245 @@
+{
+  "instance_info": {
+    "fleet_size": 1,
+    "installation_ordering": "random",
+    "number_of_installations": 5,
+    "order_composition": {
+      "1": {
+        "installation": 24,
+        "node": 1,
+        "order": "(O0-MD-I24)",
+        "size": 24
+      },
+      "2": {
+        "installation": 2,
+        "node": 2,
+        "order": "(O1-MD-I2)",
+        "size": 21
+      },
+      "3": {
+        "installation": 14,
+        "node": 3,
+        "order": "(O2-MD-I14)",
+        "size": 20
+      },
+      "4": {
+        "installation": 9,
+        "node": 4,
+        "order": "(O3-OD-I9)",
+        "size": 6
+      },
+      "5": {
+        "installation": 21,
+        "node": 5,
+        "order": "(O4-OD-I21)",
+        "size": 13
+      },
+      "6": {
+        "installation": 14,
+        "node": 6,
+        "order": "(O5-OP-I14)",
+        "size": 10
+      },
+      "7": {
+        "installation": 24,
+        "node": 7,
+        "order": "(O6-OP-I24)",
+        "size": 25
+      }
+    },
+    "weather_scenario": "perfect"
+  },
+  "objective": {
+    "charter_costs": 0,
+    "fuel_costs": 2709.6516,
+    "objective_bound": 2709.6516,
+    "optimality_gap": 0.0,
+    "penalty_costs": 0.0,
+    "incumbent": 2709.6516
+  },
+  "order_fulfillment": {
+    "postponed_orders": [],
+    "serviced_orders": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "runtime": {
+    "model_runtime": 4.1821,
+    "preprocess_runtime": 2.2682
+  },
+  "variables": {
+    "number_of_arcs": 35036,
+    "number_of_bin_variables": 35054,
+    "number_of_cont_variables": 36,
+    "number_of_variables": 35090
+  },
+  "vessels": {
+    "chartered_vessels": 0,
+    "fleet_vessels": 1
+  },
+  "voyages": {
+    "0": {
+      "0": [
+        3,
+        [
+          63,
+          93,
+          101
+        ],
+        10.0,
+        [
+          84.0,
+          0
+        ],
+        [
+          740.7150000000003,
+          0.0
+        ]
+      ],
+      "1": [
+        7,
+        [
+          161,
+          161,
+          162
+        ],
+        0,
+        [
+          13.0,
+          9.999999999999858
+        ],
+        [
+          11.73,
+          0.0
+        ]
+      ],
+      "2": [
+        1,
+        [
+          133,
+          151,
+          161
+        ],
+        10.0,
+        [
+          37.000000000000114,
+          10.0
+        ],
+        [
+          505.4250000000001,
+          0.0
+        ]
+      ],
+      "3": [
+        6,
+        [
+          101,
+          101,
+          102
+        ],
+        0,
+        [
+          64.0,
+          0
+        ],
+        [
+          11.73,
+          0.0
+        ]
+      ],
+      "4": [
+        2,
+        [
+          114,
+          124,
+          133
+        ],
+        10.0,
+        [
+          58.000000000000114,
+          10.0
+        ],
+        [
+          321.1950000000001,
+          0.0
+        ]
+      ],
+      "5": [
+        8,
+        [
+          171,
+          205,
+          205
+        ],
+        10.0,
+        [
+          0,
+          34.999999999999545
+        ],
+        [
+          733.1250000000002,
+          0.0
+        ]
+      ],
+      "6": [
+        4,
+        [
+          102,
+          111,
+          114
+        ],
+        10.0,
+        [
+          64.00000000000001,
+          10.0
+        ],
+        [
+          229.25250000000005,
+          0.0
+        ]
+      ],
+      "7": [
+        5,
+        [
+          162,
+          165,
+          171
+        ],
+        11.0,
+        [
+          13.0,
+          34.99999999999986
+        ],
+        [
+          156.4790625,
+          0.0
+        ]
+      ]
+    },
+    "1": {
+      "0": [
+        8,
+        [
+          63,
+          63,
+          63
+        ],
+        0,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}

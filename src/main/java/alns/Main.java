@@ -318,7 +318,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Constants.FILE_NAME = "19-21-3-2_critical.json";  // If running locally (will be overwritten on Solstorm)
+        Constants.FILE_NAME = "9-9-1-2.json";  // If running locally (will be overwritten on Solstorm)
         if (args.length > 0) Constants.setSolstormConstants(args[0], args[1]);
         Main.run();
     }

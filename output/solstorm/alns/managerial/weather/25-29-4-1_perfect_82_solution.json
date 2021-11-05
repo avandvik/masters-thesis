@@ -1,0 +1,269 @@
+{
+  "best_objective": 6722.5101180555575,
+  "instance": "25-29-4-1_perfect.json",
+  "voyages": {
+    "PSV_1": {
+      "sequence": [
+        18,
+        26,
+        21,
+        10,
+        5,
+        25,
+        20,
+        28,
+        17,
+        27,
+        9
+      ],
+      "time_points": {
+        "5": {
+          "arrival_time": 124,
+          "end_time": 135,
+          "service_time": 124,
+          "speed": 12.0
+        },
+        "9": {
+          "arrival_time": 153,
+          "end_time": 159,
+          "service_time": 153,
+          "speed": 10.0
+        },
+        "10": {
+          "arrival_time": 108,
+          "end_time": 124,
+          "service_time": 108,
+          "speed": 11.0
+        },
+        "17": {
+          "arrival_time": 148,
+          "end_time": 151,
+          "service_time": 148,
+          "speed": 10.0
+        },
+        "18": {
+          "arrival_time": 92,
+          "end_time": 99,
+          "service_time": 92,
+          "speed": 10.0
+        },
+        "20": {
+          "arrival_time": 136,
+          "end_time": 140,
+          "service_time": 136,
+          "speed": 13.0
+        },
+        "21": {
+          "arrival_time": 100,
+          "end_time": 105,
+          "service_time": 100,
+          "speed": 13.0
+        },
+        "25": {
+          "arrival_time": 135,
+          "end_time": 136,
+          "service_time": 135,
+          "speed": 12.0
+        },
+        "26": {
+          "arrival_time": 99,
+          "end_time": 100,
+          "service_time": 99,
+          "speed": 12.0
+        },
+        "27": {
+          "arrival_time": 151,
+          "end_time": 152,
+          "service_time": 151,
+          "speed": 12.0
+        },
+        "28": {
+          "arrival_time": 140,
+          "end_time": 141,
+          "service_time": 140,
+          "speed": 12.0
+        },
+        "ED": {
+          "end_time": 185,
+          "speed": 10.0
+        },
+        "SD": {
+          "end_time": 63,
+          "speed": 0.0
+        }
+      }
+    },
+    "PSV_2": {
+      "sequence": [
+        6,
+        16,
+        0,
+        13,
+        22
+      ],
+      "time_points": {
+        "0": {
+          "arrival_time": 87,
+          "end_time": 99,
+          "service_time": 87,
+          "speed": 10.0
+        },
+        "6": {
+          "arrival_time": 73,
+          "end_time": 79,
+          "service_time": 73,
+          "speed": 10.0
+        },
+        "13": {
+          "arrival_time": 99,
+          "end_time": 105,
+          "service_time": 99,
+          "speed": 12.0
+        },
+        "16": {
+          "arrival_time": 79,
+          "end_time": 85,
+          "service_time": 79,
+          "speed": 12.0
+        },
+        "22": {
+          "arrival_time": 105,
+          "end_time": 106,
+          "service_time": 105,
+          "speed": 12.0
+        },
+        "ED": {
+          "end_time": 119,
+          "speed": 10.0
+        },
+        "SD": {
+          "end_time": 63,
+          "speed": 0.0
+        }
+      }
+    },
+    "PSV_3": {
+      "sequence": [
+        1,
+        2,
+        4,
+        23,
+        8
+      ],
+      "time_points": {
+        "1": {
+          "arrival_time": 75,
+          "end_time": 81,
+          "service_time": 75,
+          "speed": 10.0
+        },
+        "2": {
+          "arrival_time": 92,
+          "end_time": 108,
+          "service_time": 92,
+          "speed": 10.0
+        },
+        "4": {
+          "arrival_time": 110,
+          "end_time": 122,
+          "service_time": 110,
+          "speed": 10.0
+        },
+        "8": {
+          "arrival_time": 130,
+          "end_time": 139,
+          "service_time": 130,
+          "speed": 10.0
+        },
+        "23": {
+          "arrival_time": 122,
+          "end_time": 123,
+          "service_time": 122,
+          "speed": 12.0
+        },
+        "ED": {
+          "end_time": 169,
+          "speed": 10.0
+        },
+        "SD": {
+          "end_time": 63,
+          "speed": 0.0
+        }
+      }
+    },
+    "PSV_4": {
+      "sequence": [
+        3,
+        19,
+        15,
+        14,
+        7,
+        11,
+        12,
+        24
+      ],
+      "time_points": {
+        "3": {
+          "arrival_time": 75,
+          "end_time": 83,
+          "service_time": 75,
+          "speed": 10.0
+        },
+        "7": {
+          "arrival_time": 109,
+          "end_time": 118,
+          "service_time": 109,
+          "speed": 10.0
+        },
+        "11": {
+          "arrival_time": 118,
+          "end_time": 128,
+          "service_time": 118,
+          "speed": 12.0
+        },
+        "12": {
+          "arrival_time": 134,
+          "end_time": 145,
+          "service_time": 134,
+          "speed": 10.0
+        },
+        "14": {
+          "arrival_time": 102,
+          "end_time": 105,
+          "service_time": 102,
+          "speed": 12.0
+        },
+        "15": {
+          "arrival_time": 98,
+          "end_time": 102,
+          "service_time": 98,
+          "speed": 11.0
+        },
+        "19": {
+          "arrival_time": 91,
+          "end_time": 96,
+          "service_time": 91,
+          "speed": 10.0
+        },
+        "24": {
+          "arrival_time": 146,
+          "end_time": 147,
+          "service_time": 146,
+          "speed": 10.0
+        },
+        "ED": {
+          "end_time": 160,
+          "speed": 10.0
+        },
+        "SD": {
+          "end_time": 63,
+          "speed": 0.0
+        }
+      }
+    },
+    "SPOT": {
+      "sequence": [],
+      "time_points": {}
+    }
+  }
+}

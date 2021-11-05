@@ -1,0 +1,14 @@
+{
+  "objective": {
+    "objective_bound": 7978.18324,
+    "optimality_gap": 100.0,
+    "incumbent": 1000000.0
+  },
+  "variables": {
+    "number_of_variables": 1582940
+  },
+  "runtime": {
+    "preprocess_runtime": 100.0,
+    "model_runtime": 600.0
+  }
+}

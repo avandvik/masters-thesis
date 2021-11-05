@@ -1,0 +1,269 @@
+{
+  "instance_info": {
+    "fleet_size": 1,
+    "installation_ordering": "random",
+    "number_of_installations": 7,
+    "order_composition": {
+      "1": {
+        "installation": 6,
+        "node": 1,
+        "order": "(O0-MD-I6)",
+        "size": 12
+      },
+      "2": {
+        "installation": 3,
+        "node": 2,
+        "order": "(O1-MD-I3)",
+        "size": 18
+      },
+      "3": {
+        "installation": 21,
+        "node": 3,
+        "order": "(O2-MD-I21)",
+        "size": 29
+      },
+      "4": {
+        "installation": 23,
+        "node": 4,
+        "order": "(O3-MD-I23)",
+        "size": 19
+      },
+      "5": {
+        "installation": 15,
+        "node": 5,
+        "order": "(O4-OD-I15)",
+        "size": 12
+      },
+      "6": {
+        "installation": 17,
+        "node": 6,
+        "order": "(O5-OD-I17)",
+        "size": 10
+      },
+      "7": {
+        "installation": 2,
+        "node": 7,
+        "order": "(O6-OP-I2)",
+        "size": 15
+      },
+      "8": {
+        "installation": 23,
+        "node": 8,
+        "order": "(O7-OP-I23)",
+        "size": 25
+      }
+    },
+    "weather_scenario": "perfect"
+  },
+  "objective": {
+    "charter_costs": 0,
+    "fuel_costs": 2080.1775,
+    "objective_bound": 2080.1775,
+    "optimality_gap": 0.0,
+    "penalty_costs": 0.0,
+    "incumbent": 2080.1775
+  },
+  "order_fulfillment": {
+    "postponed_orders": [],
+    "serviced_orders": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "runtime": {
+    "model_runtime": 9.7195,
+    "preprocess_runtime": 3.0429
+  },
+  "variables": {
+    "number_of_arcs": 47928,
+    "number_of_bin_variables": 47948,
+    "number_of_cont_variables": 40,
+    "number_of_variables": 47988
+  },
+  "vessels": {
+    "chartered_vessels": 0,
+    "fleet_vessels": 1
+  },
+  "voyages": {
+    "0": {
+      "0": [
+        1,
+        [
+          63,
+          75,
+          80
+        ],
+        10.0,
+        [
+          100.0,
+          0
+        ],
+        [
+          317.4000000000001,
+          0.0
+        ]
+      ],
+      "1": [
+        5,
+        [
+          80,
+          94,
+          99
+        ],
+        10.0,
+        [
+          88.0,
+          0
+        ],
+        [
+          360.5250000000001,
+          0.0
+        ]
+      ],
+      "2": [
+        9,
+        [
+          169,
+          182,
+          182
+        ],
+        10.0,
+        [
+          0,
+          40.0
+        ],
+        [
+          280.3125000000001,
+          0.0
+        ]
+      ],
+      "3": [
+        7,
+        [
+          136,
+          158,
+          159
+        ],
+        10.0,
+        [
+          18.0,
+          25.0
+        ],
+        [
+          486.1050000000002,
+          0.0
+        ]
+      ],
+      "4": [
+        8,
+        [
+          119,
+          119,
+          120
+        ],
+        0,
+        [
+          47.0,
+          0
+        ],
+        [
+          11.73,
+          0.0
+        ]
+      ],
+      "5": [
+        6,
+        [
+          99,
+          100,
+          104
+        ],
+        10.0,
+        [
+          76.0,
+          0
+        ],
+        [
+          68.48250000000002,
+          0.0
+        ]
+      ],
+      "6": [
+        4,
+        [
+          104,
+          111,
+          119
+        ],
+        10.0,
+        [
+          66.0,
+          0
+        ],
+        [
+          244.77750000000006,
+          0.0
+        ]
+      ],
+      "7": [
+        2,
+        [
+          159,
+          161,
+          169
+        ],
+        10.0,
+        [
+          18.0,
+          40.0
+        ],
+        [
+          136.96500000000003,
+          0.0
+        ]
+      ],
+      "8": [
+        3,
+        [
+          120,
+          120,
+          136
+        ],
+        12.0,
+        [
+          47.0,
+          25.0
+        ],
+        [
+          173.88000000000002,
+          0.0
+        ]
+      ]
+    },
+    "1": {
+      "0": [
+        9,
+        [
+          63,
+          63,
+          63
+        ],
+        0,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}

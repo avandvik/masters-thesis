@@ -1,0 +1,376 @@
+{
+  "instance_info": {
+    "fleet_size": 2,
+    "installation_ordering": "random",
+    "number_of_installations": 13,
+    "order_composition": {
+      "1": {
+        "installation": 27,
+        "node": 1,
+        "order": "(O0-MD-I27)",
+        "size": 21
+      },
+      "2": {
+        "installation": 9,
+        "node": 2,
+        "order": "(O1-MD-I9)",
+        "size": 15
+      },
+      "3": {
+        "installation": 21,
+        "node": 3,
+        "order": "(O2-MD-I21)",
+        "size": 13
+      },
+      "4": {
+        "installation": 14,
+        "node": 4,
+        "order": "(O3-MD-I14)",
+        "size": 10
+      },
+      "5": {
+        "installation": 1,
+        "node": 5,
+        "order": "(O4-MD-I1)",
+        "size": 16
+      },
+      "6": {
+        "installation": 12,
+        "node": 6,
+        "order": "(O5-MD-I12)",
+        "size": 22
+      },
+      "7": {
+        "installation": 18,
+        "node": 7,
+        "order": "(O6-MD-I18)",
+        "size": 32
+      },
+      "8": {
+        "installation": 3,
+        "node": 8,
+        "order": "(O7-MD-I3)",
+        "size": 10
+      },
+      "9": {
+        "installation": 11,
+        "node": 9,
+        "order": "(O8-OD-I11)",
+        "size": 10
+      },
+      "10": {
+        "installation": 16,
+        "node": 10,
+        "order": "(O9-OD-I16)",
+        "size": 6
+      },
+      "11": {
+        "installation": 15,
+        "node": 11,
+        "order": "(O10-OD-I15)",
+        "size": 18
+      },
+      "12": {
+        "installation": 10,
+        "node": 12,
+        "order": "(O11-OD-I10)",
+        "size": 9
+      },
+      "13": {
+        "installation": 7,
+        "node": 13,
+        "order": "(O12-OD-I7)",
+        "size": 9
+      },
+      "14": {
+        "installation": 7,
+        "node": 14,
+        "order": "(O13-OP-I7)",
+        "size": 13
+      },
+      "15": {
+        "installation": 9,
+        "node": 15,
+        "order": "(O14-OP-I9)",
+        "size": 12
+      },
+      "16": {
+        "installation": 27,
+        "node": 16,
+        "order": "(O15-OP-I27)",
+        "size": 28
+      },
+      "17": {
+        "installation": 3,
+        "node": 17,
+        "order": "(O16-OP-I3)",
+        "size": 19
+      },
+      "18": {
+        "installation": 11,
+        "node": 18,
+        "order": "(O17-OP-I11)",
+        "size": 15
+      }
+    },
+    "weather_scenario": "perfect"
+  },
+  "objective": {
+    "charter_costs": 0,
+    "fuel_costs": 6090.4551,
+    "objective_bound": 3004.241,
+    "optimality_gap": 0.8269606392899532,
+    "penalty_costs": 11271.15,
+    "incumbent": 17361.6051
+  },
+  "order_fulfillment": {
+    "postponed_orders": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      17,
+      18
+    ],
+    "serviced_orders": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      16
+    ]
+  },
+  "runtime": {
+    "model_runtime": 600.3164,
+    "preprocess_runtime": 23.318
+  },
+  "variables": {
+    "number_of_arcs": 510015,
+    "number_of_bin_variables": 510075,
+    "number_of_cont_variables": 120,
+    "number_of_variables": 510195
+  },
+  "vessels": {
+    "chartered_vessels": 0,
+    "fleet_vessels": 2
+  },
+  "voyages": {
+    "0": {
+      "0": [
+        1,
+        [
+          63,
+          70,
+          79
+        ],
+        14.0,
+        [
+          107.0,
+          0
+        ],
+        [
+          519.7425000000001,
+          0.0
+        ]
+      ],
+      "1": [
+        16,
+        [
+          79,
+          79,
+          80
+        ],
+        0,
+        [
+          86.0,
+          0
+        ],
+        [
+          11.73,
+          0.0
+        ]
+      ],
+      "2": [
+        19,
+        [
+          200,
+          224,
+          224
+        ],
+        10.0,
+        [
+          0,
+          28.0
+        ],
+        [
+          517.5000000000001,
+          0.0
+        ]
+      ],
+      "3": [
+        6,
+        [
+          166,
+          182,
+          191
+        ],
+        11.0,
+        [
+          37.0,
+          28.0
+        ],
+        [
+          564.765,
+          0.0
+        ]
+      ],
+      "4": [
+        8,
+        [
+          105,
+          127,
+          131
+        ],
+        10.0,
+        [
+          76.0,
+          28.0
+        ],
+        [
+          521.2950000000002,
+          0.0
+        ]
+      ],
+      "5": [
+        3,
+        [
+          142,
+          160,
+          166
+        ],
+        14.000000000000002,
+        [
+          50.0,
+          28.0
+        ],
+        [
+          1135.3950000000004,
+          0.0
+        ]
+      ],
+      "6": [
+        2,
+        [
+          191,
+          194,
+          200
+        ],
+        14.0,
+        [
+          15.0,
+          28.0
+        ],
+        [
+          247.88250000000005,
+          0.0
+        ]
+      ],
+      "8": [
+        5,
+        [
+          131,
+          135,
+          142
+        ],
+        12.0,
+        [
+          66.0,
+          28.0
+        ],
+        [
+          231.15000000000003,
+          0.0
+        ]
+      ],
+      "16": [
+        4,
+        [
+          80,
+          101,
+          105
+        ],
+        11.0,
+        [
+          86.0,
+          28.0
+        ],
+        [
+          649.6134374999999,
+          0.0
+        ]
+      ]
+    },
+    "1": {
+      "0": [
+        7,
+        [
+          63,
+          78,
+          91
+        ],
+        14.0,
+        [
+          32.0,
+          0
+        ],
+        [
+          1171.4858333333336,
+          0.0
+        ]
+      ],
+      "7": [
+        19,
+        [
+          91,
+          112,
+          112
+        ],
+        10.0,
+        [
+          0,
+          0
+        ],
+        [
+          519.8958333333335,
+          0.0
+        ]
+      ]
+    },
+    "2": {
+      "0": [
+        19,
+        [
+          63,
+          63,
+          63
+        ],
+        0,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}

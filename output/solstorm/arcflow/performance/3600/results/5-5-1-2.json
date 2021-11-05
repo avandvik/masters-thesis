@@ -1,0 +1,197 @@
+{
+  "instance_info": {
+    "fleet_size": 1,
+    "installation_ordering": "random",
+    "number_of_installations": 5,
+    "order_composition": {
+      "1": {
+        "installation": 19,
+        "node": 1,
+        "order": "(O0-MD-I19)",
+        "size": 17
+      },
+      "2": {
+        "installation": 25,
+        "node": 2,
+        "order": "(O1-MD-I25)",
+        "size": 17
+      },
+      "3": {
+        "installation": 14,
+        "node": 3,
+        "order": "(O2-MD-I14)",
+        "size": 18
+      },
+      "4": {
+        "installation": 12,
+        "node": 4,
+        "order": "(O3-OD-I12)",
+        "size": 8
+      },
+      "5": {
+        "installation": 6,
+        "node": 5,
+        "order": "(O4-OP-I6)",
+        "size": 13
+      }
+    },
+    "weather_scenario": "perfect"
+  },
+  "objective": {
+    "charter_costs": 0,
+    "fuel_costs": 2214.21,
+    "objective_bound": 2214.21,
+    "optimality_gap": 0.0,
+    "penalty_costs": 0.0,
+    "incumbent": 2214.21
+  },
+  "order_fulfillment": {
+    "postponed_orders": [],
+    "serviced_orders": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "runtime": {
+    "model_runtime": 3.7264,
+    "preprocess_runtime": 1.5806
+  },
+  "variables": {
+    "number_of_arcs": 36364,
+    "number_of_bin_variables": 36378,
+    "number_of_cont_variables": 28,
+    "number_of_variables": 36406
+  },
+  "vessels": {
+    "chartered_vessels": 0,
+    "fleet_vessels": 1
+  },
+  "voyages": {
+    "0": {
+      "0": [
+        5,
+        [
+          63,
+          75,
+          76
+        ],
+        10.0,
+        [
+          60.0,
+          0
+        ],
+        [
+          270.4800000000001,
+          0.0
+        ]
+      ],
+      "1": [
+        4,
+        [
+          117,
+          121,
+          125
+        ],
+        10.0,
+        [
+          26.0,
+          13.0
+        ],
+        [
+          133.17000000000002,
+          0.0
+        ]
+      ],
+      "2": [
+        1,
+        [
+          101,
+          110,
+          117
+        ],
+        10.0,
+        [
+          43.0,
+          13.0
+        ],
+        [
+          276.17250000000007,
+          0.0
+        ]
+      ],
+      "3": [
+        6,
+        [
+          148,
+          178,
+          178
+        ],
+        10.0,
+        [
+          0,
+          13.0
+        ],
+        [
+          646.8750000000002,
+          0.0
+        ]
+      ],
+      "4": [
+        3,
+        [
+          125,
+          140,
+          148
+        ],
+        10.0,
+        [
+          18.0,
+          13.0
+        ],
+        [
+          417.27750000000015,
+          0.0
+        ]
+      ],
+      "5": [
+        2,
+        [
+          76,
+          94,
+          101
+        ],
+        10.0,
+        [
+          60.0,
+          13.0
+        ],
+        [
+          470.2350000000001,
+          0.0
+        ]
+      ]
+    },
+    "1": {
+      "0": [
+        6,
+        [
+          63,
+          63,
+          63
+        ],
+        0,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}

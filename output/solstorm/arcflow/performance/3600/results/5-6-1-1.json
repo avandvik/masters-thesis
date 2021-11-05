@@ -1,0 +1,221 @@
+{
+  "instance_info": {
+    "fleet_size": 1,
+    "installation_ordering": "random",
+    "number_of_installations": 5,
+    "order_composition": {
+      "1": {
+        "installation": 5,
+        "node": 1,
+        "order": "(O0-MD-I5)",
+        "size": 22
+      },
+      "2": {
+        "installation": 8,
+        "node": 2,
+        "order": "(O1-MD-I8)",
+        "size": 19
+      },
+      "3": {
+        "installation": 12,
+        "node": 3,
+        "order": "(O2-MD-I12)",
+        "size": 15
+      },
+      "4": {
+        "installation": 9,
+        "node": 4,
+        "order": "(O3-OD-I9)",
+        "size": 6
+      },
+      "5": {
+        "installation": 26,
+        "node": 5,
+        "order": "(O4-OD-I26)",
+        "size": 15
+      },
+      "6": {
+        "installation": 12,
+        "node": 6,
+        "order": "(O5-OP-I12)",
+        "size": 22
+      }
+    },
+    "weather_scenario": "perfect"
+  },
+  "objective": {
+    "charter_costs": 0,
+    "fuel_costs": 1939.59,
+    "objective_bound": 1939.59,
+    "optimality_gap": 0.0,
+    "penalty_costs": 0.0,
+    "incumbent": 1939.59
+  },
+  "order_fulfillment": {
+    "postponed_orders": [],
+    "serviced_orders": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  },
+  "runtime": {
+    "model_runtime": 4.2838,
+    "preprocess_runtime": 1.7697
+  },
+  "variables": {
+    "number_of_arcs": 40562,
+    "number_of_bin_variables": 40578,
+    "number_of_cont_variables": 32,
+    "number_of_variables": 40610
+  },
+  "vessels": {
+    "chartered_vessels": 0,
+    "fleet_vessels": 1
+  },
+  "voyages": {
+    "0": {
+      "0": [
+        1,
+        [
+          63,
+          76,
+          85
+        ],
+        10.0,
+        [
+          77.0,
+          0
+        ],
+        [
+          385.8825000000001,
+          0.0
+        ]
+      ],
+      "1": [
+        5,
+        [
+          85,
+          101,
+          107
+        ],
+        10.0,
+        [
+          55.0,
+          0
+        ],
+        [
+          415.3800000000001,
+          0.0
+        ]
+      ],
+      "2": [
+        7,
+        [
+          144,
+          168,
+          168
+        ],
+        10.0,
+        [
+          0,
+          21.999999999999403
+        ],
+        [
+          517.5000000000001,
+          0.0
+        ]
+      ],
+      "3": [
+        6,
+        [
+          127,
+          127,
+          128
+        ],
+        0,
+        [
+          25.0,
+          0
+        ],
+        [
+          11.73,
+          0.0
+        ]
+      ],
+      "4": [
+        2,
+        [
+          136,
+          136,
+          144
+        ],
+        0,
+        [
+          19.0,
+          21.999999999999545
+        ],
+        [
+          93.84,
+          0.0
+        ]
+      ],
+      "5": [
+        3,
+        [
+          107,
+          121,
+          127
+        ],
+        10.0,
+        [
+          40.0,
+          0
+        ],
+        [
+          372.2550000000001,
+          0.0
+        ]
+      ],
+      "6": [
+        4,
+        [
+          128,
+          133,
+          136
+        ],
+        10.0,
+        [
+          25.0,
+          22.0
+        ],
+        [
+          143.00250000000005,
+          0.0
+        ]
+      ]
+    },
+    "1": {
+      "0": [
+        7,
+        [
+          63,
+          63,
+          63
+        ],
+        0,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}

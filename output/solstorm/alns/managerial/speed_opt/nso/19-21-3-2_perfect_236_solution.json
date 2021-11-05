@@ -1,0 +1,199 @@
+{
+  "best_objective": 6541.752,
+  "instance": "19-21-3-2_perfect.json",
+  "voyages": {
+    "PSV_1": {
+      "sequence": [
+        0,
+        3,
+        13,
+        6,
+        5,
+        17,
+        15,
+        18,
+        16,
+        2
+      ],
+      "time_points": {
+        "0": {
+          "arrival_time": 74,
+          "end_time": 84,
+          "service_time": 74,
+          "speed": 12.0
+        },
+        "2": {
+          "arrival_time": 150,
+          "end_time": 159,
+          "service_time": 150,
+          "speed": 12.0
+        },
+        "3": {
+          "arrival_time": 94,
+          "end_time": 108,
+          "service_time": 94,
+          "speed": 12.0
+        },
+        "5": {
+          "arrival_time": 129,
+          "end_time": 135,
+          "service_time": 129,
+          "speed": 12.0
+        },
+        "6": {
+          "arrival_time": 117,
+          "end_time": 129,
+          "service_time": 117,
+          "speed": 12.0
+        },
+        "13": {
+          "arrival_time": 111,
+          "end_time": 114,
+          "service_time": 111,
+          "speed": 12.0
+        },
+        "15": {
+          "arrival_time": 140,
+          "end_time": 141,
+          "service_time": 140,
+          "speed": 12.0
+        },
+        "16": {
+          "arrival_time": 149,
+          "end_time": 150,
+          "service_time": 149,
+          "speed": 12.0
+        },
+        "17": {
+          "arrival_time": 136,
+          "end_time": 137,
+          "service_time": 136,
+          "speed": 12.0
+        },
+        "18": {
+          "arrival_time": 144,
+          "end_time": 145,
+          "service_time": 144,
+          "speed": 12.0
+        },
+        "ED": {
+          "end_time": 179,
+          "speed": 12.0
+        },
+        "SD": {
+          "end_time": 63,
+          "speed": 0.0
+        }
+      }
+    },
+    "PSV_2": {
+      "sequence": [
+        11,
+        1,
+        9
+      ],
+      "time_points": {
+        "1": {
+          "arrival_time": 75,
+          "end_time": 81,
+          "service_time": 75,
+          "speed": 12.0
+        },
+        "9": {
+          "arrival_time": 83,
+          "end_time": 89,
+          "service_time": 83,
+          "speed": 12.0
+        },
+        "11": {
+          "arrival_time": 73,
+          "end_time": 75,
+          "service_time": 73,
+          "speed": 12.0
+        },
+        "ED": {
+          "end_time": 97,
+          "speed": 12.0
+        },
+        "SD": {
+          "end_time": 63,
+          "speed": 0.0
+        }
+      }
+    },
+    "PSV_3": {
+      "sequence": [
+        8,
+        14,
+        4,
+        20,
+        12,
+        7,
+        10,
+        19
+      ],
+      "time_points": {
+        "4": {
+          "arrival_time": 113,
+          "end_time": 127,
+          "service_time": 113,
+          "speed": 12.0
+        },
+        "7": {
+          "arrival_time": 141,
+          "end_time": 148,
+          "service_time": 141,
+          "speed": 12.0
+        },
+        "8": {
+          "arrival_time": 73,
+          "end_time": 89,
+          "service_time": 73,
+          "speed": 12.0
+        },
+        "10": {
+          "arrival_time": 149,
+          "end_time": 155,
+          "service_time": 149,
+          "speed": 12.0
+        },
+        "12": {
+          "arrival_time": 132,
+          "end_time": 136,
+          "service_time": 132,
+          "speed": 12.0
+        },
+        "14": {
+          "arrival_time": 104,
+          "end_time": 105,
+          "service_time": 104,
+          "speed": 12.0
+        },
+        "19": {
+          "arrival_time": 155,
+          "end_time": 156,
+          "service_time": 155,
+          "speed": 12.0
+        },
+        "20": {
+          "arrival_time": 127,
+          "end_time": 128,
+          "service_time": 127,
+          "speed": 12.0
+        },
+        "ED": {
+          "end_time": 167,
+          "speed": 12.0
+        },
+        "SD": {
+          "end_time": 63,
+          "speed": 0.0
+        }
+      }
+    },
+    "SPOT": {
+      "sequence": [],
+      "time_points": {}
+    }
+  }
+}

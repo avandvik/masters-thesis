@@ -1,0 +1,267 @@
+{
+  "instance_info": {
+    "fleet_size": 1,
+    "installation_ordering": "random",
+    "number_of_installations": 9,
+    "order_composition": {
+      "1": {
+        "installation": 26,
+        "node": 1,
+        "order": "(O0-MD-I26)",
+        "size": 35
+      },
+      "2": {
+        "installation": 5,
+        "node": 2,
+        "order": "(O1-MD-I5)",
+        "size": 29
+      },
+      "3": {
+        "installation": 19,
+        "node": 3,
+        "order": "(O2-MD-I19)",
+        "size": 21
+      },
+      "4": {
+        "installation": 2,
+        "node": 4,
+        "order": "(O3-MD-I2)",
+        "size": 24
+      },
+      "5": {
+        "installation": 10,
+        "node": 5,
+        "order": "(O4-MD-I10)",
+        "size": 17
+      },
+      "6": {
+        "installation": 24,
+        "node": 6,
+        "order": "(O5-OD-I24)",
+        "size": 11
+      },
+      "7": {
+        "installation": 7,
+        "node": 7,
+        "order": "(O6-OD-I7)",
+        "size": 12
+      },
+      "8": {
+        "installation": 23,
+        "node": 8,
+        "order": "(O7-OD-I23)",
+        "size": 9
+      },
+      "9": {
+        "installation": 15,
+        "node": 9,
+        "order": "(O8-OP-I15)",
+        "size": 42
+      },
+      "10": {
+        "installation": 7,
+        "node": 10,
+        "order": "(O9-OP-I7)",
+        "size": 13
+      }
+    },
+    "weather_scenario": "perfect"
+  },
+  "objective": {
+    "charter_costs": 0,
+    "fuel_costs": 2099.5191,
+    "objective_bound": 6958.4991,
+    "optimality_gap": 0.0,
+    "penalty_costs": 4858.98,
+    "incumbent": 6958.4991
+  },
+  "order_fulfillment": {
+    "postponed_orders": [
+      8,
+      6,
+      7
+    ],
+    "serviced_orders": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      9,
+      10
+    ]
+  },
+  "runtime": {
+    "model_runtime": 37.6176,
+    "preprocess_runtime": 6.0946
+  },
+  "variables": {
+    "number_of_arcs": 129894,
+    "number_of_bin_variables": 129918,
+    "number_of_cont_variables": 48,
+    "number_of_variables": 129966
+  },
+  "vessels": {
+    "chartered_vessels": 0,
+    "fleet_vessels": 1
+  },
+  "voyages": {
+    "0": {
+      "0": [
+        2,
+        [
+          63,
+          76,
+          88
+        ],
+        10.0,
+        [
+          126.0,
+          0
+        ],
+        [
+          421.0725000000001,
+          0.0
+        ]
+      ],
+      "1": [
+        9,
+        [
+          118,
+          121,
+          122
+        ],
+        11.0,
+        [
+          61.99999999999966,
+          0
+        ],
+        [
+          97.82906249999999,
+          0.0
+        ]
+      ],
+      "2": [
+        1,
+        [
+          88,
+          104,
+          118
+        ],
+        10.0,
+        [
+          96.99999999999962,
+          0
+        ],
+        [
+          509.22000000000014,
+          0.0
+        ]
+      ],
+      "3": [
+        5,
+        [
+          136,
+          142,
+          149
+        ],
+        10.0,
+        [
+          40.99999999999976,
+          41.99999999999996
+        ],
+        [
+          211.48500000000004,
+          0.0
+        ]
+      ],
+      "4": [
+        10,
+        [
+          168,
+          171,
+          172
+        ],
+        10.0,
+        [
+          0,
+          41.99999999999953
+        ],
+        [
+          76.41750000000002,
+          0.0
+        ]
+      ],
+      "5": [
+        4,
+        [
+          149,
+          158,
+          168
+        ],
+        10.0,
+        [
+          24.0,
+          41.99999999999973
+        ],
+        [
+          311.36250000000007,
+          0.0
+        ]
+      ],
+      "9": [
+        3,
+        [
+          122,
+          127,
+          136
+        ],
+        10.0,
+        [
+          61.99999999999973,
+          42.0
+        ],
+        [
+          213.38250000000005,
+          0.0
+        ]
+      ],
+      "10": [
+        11,
+        [
+          172,
+          184,
+          184
+        ],
+        10.0,
+        [
+          0,
+          54.99999999999936
+        ],
+        [
+          258.75000000000006,
+          0.0
+        ]
+      ]
+    },
+    "1": {
+      "0": [
+        11,
+        [
+          63,
+          63,
+          63
+        ],
+        0,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "instance_info": {
+    "fleet_size": 1,
+    "installation_ordering": "random",
+    "number_of_installations": 9,
+    "order_composition": {
+      "1": {
+        "installation": 6,
+        "node": 1,
+        "order": "(O0-MD-I6)",
+        "size": 13
+      },
+      "2": {
+        "installation": 27,
+        "node": 2,
+        "order": "(O1-MD-I27)",
+        "size": 20
+      },
+      "3": {
+        "installation": 18,
+        "node": 3,
+        "order": "(O2-MD-I18)",
+        "size": 27
+      },
+      "4": {
+        "installation": 20,
+        "node": 4,
+        "order": "(O3-MD-I20)",
+        "size": 29
+      },
+      "5": {
+        "installation": 21,
+        "node": 5,
+        "order": "(O4-MD-I21)",
+        "size": 24
+      },
+      "6": {
+        "installation": 12,
+        "node": 6,
+        "order": "(O5-OD-I12)",
+        "size": 10
+      },
+      "7": {
+        "installation": 7,
+        "node": 7,
+        "order": "(O6-OD-I7)",
+        "size": 10
+      },
+      "8": {
+        "installation": 15,
+        "node": 8,
+        "order": "(O7-OP-I15)",
+        "size": 38
+      },
+      "9": {
+        "installation": 22,
+        "node": 9,
+        "order": "(O8-OP-I22)",
+        "size": 23
+      }
+    },
+    "weather_scenario": "perfect"
+  },
+  "objective": {
+    "charter_costs": 0,
+    "fuel_costs": 2102.2144,
+    "objective_bound": 2894.3344,
+    "optimality_gap": 0.0,
+    "penalty_costs": 792.12,
+    "incumbent": 2894.334
+  },
+  "order_fulfillment": {
+    "postponed_orders": [
+      7
+    ],
+    "serviced_orders": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      9
+    ]
+  },
+  "runtime": {
+    "model_runtime": 37.6054,
+    "preprocess_runtime": 4.9738
+  },
+  "variables": {
+    "number_of_arcs": 103676,
+    "number_of_bin_variables": 103698,
+    "number_of_cont_variables": 44,
+    "number_of_variables": 103742
+  },
+  "vessels": {
+    "chartered_vessels": 0,
+    "fleet_vessels": 1
+  },
+  "voyages": {
+    "0": {
+      "0": [
+        1,
+        [
+          63,
+          75,
+          81
+        ],
+        10.0,
+        [
+          123.0,
+          0
+        ],
+        [
+          329.13000000000005,
+          0.0
+        ]
+      ],
+      "1": [
+        6,
+        [
+          81,
+          89,
+          93
+        ],
+        10.0,
+        [
+          110.0,
+          0
+        ],
+        [
+          219.42000000000007,
+          0.0
+        ]
+      ],
+      "2": [
+        10,
+        [
+          174,
+          184,
+          184
+        ],
+        10.0,
+        [
+          0,
+          61.0
+        ],
+        [
+          215.62500000000009,
+          0.0
+        ]
+      ],
+      "3": [
+        4,
+        [
+          105,
+          107,
+          119
+        ],
+        11.0,
+        [
+          73.0,
+          0
+        ],
+        [
+          198.159375,
+          0.0
+        ]
+      ],
+      "4": [
+        9,
+        [
+          119,
+          131,
+          132
+        ],
+        10.0,
+        [
+          44.0,
+          0
+        ],
+        [
+          270.4800000000001,
+          0.0
+        ]
+      ],
+      "5": [
+        8,
+        [
+          142,
+          150,
+          151
+        ],
+        10.0,
+        [
+          20.0,
+          23.0
+        ],
+        [
+          184.23000000000005,
+          0.0
+        ]
+      ],
+      "6": [
+        3,
+        [
+          93,
+          94,
+          105
+        ],
+        10.0,
+        [
+          100.0,
+          0
+        ],
+        [
+          150.5925,
+          0.0
+        ]
+      ],
+      "8": [
+        2,
+        [
+          151,
+          166,
+          174
+        ],
+        10.0,
+        [
+          20.0,
+          61.0
+        ],
+        [
+          417.27750000000015,
+          0.0
+        ]
+      ],
+      "9": [
+        5,
+        [
+          132,
+          132,
+          142
+        ],
+        13.0,
+        [
+          44.0,
+          23.0
+        ],
+        [
+          117.30000000000001,
+          0.0
+        ]
+      ]
+    },
+    "1": {
+      "0": [
+        10,
+        [
+          63,
+          63,
+          63
+        ],
+        0,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}
