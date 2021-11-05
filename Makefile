@@ -25,7 +25,7 @@ run:
 	./run.sh $(sims) $(jar)
 
 get-results:
-	scp -r anderhva@solstorm-login.iot.ntnu.no:/storage/users/anderhva/* /Users/andersvandvik/Repositories/masters-thesis/output/solstorm/
+	scp -r anderhva@solstorm-login.iot.ntnu.no:/storage/users/anderhva/* /Users/andersvandvik/Repositories/masters-thesis/output/new_solstorm/
 
 plot-results:
 	./shell/plot_solution.sh

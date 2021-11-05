@@ -27,6 +27,13 @@ public class IO {
         JSONObject obj = new JSONObject();
         obj.put(Constants.INSTANCE_NAME_KEY, Constants.FILE_NAME);
         obj.put(Constants.OBJECTIVE_VALUE_KEY, solution.getObjective(false));
+
+        double objVal = solution.getObjective(false);
+        double penaltyCosts = solution.getPenaltyCosts();
+        double vesselCosts = objVal - penaltyCosts;
+        obj.put("vessel_costs", vesselCosts);
+        obj.put("penalty_costs", penaltyCosts);
+
         obj.put(Constants.VOYAGES_KEY, new JSONObject());
         for (int vesselIdx = 0; vesselIdx < Problem.getNumberOfVessels(); vesselIdx++) {
             Vessel vessel = Problem.getVessel(vesselIdx);
