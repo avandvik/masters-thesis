@@ -13,3 +13,5 @@ All output files from both the ALNS and the exact Gurobi solver can be found in 
 To run the ALNS algorithm locally, ensure that Java is installed. We used the Amazon Coretto JDK 11 Java [distribution](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html). The ALNS can then be run from the Main file in 'src/main/java/alns'. There is also a Makefile with different commands for running tests, building a jar, and so on. Some of the commands, like 'run' is tailored for our use on the computing cluster Solstorm, but other will work more generally, like 'test'. 
 
 To run the exact solver implemented with the Python Gurobi [interface](https://support.gurobi.com/hc/en-us/articles/360044290292-How-do-I-install-Gurobi-for-Python-), install Gurobi as described on their website and ensure you have a [license](https://www.gurobi.com/academia/academic-program-and-licenses/). 
+
+To run the Python notebooks used to generate tables and plots in 'plot', ensure that Python is installed with Jupyter notebook. 
