@@ -14,4 +14,4 @@ To run the ALNS algorithm locally, ensure that Java is installed. We used the Am
 
 To run the exact solver implemented with the Python Gurobi [interface](https://support.gurobi.com/hc/en-us/articles/360044290292-How-do-I-install-Gurobi-for-Python-), install Gurobi as described on their website and ensure you have a [license](https://www.gurobi.com/academia/academic-program-and-licenses/). 
 
-To run the Python notebooks used to generate tables and plots in 'plot', ensure that Python is installed with Jupyter notebook. 
+To run the Jupyter notebooks used to generate tables and plots in 'plot', ensure that Python is installed with Jupyter notebook. 
